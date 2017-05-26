@@ -20,6 +20,9 @@ iniciando_mr_len equ    $ - iniciando_mr_msg
 iniciando_mp_msg db     'Iniciando kernel (Modo Protegido)...'
 iniciando_mp_len equ    $ - iniciando_mp_msg
 
+charly_mp_msg db     'Aguante Charly vieja...'
+charly_mp_len equ    $ - charly_mp_msg
+
 %define GDT_NULL_DESC           0
 %define GDT_CODE_L0             8
 %define GDT_CODE_L3             9
@@ -27,6 +30,7 @@ iniciando_mp_len equ    $ - iniciando_mp_msg
 %define GDT_DATA_L3             11
 
 %define GDT_CODE_L0_START 0x40
+%define GDT_DATA_L0_START 0x50
 
 ;;
 ;; Seccion de código.
@@ -35,12 +39,6 @@ iniciando_mp_len equ    $ - iniciando_mp_msg
 
 ;Cosas que llamo desde c
 extern GDT_DESC
-
-%macro setear_segmento 2
-    mov ax, %2
-    mov %1, ax
-%endmacro
-
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -58,7 +56,6 @@ start:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
     
-
     ; Habilitar A20
     call habilitar_A20
     
@@ -77,14 +74,21 @@ start:
     jmp GDT_CODE_L0_START:.protMode
 
 .protMode:
+    ; Configurando resto de cosas para entrar en modo protegido
     ; Establecer selectores de segmentos
-    mov ax, GDT_DATA_L0
+    mov ax, GDT_DATA_L0_START
     mov ds, ax
     mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
 
     ; Establecer la base de la pila
+    mov esp, 0x2700
+    mov ebp, esp
     
     ; Imprimir mensaje de bienvenida
+    imprimir_texto_mr charly_mp_msg, charly_mp_len, 0x07, 0, 0
 
     ; Inicializar pantalla
     
