@@ -20,7 +20,7 @@ iniciando_mr_len equ    $ - iniciando_mr_msg
 iniciando_mp_msg db     'Iniciando kernel (Modo Protegido)...'
 iniciando_mp_len equ    $ - iniciando_mp_msg
 
-charly_mp_msg db     'Aguante Charly vieja...'
+charly_mp_msg db     'Think for youself, dont be sheep...'
 charly_mp_len equ    $ - charly_mp_msg
 
 %define GDT_NULL_DESC           0
@@ -68,12 +68,10 @@ start:
     mov cr0, eax
     
     ; Saltar a modo protegido
-    ;mov ax, GDT_CODE_L0
-    ;mov cs, ax
-    ;jmp cs:0x0
-    jmp GDT_CODE_L0_START:.protMode
+    jmp GDT_CODE_L0_START:STARTProtMode
 
-.protMode:
+BITS 32
+STARTProtMode:
     ; Configurando resto de cosas para entrar en modo protegido
     ; Establecer selectores de segmentos
     mov ax, GDT_DATA_L0_START
