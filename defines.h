@@ -33,6 +33,7 @@
 #define GDT_IDX_CODE_L3             9
 #define GDT_IDX_DATA_L0             10
 #define GDT_IDX_DATA_L3             11
+#define GDT_IDX_SCREEN              12
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */

@@ -11,6 +11,9 @@ global start
 ;; Saltear seccion de datos
 jmp start
 
+;Magic breakpoint
+;xchg bx,bx
+
 ;;
 ;; Seccion de datos.
 ;; -------------------------------------------------------------------------- ;;
@@ -31,6 +34,11 @@ charly_mp_len equ    $ - charly_mp_msg
 
 %define GDT_CODE_L0_START 0x40
 %define GDT_DATA_L0_START 0x50
+%define GDT_SS_SCREEN     12
+
+%macro BREAK 0
+xchg bx,bx
+%endmacro
 
 ;;
 ;; Seccion de código.
@@ -39,6 +47,9 @@ charly_mp_len equ    $ - charly_mp_msg
 
 ;Cosas que llamo desde c
 extern GDT_DESC
+extern IDT_DESC
+extern idt_inicializar
+extern areloco
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -68,7 +79,7 @@ start:
     mov cr0, eax
     
     ; Saltar a modo protegido
-    jmp GDT_CODE_L0_START:STARTProtMode
+    jmp 0x40:STARTProtMode
 
 BITS 32
 STARTProtMode:
@@ -77,16 +88,31 @@ STARTProtMode:
     mov ax, GDT_DATA_L0_START
     mov ds, ax
     mov ss, ax
-    mov es, ax
     mov fs, ax
     mov gs, ax
+    mov ax, GDT_SS_SCREEN << 3
+    mov es, ax ; 'es' es el segmento de video
 
     ; Establecer la base de la pila
     mov esp, 0x2700
     mov ebp, esp
     
     ; Imprimir mensaje de bienvenida
-    imprimir_texto_mr charly_mp_msg, charly_mp_len, 0x07, 0, 0
+    imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
+
+
+    ;Buludeando con la pantalla
+
+    mov ecx, 80*50
+    xor ebx, ebx
+.llenarPantalla:
+    mov word[es:ebx], 0x20FF
+    inc ebx
+    inc ebx
+    loop .llenarPantalla
+
+
+    ;call areloco
 
     ; Inicializar pantalla
     
@@ -105,8 +131,15 @@ STARTProtMode:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+    lidt [IDT_DESC]
     
     ; Cargar IDT
+    call idt_inicializar
+    ; Testeando idt
+    mov eax, 0x5
+    mov ebx, 0x0
+    BREAK
+    div ebx
  
     ; Configurar controlador de interrupciones
 

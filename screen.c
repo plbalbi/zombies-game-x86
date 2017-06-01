@@ -51,6 +51,29 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
+#define error_msg_size 16
+void print_int_error(){
+    int error_num;
+    asm("movl %%eax, %0;" : "=r" (error_num) : );
+    char* msg = "ERROR en int: ";
+    print(msg, 40-error_msg_size/2 - 2,  25, 0x24);
+    print_int(error_num, 40+error_msg_size/2, 25, 0x24);
+}
+
+void areloco(){
+    int str_size = 5;
+    char* testo= "PUTOO";
+    while(1){
+        for (int i = 0; i < 80-80%str_size; i+=1) {
+            print(" ", i-1, 30, 0x20);
+            print(testo, i, 30, 0x24);
+            for (int j = 0; j < 2556000; j++) {
+                
+            }
+        }
+        print("    ", 80-1, 30, 0x20);
+    }
+}
 
 
 
