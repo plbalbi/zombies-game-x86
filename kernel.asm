@@ -1,8 +1,8 @@
-; ** por compatibilidad se omiten tildes **
 ; ==============================================================================
 ; TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 ; ==============================================================================
 
+; ** por compatibilidad se omiten tildes **
 %include "imprimir.mac"
 
 global start
@@ -44,12 +44,11 @@ xchg bx,bx
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
 
-
 ;Cosas que llamo desde c
 extern GDT_DESC
 extern IDT_DESC
 extern idt_inicializar
-extern areloco
+extern mmu_inicializar
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -66,10 +65,10 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
-    
+
     ; Habilitar A20
     call habilitar_A20
-    
+
     ; Cargar la GDT
     lgdt [GDT_DESC]
 
@@ -77,7 +76,7 @@ start:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    
+
     ; Saltar a modo protegido
     jmp 0x40:STARTProtMode
 
@@ -96,13 +95,11 @@ STARTProtMode:
     ; Establecer la base de la pila
     mov esp, 0x2700
     mov ebp, esp
-    
+
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
 
-
-    ;Buludeando con la pantalla
-
+    ; Inicializar pantalla
     mov ecx, 80*50
     xor ebx, ebx
 .llenarPantalla:
@@ -111,19 +108,22 @@ STARTProtMode:
     inc ebx
     loop .llenarPantalla
 
-
-    ;call areloco
-
-    ; Inicializar pantalla
-    
     ; Inicializar el manejador de memoria
- 
-    ; Inicializar el directorio de paginas
+    BREAK
+    call mmu_inicializar
+    mov eax, 0x27000 ; bits menos significativos son atributos, la base es 0x27
+    mov cr3, eax
+    mov eax, cr1
+    or eax, 0x10000000 ; prendemos el bit más significativo
+    mov cr1, eax
     
+
+    ; Inicializar el directorio de paginas
+
     ; Cargar directorio de paginas
 
     ; Habilitar paginacion
-    
+
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -132,15 +132,10 @@ STARTProtMode:
 
     ; Inicializar la IDT
     lidt [IDT_DESC]
-    
+
     ; Cargar IDT
     call idt_inicializar
-    ; Testeando idt
-    mov eax, 0x5
-    mov ebx, 0x0
-    BREAK
-    div ebx
- 
+
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial
