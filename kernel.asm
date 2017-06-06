@@ -49,6 +49,7 @@ extern GDT_DESC
 extern IDT_DESC
 extern idt_inicializar
 extern mmu_inicializar
+extern areloco
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -113,9 +114,11 @@ STARTProtMode:
     call mmu_inicializar
     mov eax, 0x27000 ; bits menos significativos son atributos, la base es 0x27
     mov cr3, eax
-    mov eax, cr1
+    mov eax, cr0
     or eax, 0x10000000 ; prendemos el bit más significativo
-    mov cr1, eax
+    mov cr0, eax
+
+    call areloco
     
 
     ; Inicializar el directorio de paginas
