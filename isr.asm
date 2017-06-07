@@ -20,7 +20,9 @@ extern fin_intr_pic1
 ;; Sched
 extern sched_proximo_indice
 extern print_int_error
+extern print_hex
 
+extern areloco
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -70,11 +72,38 @@ ISR 20
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
+global _isr32
+_isr32:
+call fin_intr_pic1
+iret
+
+
+
 
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+global _isr33
+_isr33:
+push eax
 
+push 0x24
+push 10
+push 10
+push 2
+xor eax, eax
+in al, 0x60
+push eax
+call print_hex
+pop eax
+pop eax
+pop eax
+pop eax
+pop eax
+
+call fin_intr_pic1
+pop eax
+iret
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
@@ -100,5 +129,3 @@ proximo_reloj:
                 imprimir_texto_mp ebx, 1, 0x0f, 49, 79
                 popad
         ret
-        
-        

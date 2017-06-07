@@ -51,6 +51,8 @@ extern idt_inicializar
 extern mmu_inicializar
 extern areloco
 extern mmu_mapear_pagina
+extern habilitar_pic
+extern resetear_pic
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -135,6 +137,9 @@ STARTProtMode:
     call idt_inicializar
 
     ; Configurar controlador de interrupciones
+    call resetear_pic
+    call habilitar_pic
+    sti
 
     ; Cargar tarea inicial
 
