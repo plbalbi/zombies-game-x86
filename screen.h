@@ -20,11 +20,20 @@ typedef struct ca_s {
     unsigned char a;
 } ca;
 
+unsigned int frame_x;
+unsigned int frame_y;
+unsigned int cursor_x;
+unsigned int cursor_y;
+unsigned int cursor_reset;
+
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
 
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr);
 
 void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr);
 
+void prrint(char* str);
+
+void set_print_ptr(unsigned int x, unsigned int y);
 
 #endif  /* !__SCREEN_H__ */

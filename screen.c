@@ -7,6 +7,7 @@
 
 #include "screen.h"
 
+
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
     int i;
@@ -60,6 +61,44 @@ void print_int_error(){
     print_int(error_num, 40+error_msg_size/2, 25, 0x24);
 }
 
+void set_print_ptr(unsigned int x, unsigned int y)
+  { cursor_reset = 1; frame_x = x; frame_y = y; };
+
+void prrint(char* str){
+  unsigned int x = cursor_x, y = cursor_y; // Carga el seteo de donde empieza el frame del cursor
+  if (cursor_reset) {
+    x = frame_x; y = frame_y;
+  }
+  ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
+  int i;
+  unsigned char attr = p[y][x].a; // Deja los atributos del fondo
+  for (i = 0; str[i] != 0; i++) {
+    if (str[i] == '\n') {
+      x = frame_x;
+      y++;
+    }else{
+      p[y][x].c = (unsigned char) str[i];
+      p[y][x].a = (unsigned char) attr;
+      x++;
+      if (x == VIDEO_COLS) {
+        x = frame_x;
+        y++;
+      }
+    }
+    if (y == VIDEO_FILS) y = frame_y;
+  }
+  cursor_x = x;
+  cursor_y = y;
+}
+
+void init_prrint_frame(){
+  frame_x = 0;
+  frame_y = 0;
+  cursor_x = 0;
+  cursor_y = 0;
+  cursor_reset = 1;
+}
+
 void areloco(){
     int str_size = 5;
     char* testo= "PUTOO";
@@ -68,13 +107,15 @@ void areloco(){
             print(" ", i-1, 30, 0x20);
             print(testo, i, 30, 0x24);
             for (int j = 0; j < 2556000; j++) {
-                
+
             }
         }
         print("    ", 80-1, 30, 0x20);
     }
 }
 
-
-
-
+void test_prrint(){
+  set_print_ptr(10, 10);
+  prrint("Esto es una prueba de imrpimir -> ");
+  prrint("Esto deberia seguir ahora \ny esto deberia ir abajo");
+}

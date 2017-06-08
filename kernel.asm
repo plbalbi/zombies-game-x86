@@ -53,6 +53,10 @@ extern areloco
 extern mmu_mapear_pagina
 extern habilitar_pic
 extern resetear_pic
+;test prrint
+extern init_prrint_frame
+extern test_prrint
+
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -148,6 +152,11 @@ STARTProtMode:
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)
+
+    ;cosas de testeo de prrunt
+    call init_prrint_frame
+    call test_prrint
+
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
     mov ecx, 0xFFFF
