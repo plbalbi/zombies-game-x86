@@ -68,6 +68,7 @@ void prrint(char* str){
   unsigned int x = cursor_x, y = cursor_y; // Carga el seteo de donde empieza el frame del cursor
   if (cursor_reset) {
     x = frame_x; y = frame_y;
+    cursor_reset = 0;
   }
   ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
   int i;
@@ -116,6 +117,8 @@ void areloco(){
 
 void test_prrint(){
   set_print_ptr(10, 10);
-  prrint("Esto es una prueba de imrpimir -> ");
-  prrint("Esto deberia seguir ahora \ny esto deberia ir abajo");
+  prrint("imprimir \nimprimir\n");
+  prrint("imprimir \nimprimir");
+  prrint("imprimir \n\nimprimirjodasd asdijas d 9uds");
+
 }

@@ -36,6 +36,10 @@ void mmu_inicializar() {
 
 }
 
+// void mmu_inicializar_dir_zombi(x,y,jugador,tarea) {
+//
+// }
+
 unsigned int mmu_prox_pag_libre(){
     unsigned int prev_page = prox_pag_lib;
     prox_pag_lib+=PAGE_SIZE;

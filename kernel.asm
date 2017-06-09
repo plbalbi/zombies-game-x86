@@ -65,11 +65,11 @@ start:
     cli
 
     ; Cambiar modo de video a 80 X 50
-    mov ax, 0003h
-    int 10h ; set mode 03h
-    xor bx, bx
-    mov ax, 1112h
-    int 10h ; load 8x8 font
+      mov ax, 0003h
+      int 10h ; set mode 03h
+      xor bx, bx
+      mov ax, 1112h
+      int 10h ; load 8x8 font
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
@@ -155,6 +155,7 @@ STARTProtMode:
 
     ;cosas de testeo de prrunt
     call init_prrint_frame
+    BREAK
     call test_prrint
 
     mov eax, 0xFFFF
