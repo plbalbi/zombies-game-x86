@@ -151,7 +151,6 @@ STARTProtMode:
 
     ;cosas de testeo de prrunt
     call init_prrint_frame
-    BREAK
     call test_prrint
 
     mov eax, 0xFFFF
