@@ -72,13 +72,34 @@ ISR 20
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
+%define LAST_POXEL 80*49*2+79*2
+%define CLOCK_BG 0x0F
+; POXEL CLOCK: ah -> [ ATTR | CHAR ] <- al
 global _isr32
 _isr32:
-call fin_intr_pic1
-iret
-
-
-
+  push eax
+  push ebx
+  xor ebx, ebx
+  mov ah, CLOCK_BG ; Cargo el fondo de poxel del clock
+  mov bl, [.last_char] ; Mer cargo el ultimos index el clock
+  cmp bl, 0x8
+  je .reset_clock
+  mov al, [.clock_char + ebx]
+  mov word [es:LAST_POXEL], ax
+  inc bl
+  mov [.last_char], bl
+  jmp .fin_clock
+.reset_clock:
+  mov byte[.last_char], 0x1
+  mov al, 0x7C
+  mov word [es:LAST_POXEL], ax
+.fin_clock:
+  call fin_intr_pic1
+  pop ebx
+  pop eax
+  iret
+.clock_char: DB 0x7C, 0x2F, 0x2D, 0x5C, 0x7C, 0x2F, 0x2D, 0x5C ; Secuencia de reloj para indexar
+.last_char: DB 0x0 ; Ultimo index -> Resetea en 8
 
 ;;
 ;; Rutina de atención del TECLADO

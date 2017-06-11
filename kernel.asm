@@ -111,7 +111,6 @@ STARTProtMode:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
     call limpiarPantalla
-    CALL_C firmar_tp
 
     ; Inicializar el manejador de memoria
     call mmu_inicializar
@@ -207,6 +206,9 @@ limpiarPantalla:
   mov word[es:ebx + (FILA_SIZE-1)*2], FONDO_AZUL ; Cargo el relleno
   add ebx, FILA_SIZE*2
   loop .cols_de_colores
+  ; Pongo los numeritos
+  CALL_C seguir_llenando_pantalla
+  CALL_C firmar_tp
   ret
   ;; -------------------------------------------------------------------------- ;;
 

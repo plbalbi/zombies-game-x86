@@ -119,6 +119,12 @@ void firmar_tp(){
   set_print_ptr(2, 0);
   prrint("Felizmente desarrolado en Windows Vista");
 }
+void seguir_llenando_pantalla(){
+  set_print_ptr(4, 50-4);
+  prrint("1 2 3 4 5 6 7 8");
+  set_print_ptr(80-20, 50-4);
+  prrint("1 2 3 4 5 6 7 8");
+}
 
 void test_prrint(){
   set_print_ptr(10, 10);
