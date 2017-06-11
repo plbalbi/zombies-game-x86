@@ -172,7 +172,7 @@ STARTProtMode:
 %define FILA_SIZE 80
 %define CANT_FILAS 50
 %define FONDO_VERDE 0x20FF
-%define FONDO_NEGRO 0x07FF
+%define FONDO_NEGRO 0x0FFF
 %define FONDO_ROJO 0x40FF
 %define FONDO_AZUL 0x10FF
 limpiarPantalla:
