@@ -39,6 +39,10 @@ charly_mp_len equ    $ - charly_mp_msg
 %macro BREAK 0
 xchg bx,bx
 %endmacro
+%macro CALL_C 1
+extern %1
+call %1
+%endmacro
 
 ;;
 ;; Seccion de código.
@@ -107,6 +111,7 @@ STARTProtMode:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
     call limpiarPantalla
+    CALL_C firmar_tp
 
     ; Inicializar el manejador de memoria
     call mmu_inicializar
@@ -167,7 +172,7 @@ STARTProtMode:
 %define FILA_SIZE 80
 %define CANT_FILAS 50
 %define FONDO_VERDE 0x20FF
-%define FONDO_NEGRO 0x00FF
+%define FONDO_NEGRO 0x07FF
 %define FONDO_ROJO 0x40FF
 %define FONDO_AZUL 0x10FF
 limpiarPantalla:

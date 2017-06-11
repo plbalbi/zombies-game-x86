@@ -115,10 +115,14 @@ void areloco(){
     }
 }
 
+void firmar_tp(){
+  set_print_ptr(2, 0);
+  prrint("Felizmente desarrolado en Windows Vista");
+}
+
 void test_prrint(){
   set_print_ptr(10, 10);
   prrint("imprimir \nimprimir\n");
   prrint("imprimir \nimprimir");
   prrint("imprimir \n\nimprimirjodasd asdijas d 9uds");
-
 }
