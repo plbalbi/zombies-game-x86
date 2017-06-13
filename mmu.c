@@ -65,3 +65,38 @@ void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
     pt_entry* pt = (pt_entry*) (pde[INDEXAR_DIR(vir)].frame << 12);
     pt[INDEXAR_TABLE(vir)] = (pt_entry) { };
 }
+
+
+void copiar_zombi(unsigned int task, unsigned int player, unsigned int y){
+    // Tareas Jug 1 (A)
+    // 1 0x10000 - 0x10FFF
+    // 2 0x11000 - 0x11FFF
+    // 3 0x12000 - 0x12FFF
+    // Tareas Jug 2 (B)
+    // 1 0x13000 - 0x13FFF
+    // 2 0x14000 - 0x14FFF
+    // 3 0x15000 - 0x15FFF
+    
+    // Las direccions de arriba están en la parte de kernel (identity mapping)
+    char* dir_task;
+    // base de jugador
+    if(player==1){
+        dir_task (char*) 0x10000;
+    }else{
+        dir_task = (char*) 0x13000;
+    }
+    // offset de tarea
+    dir_task += (task-1)*0x1000;
+    
+    // el x depende de cómo indexe la funciòn que da la dirección física
+    unsigned int x = (player==1)*2 + (player==2)*(78-2);
+    char* dir_mapa = (char*) dir_fisica(x,y);
+    
+    int i = 0;
+    while(i < 0x1000){
+        dir_mapa* = dir_task*;
+        dir_mapa++;
+        dir_task++;
+    }
+    
+}
