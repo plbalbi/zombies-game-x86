@@ -103,11 +103,12 @@ void init_prrint_frame(){
 void areloco(){
     int str_size = 5;
     char* testo= "PUTOO";
+	int i, j;
     while(1){
-        for (int i = 0; i < 80-80%str_size; i+=1) {
+        for (i = 0; i < 80-80%str_size; i+=1) {
             print(" ", i-1, 30, 0x20);
             print(testo, i, 30, 0x24);
-            for (int j = 0; j < 2556000; j++) {
+            for (j = 0; j < 2556000; j++) {
 
             }
         }
