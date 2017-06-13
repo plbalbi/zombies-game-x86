@@ -70,7 +70,7 @@ void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
 #define INICIO_MAPA 0x400000
 #define PAGE_SIZE 1024*4
 #define MAP_WIDTH 78
-unsigned int dir_fisica(unsigned int x, unsigned int y){
+unsigned int dir_fisica(int x, int y){
   return INICIO_MAPA + ((y % MAP_WIDTH) * MAP_WIDTH + x)*PAGE_SIZE ;
 }
 
@@ -79,7 +79,7 @@ unsigned int dir_fisica(unsigned int x, unsigned int y){
 // y = dir_fisica div PAGE_SIZE*MAP_WIDTH
 // x = remainder(dir_fisica, PAGE_SIZE*MAP_WIDTH) / PAGE_SIZE
 
-void copiar_zombi(unsigned int task, unsigned int player, unsigned int y){
+void copiar_zombi(unsigned int task, unsigned int player, int y){
     // Tareas Jug 1 (A)
     // 1 0x10000 - 0x10FFF
     // 2 0x11000 - 0x11FFF
@@ -93,22 +93,19 @@ void copiar_zombi(unsigned int task, unsigned int player, unsigned int y){
     char* dir_task;
     // base de jugador
     if(player==1){
-        dir_task (char*) 0x10000;
+        dir_task = (char*) 0x10000;
     }else{
         dir_task = (char*) 0x13000;
     }
     // offset de tarea
     dir_task += (task-1)*0x1000;
 
-    // el x depende de cómo indexe la funciòn que da la dirección física
-    unsigned int x = (player==1)*2 + (player==2)*(78-2);
+    int x = (player==1) ? 1 : MAP_WIDTH-2; // Operador ternario
     char* dir_mapa = (char*) dir_fisica(x,y);
-
     int i = 0;
     while(i < 0x1000){
-        dir_mapa* = dir_task*;
+        *dir_mapa = *dir_task;
         dir_mapa++;
         dir_task++;
     }
-
 }

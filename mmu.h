@@ -38,9 +38,8 @@ typedef struct posicion_t {
   unsigned short y;
 }__attribute__((__packed__)) posicion;
 
-unsigned int dir_fisica(unsigned int x, unsigned int y);
-posicion x_y(unsigned int dir_fisica);
-
+unsigned int dir_fisica(int x, int y);
+posicion x_y(unsigned int dir_fisica); // SIDENOTE: Devuelve por pila
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
