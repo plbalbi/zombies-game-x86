@@ -40,6 +40,7 @@ typedef struct posicion_t {
 
 unsigned int dir_fisica(int x, int y);
 posicion x_y(unsigned int dir_fisica); // SIDENOTE: Devuelve por pila
+void copiar_zombi(unsigned int task, unsigned int player, int y);
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
