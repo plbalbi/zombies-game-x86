@@ -1,6 +1,6 @@
---------------------------------------------------------------------------------
+---------------------------------------------------
   NOTAS
---------------------------------------------------------------------------------
+  ---------------------------------------------------
 
 1 - funcion que formatee un poxel
 2 - funcion que cambie el caracter escirto en un poxel
@@ -18,3 +18,12 @@ NOTA1.2:  Hacer una macro, la cual se utilizaria en los ciclos para pintar. Y un
 NOTA2:    Para los colores usar un typdef, total son solo 8 posibles
 
 Aridades de las funciones de arriba:
+
+---------------------------------------------------
+*13-06-2017*
+---------------------------------------------------
+Funciones a crear
+- copiar_zombie(# de tarea, # de jugador, y_off)
+- crear_esquema_zombie(# jugador, y_off)
+- dir_fisica(x, y)
+- x_y(dir_fisica) ... For later
