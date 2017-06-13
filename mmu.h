@@ -31,8 +31,11 @@ void mmu_inicializar();
 
 void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis);
 void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3);
+unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador, int y);
 
+/* ----------------------------------------------------------------------------- */
 // Funciones zombies
+/* ----------------------------------------------------------------------------- */
 typedef struct posicion_t {
   unsigned short x;
   unsigned short y;
@@ -43,7 +46,7 @@ posicion x_y(unsigned int dir_fisica); // SIDENOTE: Devuelve por pila
 void copiar_zombi(unsigned int task, unsigned int player, int y);
 
 unsigned int crear_esquema_zombi(int jugador, int y);
-
+/* ----------------------------------------------------------------------------- */
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
