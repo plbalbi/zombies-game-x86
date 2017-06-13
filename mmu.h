@@ -14,7 +14,7 @@
 #include "game.h"
 
 #define PRIMERA_PAG_LIBRE 0x100<<12
-#define PAGE_SIZE 2<<12
+#define PAGE_SIZE (2<<12)
 
 #define INDEXAR_DIR(virt) (virt >> 22)
 #define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF
@@ -31,6 +31,8 @@ void mmu_inicializar();
 
 void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis);
 void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3);
+
+void crear_esquema_zombi(int jugador, int y);
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
