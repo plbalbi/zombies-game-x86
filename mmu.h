@@ -14,7 +14,7 @@
 #include "game.h"
 
 #define PRIMERA_PAG_LIBRE 0x100<<12
-#define PAGE_SIZE 2<<12
+#define PAGE_SIZE (2<<12)
 
 #define INDEXAR_DIR(virt) (virt >> 22)
 #define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF
@@ -41,6 +41,9 @@ typedef struct posicion_t {
 unsigned int dir_fisica(int x, int y);
 posicion x_y(unsigned int dir_fisica); // SIDENOTE: Devuelve por pila
 void copiar_zombi(unsigned int task, unsigned int player, int y);
+
+unsigned int crear_esquema_zombi(int jugador, int y);
+
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
