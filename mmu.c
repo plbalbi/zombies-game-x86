@@ -76,8 +76,5 @@ unsigned int dir_fisica(unsigned int x, unsigned int y){
 
 // - x_y(dir_fisica) ... For later
 
-y = dir_fisica div PAGE_SIZE*MAP_WIDTH
-x = remainder(dir_fisica, PAGE_SIZE*MAP_WIDTH) / PAGE_SIZE
-
-unsigned int* x_y(unsigned int dir){
-}
+// y = dir_fisica div PAGE_SIZE*MAP_WIDTH
+// x = remainder(dir_fisica, PAGE_SIZE*MAP_WIDTH) / PAGE_SIZE

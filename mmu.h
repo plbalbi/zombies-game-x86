@@ -33,7 +33,13 @@ void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis);
 void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3);
 
 // Funciones zombies
+typedef struct posicion_t {
+  unsigned short x;
+  unsigned short y;
+}__attribute__((__packed__)) posicion;
+
 unsigned int dir_fisica(unsigned int x, unsigned int y);
+posicion x_y(unsigned int dir_fisica);
 
 
 typedef struct str_pd_entry_t{
