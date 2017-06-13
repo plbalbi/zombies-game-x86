@@ -65,3 +65,19 @@ void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
     pt_entry* pt = (pt_entry*) (pde[INDEXAR_DIR(vir)].frame << 12);
     pt[INDEXAR_TABLE(vir)] = (pt_entry) { };
 }
+
+// - dir_fisica(x, y)
+#define INICIO_MAPA 0x400000
+#define PAGE_SIZE 1024*4
+#define MAP_WIDTH 78
+unsigned int dir_fisica(unsigned int x, unsigned int y){
+  return INICIO_MAPA + ((y % MAP_WIDTH) * MAP_WIDTH + x)*PAGE_SIZE ;
+}
+
+// - x_y(dir_fisica) ... For later
+
+y = dir_fisica div PAGE_SIZE*MAP_WIDTH
+x = remainder(dir_fisica, PAGE_SIZE*MAP_WIDTH) / PAGE_SIZE
+
+unsigned int* x_y(unsigned int dir){
+}

@@ -32,6 +32,10 @@ void mmu_inicializar();
 void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis);
 void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3);
 
+// Funciones zombies
+unsigned int dir_fisica(unsigned int x, unsigned int y);
+
+
 typedef struct str_pd_entry_t{
     unsigned char p:1;
     unsigned char rw:1;
