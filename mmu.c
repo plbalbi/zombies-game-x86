@@ -12,20 +12,20 @@
 void mmu_inicializar() {
 
     // Inicializar esquema de paginación
-
+	int i;
     unsigned int* PD = (unsigned int*) DIR_INICIO_IM_KERNEL_PD;
     unsigned int* PT = (unsigned int*) DIR_INICIO_IM_KERNEL_PT;
 
     // Llenando la Page Directory
     *PD = 0x28003; // Base Address = 0x28, US=1, RW=1, P=1
     PD++;
-    for (int i = 1; i < 1024; i++) {
+    for (i = 1; i < 1024; i++) {
         *PD = 0x00000; // P=0
         PD++;
     }
 
     // Llenando la Page Table
-    for (int i = 0; i < 1024; i++) {
+    for (i = 0; i < 1024; i++) {
         *PT = 0x00003 | (i<<12); // P=0
         PT++;
     }
