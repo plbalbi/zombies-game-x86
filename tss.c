@@ -15,4 +15,3 @@ tss tss_zombisB[CANT_ZOMBIS];
 
 void tss_inicializar() {
 }
-

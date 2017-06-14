@@ -76,6 +76,13 @@ unsigned int dir_fisica(int x, int y){
 }
 
 // - x_y(dir_fisica) ... For later
+posicion x_y(unsigned int dir_fisica){
+  posicion res;
+  res.x = (dir_fisica % (MAP_WIDTH*PAGE_SIZE))/PAGE_SIZE;
+  res.y = dir_fisica / (MAP_WIDTH*PAGE_SIZE);
+  return res;
+}
+
 
 // y = dir_fisica div PAGE_SIZE*MAP_WIDTH
 // x = remainder(dir_fisica, PAGE_SIZE*MAP_WIDTH) / PAGE_SIZE
@@ -150,4 +157,8 @@ void copiar_zombi(unsigned int task, unsigned int player, int y){
         dir_mapa++;
         dir_task++;
     }
+}
+
+unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador, int y){
+  return 0;
 }
