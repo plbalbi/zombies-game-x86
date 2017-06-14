@@ -14,6 +14,7 @@
 
 #include "colors.h"
 #include "defines.h"
+
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;
@@ -35,5 +36,7 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 void prrint(char* str);
 
 void set_print_ptr(unsigned int x, unsigned int y);
+
+void init_prrint_frame();
 
 #endif  /* !__SCREEN_H__ */

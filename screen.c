@@ -7,6 +7,8 @@
 
 #include "screen.h"
 
+// HELPER FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
@@ -52,18 +54,6 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
-#define error_msg_size 16
-void print_int_error(){
-    int error_num;
-    asm("movl %%eax, %0;" : "=r" (error_num) : );
-    char* msg = "ERROR en int: ";
-    print(msg, 40-error_msg_size/2 - 2,  25, 0x24);
-    print_int(error_num, 40+error_msg_size/2, 25, 0x24);
-}
-
-void set_print_ptr(unsigned int x, unsigned int y)
-  { cursor_reset = 1; frame_x = x; frame_y = y; };
-
 void prrint(char* str){
   unsigned int x = cursor_x, y = cursor_y; // Carga el seteo de donde empieza el frame del cursor
   if (cursor_reset) {
@@ -100,9 +90,25 @@ void init_prrint_frame(){
   cursor_reset = 1;
 }
 
+void set_print_ptr(unsigned int x, unsigned int y)
+  { cursor_reset = 1; frame_x = x; frame_y = y; };
+
+
+// USER FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#define error_msg_size 16
+void print_int_error(){
+    int error_num;
+    asm("movl %%eax, %0;" : "=r" (error_num) : );
+    char* msg = "ERROR en int: ";
+    print(msg, 40-error_msg_size/2 - 2,  25, 0x24);
+    print_int(error_num, 40+error_msg_size/2, 25, 0x24);
+}
+
 void areloco(){
     int str_size = 5;
-    char* testo= "PUTOO";
+  char* testo= "PUTOO";
 	int i, j;
     while(1){
         for (i = 0; i < 80-80%str_size; i+=1) {
@@ -120,6 +126,7 @@ void firmar_tp(){
   set_print_ptr(2, 0);
   prrint("Felizmente desarrolado en Windows Vista");
 }
+
 void seguir_llenando_pantalla(){
   set_print_ptr(4, 50-4);
   prrint("1 2 3 4 5 6 7 8");
