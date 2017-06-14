@@ -160,5 +160,5 @@ void copiar_zombi(unsigned int task, unsigned int player, int y){
 }
 
 unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador, int y){
-
+  return 0;
 }
