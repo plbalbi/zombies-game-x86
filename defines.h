@@ -30,8 +30,10 @@
 
 #define GDT_IDX_NULL_DESC           0
 #define GDT_IDX_CODE_L0             8
+#define GDT_CODE_L0_REG 0x40
 #define GDT_IDX_CODE_L3             9
 #define GDT_IDX_DATA_L0             10
+#define GDT_DATA_L0_REG 0x50
 #define GDT_IDX_DATA_L3             11
 #define GDT_IDX_SCREEN              12
 
