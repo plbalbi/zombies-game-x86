@@ -1,0 +1,49 @@
+    // Notas:
+    // Como convención, arrancamos a ubicar las TSS a partir de
+    // la dirección 0x30000 (pag 0x30)
+    // El dpl es el privilegio necesario para lanzar las tareas
+    [GDT_IDX_TASK_INIT] = (gdt_entry) {
+        (unsigned short)    103,            /* limit[0:15]  */
+        (unsigned short)    0,              /* base[0:15]   */
+        (unsigned char)     0x03,           /* base[23:16]  */
+        (unsigned char)     0x9,            /* type         */
+        (unsigned char)     0x0,            /* s            */
+        (unsigned char)     0x00,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */
+        (unsigned char)     0x00,           /* limit[16:19] */
+        (unsigned char)     0x00,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x00,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+    [GDT_IDX_TASK_IDLE] = (gdt_entry) {
+        (unsigned short)    103,            /* limit[0:15]  */
+        (unsigned short)    0+104,          /* base[0:15]   */
+        (unsigned char)     0x03,           /* base[23:16]  */
+        (unsigned char)     0x9,            /* type         */
+        (unsigned char)     0x0,            /* s            */
+        (unsigned char)     0x00,           /* dpl          */
+        (unsigned char)     0x01,           /* p            */
+        (unsigned char)     0x00,           /* limit[16:19] */
+        (unsigned char)     0x00,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x00,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+
+
+
+// Acerca de cómo definir las bases de las TSS en la GDT:
+// Podemos estar seguros de que la base de las TSS van a estar
+// en el kernel, AKA en las primeras 0x100 páginas, con lo cual
+// lidiamos con direcciones de memoria menores a 0x100000, con
+// lo cual nos bastan 21 bits. Como en los descriptores las
+// bases
+#define INDEXAR_DIR(virt) (virt >> 22)
+#define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF
+#define DEVOLVER_OFF(virt) (virt) & 0x00000FFF
+
+
+Selectores de GDT?
