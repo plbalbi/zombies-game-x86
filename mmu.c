@@ -46,25 +46,26 @@ unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador,
   return 0;
 }
 
-// TODO: Reformular las dos funciones de abajo para que las podamos reutilizar al mover 
+// TODO: Reformular las dos funciones de abajo para que las podamos reutilizar al mover
 // zombies.
 
 // TODO: Descomentar esta función rompe todo, por alguna razón
 
-/*unsigned int crear_esquema_zombi(int jugador, int y) {
+unsigned int crear_esquema_zombi(int jugador, int y) {
     // Crea el esquema de paginación para un zombie, y devuelve
     // el CR3 correspondiente (AKA la dirección del page directory)
 
     // Memory Allocation
     pd_entry* pd = (pd_entry*) mmu_prox_pag_libre();
     pt_entry* pt = (pt_entry*) mmu_prox_pag_libre();
-    int i;
+    int i = 0;
+		i++;
 
     // Page Directory
     for (i = 0; i < 1024; i++) pd[i] = (pd_entry) { }; // zero everything
     pd[0] = (pd_entry) { .p = 1, .rw = 1, .frame = 0x28 }; // first entry
     pd[0x20] = (pd_entry) { .p = 1, .rw = 1, .frame = (unsigned int)pt>>12 }; // zombi sight
-
+		//
     // Page Table
     for (i = 0; i < 1024; i++) pt[i] = (pt_entry) { }; // zero everything
     if (jugador == 0) {
@@ -91,7 +92,7 @@ unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador,
         mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y-1)); // 9
     }
     return (unsigned int) pd;
-}*/
+}
 
 void copiar_zombi(unsigned int task, unsigned int player, int y){
     // Tareas Jug 1 (A)
