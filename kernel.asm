@@ -101,7 +101,8 @@ STARTProtMode:
     mov ebp, esp
 
     ; Imprimir mensaje de bienvenida
-    imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
+    ;imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
+    ; CALL_C init_prrint_frame
     call limpiarPantalla
 
     ; Inicializar el manejador de memoria
@@ -131,17 +132,20 @@ STARTProtMode:
     ; Configurar controlador de interrupciones
     call resetear_pic
     call habilitar_pic
-    sti
 
     ; Cargar tarea inicial
 
+
     ; Habilitar interrupciones
+    sti
+
 
     ; Saltar a la primera tarea: Idle
 
     ; Prrint Test
-    call init_prrint_frame
-    call test_prrint
+
+    ; call init_prrint_frame
+    ; call test_prrint
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
@@ -197,8 +201,9 @@ limpiarPantalla:
   add ebx, FILA_SIZE*2
   loop .cols_de_colores
   ; Pongo los numeritos
-  CALL_C seguir_llenando_pantalla
-  CALL_C firmar_tp
+  ; TODO: Ver alineación pila
+  ; CALL_C seguir_llenando_pantalla
+  ; CALL_C firmar_tp
   ret
   ;; -------------------------------------------------------------------------- ;;
 
