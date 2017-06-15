@@ -52,12 +52,9 @@ typedef bool _Bool;
 #define GDT_IDX_DATA_L3             11
 #define GDT_IDX_SCREEN              12
 
-<<<<<<< HEAD
-=======
 #define GDT_IDX_TSS_INIT            15
 #define GDT_IDX_TSS_IDLE            GDT_IDX_TSS_INIT+1
-    
->>>>>>> 9d78746975f7cb5d8589159f0a7138f178fb9bfd
+
 /* Selectores de la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_CODE_L0_REG             (GDT_IDX_CODE_L0 << 3)
