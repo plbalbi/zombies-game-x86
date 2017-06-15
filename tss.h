@@ -12,16 +12,6 @@
 #include "i386.h"
 #include "gdt.h"
 
-// Acerca de cómo definir las bases de las TSS en la GDT:
-// Podemos estar seguros de que la base de las TSS van a estar
-// en el kernel, AKA en las primeras 0x100 páginas, con lo cual
-// lidiamos con direcciones de memoria menores a 0x100000, con
-// lo cual nos bastan 21 bits. Como en los descriptores las
-// bases están fragmentadas, defino las siguientes macros:
-#define INDEXAR_DIR(virt) (virt >> 22)
-#define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF
-#define DEVOLVER_OFF(virt) (virt) & 0x00000FFF
-
 typedef struct str_tss {
     unsigned short  ptl;
     unsigned short  unused0;
