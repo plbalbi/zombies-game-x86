@@ -15,7 +15,7 @@
 #define FALSE                   0x00000000
 #define ERROR                   1
 
-typedef bool _Bool;
+typedef _Bool bool;
 #define true True
 #define false False
 
