@@ -27,6 +27,19 @@ typedef bool _Bool;
 #define SIZE_W                  78
 #define SIZE_H                  44
 
+#define TSS_SIZE                104
+
+/* Direcciones en memoria */
+/* -------------------------------------------------------------------------- */
+
+#define DIR_INICIO_PILA_KERNEL  0x27000
+#define DIR_INICIO_TASK_AG      0X10000
+#define DIR_INICIO_TASK_AM      0X11000
+#define DIR_INICIO_TASK_AC      0X12000
+#define DIR_INICIO_TASK_BG      0X13000
+#define DIR_INICIO_TASK_BM      0X14000
+#define DIR_INICIO_TASK_BC      0X15000
+#define DIR_INICIO_TASK_IDLE    0X16000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -39,6 +52,12 @@ typedef bool _Bool;
 #define GDT_IDX_DATA_L3             11
 #define GDT_IDX_SCREEN              12
 
+<<<<<<< HEAD
+=======
+#define GDT_IDX_TSS_INIT            15
+#define GDT_IDX_TSS_IDLE            GDT_IDX_TSS_INIT+1
+    
+>>>>>>> 9d78746975f7cb5d8589159f0a7138f178fb9bfd
 /* Selectores de la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_CODE_L0_REG             (GDT_IDX_CODE_L0 << 3)
