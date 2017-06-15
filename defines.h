@@ -15,6 +15,10 @@
 #define FALSE                   0x00000000
 #define ERROR                   1
 
+typedef bool _Bool;
+#define true True
+#define false False
+
 
 /* Misc */
 /* -------------------------------------------------------------------------- */
@@ -34,7 +38,7 @@
 #define GDT_IDX_DATA_L0             10
 #define GDT_IDX_DATA_L3             11
 #define GDT_IDX_SCREEN              12
-    
+
 /* Selectores de la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_CODE_L0_REG             (GDT_IDX_CODE_L0 << 3)
