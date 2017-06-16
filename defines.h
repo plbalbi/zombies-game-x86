@@ -24,9 +24,8 @@ typedef _Bool bool;
 /* -------------------------------------------------------------------------- */
 #define CANT_ZOMBIS             8
 
-#define SIZE_W                  78
 #define MAP_WIDTH               78
-#define SIZE_H                  44
+#define MAP_HEIGHT              44
 
 #define TSS_SIZE                104
 

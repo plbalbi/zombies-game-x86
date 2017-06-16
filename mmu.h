@@ -14,7 +14,7 @@
 #include "game.h"
 
 #define PRIMERA_PAG_LIBRE 0x100<<12
-#define PAGE_SIZE (2<<12)
+#define PAGE_SIZE (1<<12)
 
 #define INDEXAR_DIR(virt) (virt >> 22)
 #define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF

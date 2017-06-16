@@ -52,8 +52,6 @@ unsigned int crear_esquema_zombi(int jugador, int y) {
     // Memory Allocation
     pd_entry* pd = (pd_entry*) mmu_prox_pag_libre();
     pt_entry* pt = (pt_entry*) mmu_prox_pag_libre();
-    int i = 0;
-		i++;
 
     // Page Directory
     for (i = 0; i < 1024; i++) pd[i] = (pd_entry) { }; // zero everything
@@ -154,7 +152,9 @@ void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 unsigned int dir_fisica(int x, int y){
-  return INICIO_MAPA + ((y % MAP_WIDTH) * MAP_WIDTH + x)*PAGE_SIZE ;
+    int modulo_x = x % MAP_WIDTH;
+    int modulo_y = (y + MAP_HEIGHT) % MAP_HEIGHT;
+    return INICIO_MAPA + (modulo_y * MAP_WIDTH + modulo_x)*PAGE_SIZE;
 }
 
 posicion x_y(unsigned int dir_fisica){
