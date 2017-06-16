@@ -142,9 +142,9 @@ _isr32:
   call sched_proximo_indice
   add eax, GDT_IDX_TSS_PRIMERO
   shl eax, 3
-  mov [jump_far_selector], ax
+  mov [.jump_far_selector], ax
   ; TODO: preguntar si la task no es la misma en la que estoy. explota todo porque estaría busy
-  jmp far [jump_far_address]
+  jmp far [.jump_far_address]
 
 
   iret

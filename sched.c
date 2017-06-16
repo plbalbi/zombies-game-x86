@@ -20,8 +20,8 @@ unsigned int sched_proximo_indice() {
   short active_tasks_A = 0, active_tasks_B = 0;
   int i;
   for (i = 0; i < 8; i++) {
-    active_tasks_A+=short(tasks_A[i]);
-    active_tasks_B+=short(tasks_B[i]);
+    active_tasks_A+=(short)(tasks_A[i]);
+    active_tasks_B+=(short)(tasks_B[i]);
   }
 
   if ((next_player == player_A || active_tasks_B == 0) && active_tasks_A > 0) {
@@ -39,6 +39,7 @@ unsigned int sched_proximo_indice() {
         return running_B + 8;
       }
       INC_INDEX(running_B)
+    }
   }else{
     return TSS_IDLE_INDEX;
   }
