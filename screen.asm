@@ -5,8 +5,7 @@
 ; Se encarga de rellenar la pantalla con el fondo verde, los rectangulitos de los jugadores
 ; y los numeros de los  zombies. Accede mediante el segmente de video (con permisos de kernel)
 
-extern print_numeros
-extern print_firma
+extern print_misc
 
 %define FILA_SIZE 80
 %define CANT_FILAS 50
@@ -52,9 +51,8 @@ limpiarPantalla:
   add ebx, FILA_SIZE*2
   loop .cols_de_colores
 
-  ; Pongo los numeritos
-  call print_numeros
-  call print_firma
+  ; Pongo los numeritos y la firma
+  call print_misc
   BREAK
   
   ret

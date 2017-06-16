@@ -106,12 +106,36 @@ void print_int_error(){
     print_int(error_num, 40+error_msg_size/2, 25, 0x24);
 }
 
-void print_numeros(){
-  print("1 2 3 4 5 6 7 8", 4, 50-4, FG_WHITE | BG_BLACK);
-  print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
+void print_puntajes(unsigned int a, unsigned int b){
+  print_int(a, 39-2, 50-3, FG_WHITE | BG_RED);
+  print_int(b, 39+3, 50-3, FG_WHITE | BG_BLUE);
 }
 
-void print_firma(){
+void print_cantidad_zombis(unsigned int a, unsigned int b){
+  print_int(0, 39-8-1, 50-3, FG_WHITE | BG_RED);
+  print_int(a, 39-8, 50-3, FG_WHITE | BG_RED);
+  print_int(0, 39+9-1, 50-3, FG_WHITE | BG_BLUE);
+  print_int(b, 39+9, 50-3, FG_WHITE | BG_BLUE);
+}
+
+void print_misc(){
+  // Cuadraditos de puntajes
+  int i, j;
+  int x_medio_red = 39-2;
+  int x_medio_blue = x_medio_red + 5;
+  int y_medio = 50-3;
+  for (i = -2; i <= 2; i++) {
+    for (j = -2; j <= 2; j++) {
+      print(" ", x_medio_red + i, y_medio + j, BG_RED);
+      print(" ", x_medio_blue + i, y_medio + j, BG_BLUE);
+    }
+  }
+
+  // Números para los zombis
+  print("1 2 3 4 5 6 7 8", 4, 50-4, FG_WHITE | BG_BLACK);
+  print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
+
+  // Firma
   const char s[] = "Felizmente desarrollado en Windows Vista";
   print(s, 80-strlen(s), 0, FG_WHITE | BG_BLACK);
 }
