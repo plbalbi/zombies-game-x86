@@ -8,90 +8,82 @@
 
 BITS 32
 
-sched_tarea_offset:     dd 0x00
-sched_tarea_selector:   dw 0x00
 
-interrupt_msg db     'U FUCKED UP MATE, CHECK EAX'
-interrupt_msg_len equ    $ - interrupt_msg
-
-;; PIC
 extern fin_intr_pic1
 
-;; Sched
 extern sched_proximo_indice
-extern print_int_error
+
 extern print_hex
-extern sched_proximo_indice
 
-extern areloco
-
-;;
-;; Definición de MACROS
-;; -------------------------------------------------------------------------- ;;
-
-%macro ISR 1
-global _isr%1
-
-_isr%1:
-    mov eax, %1
-    xchg bx, bx
-    ;imprimir_texto_mp interrupt_msg, interrupt_msg_len, 0x04, 25, 40 - interrupt_msg_len/2
-    call print_int_error
-    jmp $
-
-%endmacro
 
 ;;
 ;; Datos
 ;; -------------------------------------------------------------------------- ;;
-; Scheduler
+sched_tarea_offset:     dd 0x00
+sched_tarea_selector:   dw 0x00
+
 isrnumero:           dd 0x00000000
 isrClock:            db '|/-\'
+
 
 ;;
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-divide_error_msg db     'Divide Error'
+divide_error_msg db     'Excepcion 0: Divide Error'
 divide_error_len equ    $ - divide_error_msg
 global _isr0
 _isr0:
     imprimir_texto_mp divide_error_msg, divide_error_len, 0x07, 0, 0
     jmp $
 
-overflow_msg db     'Overflow'
+overflow_msg db     'Excepcion 4: Overflow'
 overflow_len equ    $ - overflow_msg
 global _isr4
 _isr4:
     imprimir_texto_mp overflow_msg, overflow_len, 0x07, 0, 0
     jmp $
 
-range_msg db     'BOUND Range Exceeded'
+range_msg db     'Excepcion 5: BOUND Range Exceeded'
 range_len equ    $ - overflow_msg
 global _isr5
 _isr5:
     imprimir_texto_mp range_msg, range_len, 0x07, 0, 0
     jmp $
 
-opcode_msg db     'Invalid Opcode'
+opcode_msg db     'Excepcion 6: Invalid Opcode'
 opcode_len equ    $ - opcode_msg
 global _isr6
 _isr6:
     imprimir_texto_mp opcode_msg, opcode_len, 0x07, 0, 0
     jmp $
 
-not_present_msg db     'Segment Not Present'
+not_present_msg db     'Excepcion 11: Segment Not Present'
 not_present_len equ    $ - not_present_msg
 global _isr11
 _isr11:
     imprimir_texto_mp not_present_msg, not_present_len, 0x07, 0, 0
     jmp $
 
-protection_msg db     'General Protection'
+protection_msg db     'Excepcion 13: General Protection'
 protection_len equ    $ - protection_msg
 global _isr13
 _isr13:
     imprimir_texto_mp protection_msg, protection_len, 0x07, 0, 0
     jmp $
+
+
+interrupt_msg db     'Interrupcion generica' 
+interrupt_len equ    $ - interrupt_msg
+
+%macro ISR 1
+global _isr%1
+
+_isr%1:
+  mov eax, %1
+    imprimir_texto_mp interrupt_msg, interrupt_len, 0x07, 3, 0
+    jmp $
+
+%endmacro
 
 ISR 1
 ISR 2
@@ -108,13 +100,16 @@ ISR 17
 ISR 18
 ISR 19
 
+
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 %define LAST_POXEL 80*49*2+79*2
 %define CLOCK_BG 0x0F
 %define GDT_IDX_TSS_PRIMERO 13
+
 ; POXEL CLOCK: ah -> [ ATTR | CHAR ] <- al
+
 global _isr32
 _isr32:
   ; Actualizando relojito
@@ -146,12 +141,14 @@ _isr32:
   ; TODO: preguntar si la task no es la misma en la que estoy. explota todo porque estaría busy
   jmp far [.jump_far_address]
 
-
   iret
+
 .clock_char: DB 0x7C, 0x2F, 0x2D, 0x5C, 0x7C, 0x2F, 0x2D, 0x5C ; Secuencia de reloj para indexar
 .last_char: DB 0x0 ; Ultimo index -> Resetea en 8
 .jump_far_address:  DD 0xBEBECACA ; fruta que nos chupa dos huevos
 .jump_far_selector: DW 0xDEAD ; fruta que vamos a sobreescribir
+
+
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
@@ -176,6 +173,7 @@ pop eax
 call fin_intr_pic1
 pop eax
 iret
+
 
 ;;
 ;; Rutinas de atención de las SYSCALLS
