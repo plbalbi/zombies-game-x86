@@ -101,7 +101,8 @@ STARTProtMode:
     mov ebp, esp
 
     ; Imprimir mensaje de bienvenida
-    ;imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
+    imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
+
     ; CALL_C init_prrint_frame
     call limpiarPantalla
 
@@ -118,10 +119,13 @@ STARTProtMode:
     mov cr0, eax
 
     ; Inicializar tss
+    ; ...
 
     ; Inicializar tss de la tarea Idle
+    ; ...
 
     ; Inicializar el scheduler
+    ; ...
 
     ; Inicializar la IDT
     lidt [IDT_DESC]
@@ -134,18 +138,13 @@ STARTProtMode:
     call habilitar_pic
 
     ; Cargar tarea inicial
-
+    ; ...
 
     ; Habilitar interrupciones
     sti
 
-
     ; Saltar a la primera tarea: Idle
-
-    ; Prrint Test
-
-    ; call init_prrint_frame
-    ; call test_prrint
+    ; ...
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
