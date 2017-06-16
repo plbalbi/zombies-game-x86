@@ -5,14 +5,8 @@
   definicion de funciones del manejador de memoria
 */
 
+#include "defines.h"
 #include "mmu.h"
-
-#define DIR_INICIO_KERNEL_PD 0x27000
-#define DIR_INICIO_KERNEL_PT 0x28000
-#define DIR_INICIO_ZOMBI_VISION 0x8000000
-#define INICIO_MAPA 0x400000
-
-#define MAP_WIDTH 78
 
 
 // INICIALIZACIÓN ++++++++++++++++++++++++++++++++++++++++++++++++
