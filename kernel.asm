@@ -53,6 +53,7 @@ extern habilitar_pic
 extern resetear_pic
 extern init_prrint_frame
 extern test_prrint
+extern run_tests
 
 
 ;; Punto de entrada del kernel.
@@ -145,6 +146,9 @@ STARTProtMode:
 
     ; Saltar a la primera tarea: Idle
     ; ...
+
+    ; Tests
+    call run_tests
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

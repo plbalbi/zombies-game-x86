@@ -43,11 +43,10 @@ unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador,
 // TODO: Reformular las dos funciones de abajo para que las podamos reutilizar al mover
 // zombies.
 
-// TODO: Descomentar esta función rompe todo, por alguna razón
-
 unsigned int crear_esquema_zombi(int jugador, int y) {
     // Crea el esquema de paginación para un zombie, y devuelve
     // el CR3 correspondiente (AKA la dirección del page directory)
+    int i;
 
     // Memory Allocation
     pd_entry* pd = (pd_entry*) mmu_prox_pag_libre();
@@ -57,7 +56,7 @@ unsigned int crear_esquema_zombi(int jugador, int y) {
     for (i = 0; i < 1024; i++) pd[i] = (pd_entry) { }; // zero everything
     pd[0] = (pd_entry) { .p = 1, .rw = 1, .frame = 0x28 }; // first entry
     pd[0x20] = (pd_entry) { .p = 1, .rw = 1, .frame = (unsigned int)pt>>12 }; // zombi sight
-		//
+
     // Page Table
     for (i = 0; i < 1024; i++) pt[i] = (pt_entry) { }; // zero everything
     if (jugador == 0) {
