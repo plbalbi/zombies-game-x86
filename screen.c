@@ -136,7 +136,7 @@ void print_misc(){
   print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
 
   // Firma
-  const char s[] = "Felizmente desarrollado en Windows Vista";
+  const char s[] = "Windows 2000";
   print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
 
   // Null key

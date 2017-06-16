@@ -15,5 +15,6 @@ void warning(const char * text);
 void notify_int(const char * text, unsigned int var);
 void notify_hex(const char * text, unsigned int var);
 
+void clear_line(void);
 
 #endif  /* !__DEBUG_H__ */
