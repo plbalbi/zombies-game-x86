@@ -137,7 +137,37 @@ void print_misc(){
 
   // Firma
   const char s[] = "Felizmente desarrollado en Windows Vista";
-  print(s, 80-strlen(s), 0, FG_WHITE | BG_BLACK);
+  print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
+
+  // Null key
+  print("0", 80-1, 0, FG_LIGHT_GREY | BG_BLACK);
+}
+
+
+void print_teclado(unsigned int key){
+  // Player A
+  if (key == KEY_W) { // w - Up
+    print("w", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_S) { // s - Down
+    print("s", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_A) { // a - Left
+    print("a", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_D) { // d - Right
+    print("d", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_LS) { // LShift
+    print("L", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  // Player 2
+  } else if (key == KEY_I) { // i - Up
+    print("i", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_K) { // k - Down
+    print("k", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_L) { // l - Left
+    print("l", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_J) { // j - Right
+    print("j", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  } else if (key == KEY_RS) { // RShift
+    print("R", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+  }
 }
 
 

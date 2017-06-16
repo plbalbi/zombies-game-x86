@@ -30,7 +30,7 @@ typedef _Bool bool;
 
 #define TSS_SIZE                104
 
-/* Direcciones en memoria */
+/* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 
 #define DIR_INICIO_KERNEL_PD     0x27000
@@ -49,6 +49,8 @@ typedef _Bool bool;
 
 #define DIR_INICIO_ZOMBI_VISION  0x8000000
 #define DIR_INICIO_ZOMBI_PILA    0x8001000
+
+#define VIDEO                    0x000B8000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -74,8 +76,18 @@ typedef _Bool bool;
 #define GDT_DATA_L3_REG             (GDT_IDX_DATA_L3 << 3)
 #define GDT_SCREEN_REG              (GDT_IDX_SCREEN << 3)
 
-/* Direcciones de memoria */
+/* Keyboard opcodes */
 /* -------------------------------------------------------------------------- */
-#define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
+#define KEY_W  0x11
+#define KEY_S  0x1f
+#define KEY_A  0x1e
+#define KEY_D  0x20
+#define KEY_LS 0x2a
+
+#define KEY_I  0x17
+#define KEY_K  0x25
+#define KEY_L  0x26
+#define KEY_J  0x24
+#define KEY_RS 0x36
 
 #endif  /* !__DEFINES_H__ */

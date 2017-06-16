@@ -14,7 +14,7 @@ extern fin_intr_pic1
 extern sched_proximo_indice
 
 extern print_hex
-
+extern print_teclado
 
 ;;
 ;; Datos
@@ -153,24 +153,20 @@ _isr32:
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 
+; Nota: Al mantener apretado el teclado manda interrupciones
+; continuamente, no es una sóla.
+
 global _isr33
 _isr33:
   push eax
-  push 0x24
-  push 10
-  push 10
-  push 2
+
   xor eax, eax
   in al, 0x60
   push eax
-  call print_hex
+  call print_teclado
   pop eax
-  pop eax
-  pop eax
-  pop eax
-  pop eax
-
   call fin_intr_pic1
+
   pop eax
   iret
 
