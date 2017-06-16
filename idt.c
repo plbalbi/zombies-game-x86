@@ -49,4 +49,8 @@ void idt_inicializar() {
 
     IDT_ENTRY(32)
     IDT_ENTRY(33)
+
+    IDT_ENTRY(102) //0x66
+    // prendo bits de DPL para que el privilegio sea 3 (syscall)
+    idt[102].attr = (unsigned short) (0x8E00 | 0x6000);
 }

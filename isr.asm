@@ -117,7 +117,7 @@ _isr32:
   push ebx
   xor ebx, ebx
   mov ah, CLOCK_BG ; Cargo el fondo de poxel del clock
-  mov bl, [.last_char] ; Mer cargo el ultimos index el clock
+  mov bl, [.last_char] ; Me cargo el ultimos index el clock
   cmp bl, 0x8
   je .reset_clock
   mov al, [.clock_char + ebx]
@@ -134,12 +134,12 @@ _isr32:
   pop ebx
   pop eax
 
-  call sched_proximo_indice
-  add eax, GDT_IDX_TSS_PRIMERO
-  shl eax, 3
-  mov [.jump_far_selector], ax
+  ;call sched_proximo_indice
+  ;add eax, GDT_IDX_TSS_PRIMERO
+  ;shl eax, 3
+  ;mov [.jump_far_selector], ax
   ; TODO: preguntar si la task no es la misma en la que estoy. explota todo porque estaría busy
-  jmp far [.jump_far_address]
+  ;jmp far [.jump_far_address]
 
   iret
 
@@ -152,27 +152,27 @@ _isr32:
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+
 global _isr33
 _isr33:
-push eax
+  push eax
+  push 0x24
+  push 10
+  push 10
+  push 2
+  xor eax, eax
+  in al, 0x60
+  push eax
+  call print_hex
+  pop eax
+  pop eax
+  pop eax
+  pop eax
+  pop eax
 
-push 0x24
-push 10
-push 10
-push 2
-xor eax, eax
-in al, 0x60
-push eax
-call print_hex
-pop eax
-pop eax
-pop eax
-pop eax
-pop eax
-
-call fin_intr_pic1
-pop eax
-iret
+  call fin_intr_pic1
+  pop eax
+  iret
 
 
 ;;
@@ -184,9 +184,14 @@ iret
 %define ADE 0x83D
 %define ATR 0x732
 
+global _isr102 ;0x66
+_isr102:
+  iret
+
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
+
 proximo_reloj:
         pushad
         inc DWORD [isrnumero]

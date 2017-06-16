@@ -53,6 +53,5 @@ limpiarPantalla:
 
   ; Pongo los numeritos y la firma
   call print_misc
-  BREAK
   
   ret
