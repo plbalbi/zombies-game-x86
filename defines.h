@@ -25,6 +25,7 @@ typedef _Bool bool;
 #define CANT_ZOMBIS             8
 
 #define SIZE_W                  78
+#define MAP_WIDTH               78
 #define SIZE_H                  44
 
 #define TSS_SIZE                104
@@ -32,14 +33,22 @@ typedef _Bool bool;
 /* Direcciones en memoria */
 /* -------------------------------------------------------------------------- */
 
-#define DIR_INICIO_PILA_KERNEL  0x27000
-#define DIR_INICIO_TASK_AG      0X10000
-#define DIR_INICIO_TASK_AM      0X11000
-#define DIR_INICIO_TASK_AC      0X12000
-#define DIR_INICIO_TASK_BG      0X13000
-#define DIR_INICIO_TASK_BM      0X14000
-#define DIR_INICIO_TASK_BC      0X15000
-#define DIR_INICIO_TASK_IDLE    0X16000
+#define DIR_INICIO_KERNEL_PD     0x27000
+#define DIR_INICIO_KERNEL_PT     0x28000
+
+#define INICIO_MAPA              0x400000
+
+#define DIR_INICIO_PILA_KERNEL   0x27000
+#define DIR_INICIO_TASK_AG       0X10000
+#define DIR_INICIO_TASK_AM       0X11000
+#define DIR_INICIO_TASK_AC       0X12000
+#define DIR_INICIO_TASK_BG       0X13000
+#define DIR_INICIO_TASK_BM       0X14000
+#define DIR_INICIO_TASK_BC       0X15000
+#define DIR_INICIO_TASK_IDLE     0X16000
+
+#define DIR_INICIO_ZOMBI_VISION  0x8000000
+#define DIR_INICIO_ZOMBI_PILA    0x8001000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -52,13 +61,17 @@ typedef _Bool bool;
 #define GDT_IDX_DATA_L3             11
 #define GDT_IDX_SCREEN              12
 
-#define GDT_IDX_TSS_INIT            15
-#define GDT_IDX_TSS_IDLE            GDT_IDX_TSS_INIT+1
+#define GDT_IDX_TSS_ZOMBIS_A        13
+#define GDT_IDX_TSS_ZOMBIS_B        GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS
+#define GDT_IDX_TSS_INIT            GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS
+#define GDT_IDX_TSS_IDLE            GDT_IDX_TSS_INIT + 1
 
 /* Selectores de la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_CODE_L0_REG             (GDT_IDX_CODE_L0 << 3)
+#define GDT_CODE_L3_REG             (GDT_IDX_CODE_L3 << 3)
 #define GDT_DATA_L0_REG             (GDT_IDX_DATA_L0 << 3)
+#define GDT_DATA_L3_REG             (GDT_IDX_DATA_L3 << 3)
 #define GDT_SCREEN_REG              (GDT_IDX_SCREEN << 3)
 
 /* Direcciones de memoria */
