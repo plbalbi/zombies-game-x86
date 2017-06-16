@@ -21,6 +21,7 @@
 #define INDEXAR_DIR(virt) (virt >> 22)
 #define INDEXAR_TABLE(virt) (virt >> 12) & 0x000003FF
 #define DEVOLVER_OFF(virt) (virt) & 0x00000FFF
+#define TSS_IDLE_INDEX 16
 
 typedef struct str_tss {
     unsigned short  ptl;

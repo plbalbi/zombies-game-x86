@@ -21,6 +21,7 @@ extern fin_intr_pic1
 extern sched_proximo_indice
 extern print_int_error
 extern print_hex
+extern sched_proximo_indice
 
 extern areloco
 ;;
@@ -74,9 +75,11 @@ ISR 20
 ;; -------------------------------------------------------------------------- ;;
 %define LAST_POXEL 80*49*2+79*2
 %define CLOCK_BG 0x0F
+%define GDT_IDX_TSS_PRIMERO 13
 ; POXEL CLOCK: ah -> [ ATTR | CHAR ] <- al
 global _isr32
 _isr32:
+  ; Actualizando relojito
   push eax
   push ebx
   xor ebx, ebx
@@ -97,10 +100,20 @@ _isr32:
   call fin_intr_pic1
   pop ebx
   pop eax
+
+  call sched_proximo_indice
+  add eax, GDT_IDX_TSS_PRIMERO
+  shl eax, 3
+  mov [jump_far_selector], ax
+  ; TODO: preguntar si la task no es la misma en la que estoy. explota todo porque estaría busy
+  jmp far [jump_far_address]
+
+
   iret
 .clock_char: DB 0x7C, 0x2F, 0x2D, 0x5C, 0x7C, 0x2F, 0x2D, 0x5C ; Secuencia de reloj para indexar
 .last_char: DB 0x0 ; Ultimo index -> Resetea en 8
-
+.jump_far_address:  DD 0xBEBECACA ; fruta que nos chupa dos huevos
+.jump_far_selector: DW 0xDEAD ; fruta que vamos a sobreescribir
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
