@@ -39,4 +39,6 @@ void set_print_ptr(unsigned int x, unsigned int y);
 
 void init_prrint_frame();
 
+unsigned int strlen(const char *str);
+
 #endif  /* !__SCREEN_H__ */

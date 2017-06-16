@@ -5,6 +5,9 @@
 ; Se encarga de rellenar la pantalla con el fondo verde, los rectangulitos de los jugadores
 ; y los numeros de los  zombies. Accede mediante el segmente de video (con permisos de kernel)
 
+extern print_numeros
+extern print_firma
+
 %define FILA_SIZE 80
 %define CANT_FILAS 50
 %define FONDO_VERDE 0x20FF
@@ -50,8 +53,8 @@ limpiarPantalla:
   loop .cols_de_colores
 
   ; Pongo los numeritos
-  ; TODO: Ver alineación pila
-  ; CALL_C seguir_llenando_pantalla
-  ; CALL_C firmar_tp
+  call print_numeros
+  call print_firma
+  BREAK
   
   ret

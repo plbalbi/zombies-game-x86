@@ -103,7 +103,7 @@ STARTProtMode:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp charly_mp_msg, charly_mp_len, 0x07, 2, 0
 
-    ; CALL_C init_prrint_frame
+    ; Pintar pantalla
     call limpiarPantalla
 
     ; Inicializar el manejador de memoria

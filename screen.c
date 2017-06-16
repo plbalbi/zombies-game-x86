@@ -7,7 +7,7 @@
 
 #include "screen.h"
 
-// HELPER FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++
+// PRINT FUNCTIONS +++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
@@ -106,8 +106,22 @@ void print_int_error(){
     print_int(error_num, 40+error_msg_size/2, 25, 0x24);
 }
 
+void print_numeros(){
+  print("1 2 3 4 5 6 7 8", 4, 50-4, FG_WHITE | BG_BLACK);
+  print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
+}
+
+void print_firma(){
+  const char s[] = "Felizmente desarrollado en Windows Vista";
+  print(s, 80-strlen(s), 0, FG_WHITE | BG_BLACK);
+}
+
+
+// TEST DUMP +++++++++++++++++++++++++++++++++++++++++++++++++
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 void areloco(){
-    int str_size = 5;
+  int str_size = 5;
   char* testo= "PUTOO";
 	int i, j;
     while(1){
@@ -139,4 +153,19 @@ void test_prrint(){
   prrint("imprimir \nimprimir\n");
   prrint("imprimir \nimprimir");
   prrint("imprimir \n\nimprimirjodasd asdijas d 9uds");
+}
+
+void testing_shit() {
+  char s[] = "Wassup";
+  print(s, 80-strlen(s), 3, FG_BLACK | BG_LIGHT_GREY);
+}
+
+
+// AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+unsigned int strlen(const char *str){
+    const char *s;
+    for (s = str; *s; ++s);
+    return(s - str);
 }
