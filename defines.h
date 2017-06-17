@@ -67,8 +67,7 @@ typedef struct posicion_t {
 
 #define GDT_IDX_TSS_ZOMBIS_A       13
 #define GDT_IDX_TSS_ZOMBIS_B       (GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS)
-#define GDT_IDX_TSS_INIT           (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS)
-#define GDT_IDX_TSS_IDLE           (GDT_IDX_TSS_INIT + 1)
+#define GDT_IDX_TSS_IDLE           (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS)
 
 #define GDT_OFF_NULL_DESC          (GDT_IDX_NULL_DESC      << 3)
 
