@@ -27,6 +27,7 @@ typedef struct posicion_t {
 #define MAP_WIDTH               78
 #define MAP_HEIGHT              44
 
+#define PAGE_SIZE               (1<<12)
 #define TSS_SIZE                104
 
 #define SMILEY                  "\x02"
@@ -69,7 +70,15 @@ typedef struct posicion_t {
 #define GDT_IDX_TSS_ZOMBIS_B       (GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS)
 #define GDT_IDX_TSS_IDLE           (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS)
 
-#define GDT_OFF_NULL_DESC          (GDT_IDX_NULL_DESC      << 3)
+
+/* Descriptores en la gdt */
+/* -------------------------------------------------------------------------- */
+#define GDT_DESC_CODE_KERNEL        (GDT_IDX_CODE_KERNEL << 3)
+#define GDT_DESC_CODE_USER          (GDT_IDX_CODE_USER << 3)
+#define GDT_DESC_DATA_KERNEL        (GDT_IDX_DATA_KERNEL << 3)
+#define GDT_DESC_DATA_USER          (GDT_IDX_DATA_USER << 3)
+#define GDT_DESC_SCREEN             (GDT_IDX_SCREEN << 3)
+
 
 /* Keyboard opcodes */
 /* -------------------------------------------------------------------------- */

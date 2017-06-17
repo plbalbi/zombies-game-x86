@@ -29,6 +29,8 @@ extern IDT_DESC
 extern mmu_inicializar
 extern mmu_inicializar_esquema_kernel
 
+extern tss_inicializar
+
 extern resetear_pic
 extern habilitar_pic
 
@@ -117,8 +119,7 @@ protegido:
     mov cr0, eax
     
     ; Inicializar tss
-
-    ; Inicializar tss de la tarea Idle
+    call tss_inicializar
 
     ; Inicializar el scheduler
 
