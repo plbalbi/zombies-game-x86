@@ -21,7 +21,6 @@ unsigned int mmu_inicializar_zombi(unsigned int tarea, int jugador, int y) {
     lcr3(cr3_zombi);
     tlbflush();
     copiar_zombi(tarea, jugador);
-    breakpoint();
     lcr3(cr3_kernel);
     tlbflush();
     return cr3_zombi;
