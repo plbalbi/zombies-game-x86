@@ -74,7 +74,6 @@ _isr32:
     ; -----------------
     ; SCHEDULER SECTION
     ; -----------------
-    xchg bx, bx ; BREAK
     call sched_proximo_indice ; EAX <- indice del decscriptor de la proxima tarea (en la gdt)
     shl eax, 3 ; 3 primeros bits de atributos para acceder en la gdt, son 0 ya que se accede con privilegios de Kernel
     str bx ; Cargo el TR en bx
