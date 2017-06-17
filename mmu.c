@@ -85,7 +85,7 @@ void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis){
 
     pd_entry* pd = (pd_entry*) (cr3 & 0xFFFFF000);
     pt_entry* pt;
-    
+
     pd_entry* ptr_pde = pd + INDEX_DIR(vir);
     if ((*ptr_pde).p == 0) {
         pt = (pt_entry*) mmu_prox_pag_libre();
@@ -140,9 +140,9 @@ void mmu_mapear_vision_zombi(int jugador, unsigned int cr3, int x, int y){
 // ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 unsigned int dir_fisica(int x, int y){
-    int modulo_x = x % MAP_WIDTH;
-    int modulo_y = (y + MAP_HEIGHT) % MAP_HEIGHT;
-    return DIR_INICIO_MAPA + (modulo_y * MAP_WIDTH + modulo_x)*PAGE_SIZE;
+    int modulo_x = (x < 0) ? (x + MAP_WIDTH) % MAP_WIDTH : x % MAP_WIDTH; // Si x < 0 -> se le suma MAP_WIDTH para que pase a ser positivo, manteniendo su congruenecia, ya que MAP_WIDTH = 0 (MAP_WIDTH)
+    int modulo_y = (y + MAP_HEIGHT) % MAP_HEIGHT; // idem modulo_x
+    return DIR_INICIO_MAPA + (modulo_y * MAP_WIDTH + modulo_x)*PAGE_SIZE; // DIR_FISICA = (INICIO de las posiciones en mapa + cantidad de filas de arriba + posicion en x) * PAGE_SIZE
 }
 
 void copiar_zombi(unsigned int task, int player){
