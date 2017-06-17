@@ -63,9 +63,9 @@ typedef _Bool bool;
 #define GDT_IDX_SCREEN              12
 
 #define GDT_IDX_TSS_ZOMBIS_A        13
-#define GDT_IDX_TSS_ZOMBIS_B        GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS
-#define GDT_IDX_TSS_INIT            GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS
-#define GDT_IDX_TSS_IDLE            GDT_IDX_TSS_INIT + 1
+#define GDT_IDX_TSS_ZOMBIS_B        (GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS)
+#define GDT_IDX_TSS_INIT            (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS)
+#define GDT_IDX_TSS_IDLE            (GDT_IDX_TSS_INIT + 1)
 
 /* Selectores de la gdt */
 /* -------------------------------------------------------------------------- */

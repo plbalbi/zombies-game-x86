@@ -108,8 +108,8 @@ void copiar_zombi(unsigned int task, unsigned int player, int y){
 
     int x = (player==1) ? 1 : MAP_WIDTH-2; // Operador ternario
     char* dir_mapa = (char*) dir_fisica(x,y);
-    int i = 0;
-    while(i < 0x1000){
+    int i;
+    for(i = 0; i < 0x1000; i++){
         *dir_mapa = *dir_task;
         dir_mapa++;
         dir_task++;
