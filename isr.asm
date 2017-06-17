@@ -38,9 +38,6 @@ _isr%1:
 sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
 
-isrnumero:           dd 0x00000000
-isrClock:            db '|/-\'
-
 ISR 0
 ISR 1
 ISR 2
@@ -102,16 +99,31 @@ _isr102:
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
+%define LAST_POXEL 80*49*2+79*2
+%define CLOCK_BG 0x0F
+
 proximo_reloj:
-        pushad
-        inc DWORD [isrnumero]
-        mov ebx, [isrnumero]
-        cmp ebx, 0x4
-        jl .ok
-                mov DWORD [isrnumero], 0x0
-                mov ebx, 0
-        .ok:
-                add ebx, isrClock
-                imprimir_texto_mp ebx, 1, 0x0f, 49, 79
-                popad
-        ret
+    ; Actualizando relojito
+    push eax
+    push ebx
+    xor ebx, ebx
+    mov ah, CLOCK_BG ; Cargo el fondo de poxel del clock
+    mov bl, [.last_char] ; Me cargo el ultimos index el clock
+    cmp bl, 0x8
+    je .reset_clock
+    mov al, [.clock_char + ebx]
+    mov word [fs:LAST_POXEL], ax
+    inc bl
+    mov [.last_char], bl
+    jmp .fin_clock
+    .reset_clock:
+    mov byte[.last_char], 0x1
+    mov al, 0x7C
+    mov word [fs:LAST_POXEL], ax
+    .fin_clock:
+    pop ebx
+    pop eax
+    ret
+
+.clock_char: DB 0x7C, 0x2F, 0x2D, 0x5C, 0x7C, 0x2F, 0x2D, 0x5C ; Secuencia de reloj para indexar
+.last_char: DB 0x0 ; Ultimo index -> Resetea en 8
