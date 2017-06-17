@@ -69,16 +69,16 @@ _isr32:
     call fin_intr_pic1
     call proximo_reloj
     str bx ; Cargo el TR en bx
-    cmp bx, 0x0 ; Veo si es 0x0 -> Nuna se cargo una tarea todavia
-    je .same_task ; Salgo es ese caso
+    cmp bx, 0x0 ; Veo si es 0x0 -> Nunca se cargo una tarea todavia
+    je .same_task ; Salgo en ese caso
     ; -----------------
     ; SCHEDULER SECTION
     ; -----------------
-    call sched_proximo_indice ; EAX <- indice del decscriptor de la proxima tarea (en la gdt)
+    call sched_proximo_indice ; EAX <- indice del descriptor de la proxima tarea (en la gdt)
     shl eax, 3 ; 3 primeros bits de atributos para acceder en la gdt, son 0 ya que se accede con privilegios de Kernel
     str bx ; Cargo el TR en bx
-    cmp bx, ax ; Compato la parte visible del TR (el selector), con el selector de la "nueva" tarea
-    je .same_task ; Si es la misma, realizo el TASK-SWITCH
+    cmp bx, ax ; Comparo la parte visible del TR (el selector), con el selector de la "nueva" tarea
+    je .same_task ; Si son distintas, realizo el TASK-SWITCH
     mov [.jump_far_selector], ax ; Cargo el nuevo selector
     jmp far [.jump_far_address] ; Salto al mismo
 .same_task:

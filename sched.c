@@ -23,6 +23,7 @@ unsigned int sched_proximo_indice() {
   }
 
   if ((next_player == player_A || active_tasks_B == 0) && active_tasks_A > 0) {
+    next_player = player_B;
     INC_INDEX(running_A);
     while(1) {
       if (tasks_A[running_A]) {
@@ -31,6 +32,7 @@ unsigned int sched_proximo_indice() {
       INC_INDEX(running_A);
     }
   }else if(active_tasks_B > 0){
+    next_player = player_A;
     INC_INDEX(running_B);
     while(1) {
       if (tasks_B[running_B]) {
