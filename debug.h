@@ -10,8 +10,6 @@
 #include "tss.h"
 #include "game.h"
 
-void handle_interrupt(unsigned int code);
-
 void error(const char * text);
 void warning(const char * text);
 void notify_int(const char * text, unsigned int var);

@@ -16,9 +16,9 @@ DEPEND = Makefile \
 	gdt.c gdt.h pic.c pic.h idt.c idt.h isr.h tss.c tss.h mmu.c mmu.h \
 	sched.c sched.h screen.c screen.h \
 	game.c game.h syscall.h \
-	debug.c debug.h
+	debug.c debug.h interrupt.c interrupt.h
 
-OBJ=$(KERNEL_OBJ) gdt.o pic.o idt.o isr.o mmu.o sched.o tss.o screen.o game.o debug.o
+OBJ=$(KERNEL_OBJ) gdt.o pic.o idt.o isr.o mmu.o sched.o tss.o screen.o game.o debug.o interrupt.o
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
 
