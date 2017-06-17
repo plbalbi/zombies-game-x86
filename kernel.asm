@@ -121,8 +121,6 @@ protegido:
     ; Inicializar tss
     call tss_inicializar
 
-    ; Inicializar el scheduler
-
     ; Inicializar la IDT
     call idt_inicializar
 
