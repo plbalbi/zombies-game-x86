@@ -46,9 +46,9 @@ void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, un
 void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO; // magia
     if( n > 9 ) {
-      int a = n / 10;
-      n -= 10 * a;
-      print_int(a,x-1,y,attr);
+        int a = n / 10;
+        n -= 10 * a;
+        print_int(a,x-1,y,attr);
     }
     p[y][x].c = '0'+n;
     p[y][x].a = attr;
@@ -59,94 +59,106 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void print_puntajes(unsigned int a, unsigned int b){
-  print_int(a, 39-2, 50-3, FG_WHITE | BG_RED);
-  print_int(b, 39+3, 50-3, FG_WHITE | BG_BLUE);
+    print_int(a, 39-2, 50-3, FG_WHITE | BG_RED);
+    print_int(b, 39+3, 50-3, FG_WHITE | BG_BLUE);
 }
 
 void print_cantidad_zombis(unsigned int a, unsigned int b){
-  print_int(0, 39-8-1, 50-3, FG_WHITE | BG_RED);
-  print_int(a, 39-8, 50-3, FG_WHITE | BG_RED);
-  print_int(0, 39+9-1, 50-3, FG_WHITE | BG_BLUE);
-  print_int(b, 39+9, 50-3, FG_WHITE | BG_BLUE);
+    print_int(0, 39-8-1, 50-3, FG_WHITE | BG_RED);
+    print_int(a, 39-8, 50-3, FG_WHITE | BG_RED);
+    print_int(0, 39+9-1, 50-3, FG_WHITE | BG_BLUE);
+    print_int(b, 39+9, 50-3, FG_WHITE | BG_BLUE);
 }
 
 void print_screen(){
-  // Index declare
-  int i, j;
+    // Index declare
+    int i, j;
 
-  // Fondo verde
-  for (i = 0; i < 80; i++) {
+    // Fondo verde
+    for (i = 0; i < 80; i++) {
+        for (j = 0; j < 50; j++) {
+          print(" ", i, j, BG_GREEN);
+        }
+    }
+
+    // Barras coloreadas de los jugadores
     for (j = 0; j < 50; j++) {
-      print(" ", i, j, BG_GREEN);
+        print(" ", 0, j, BG_RED);
+        print(" ", 79, j, BG_BLUE);
     }
-  }
-  
-  // Barras coloreadas de los jugadores
-  for (j = 0; j < 50; j++) {
-    print(" ", 0, j, BG_RED);
-    print(" ", 79, j, BG_BLUE);
-  }
 
-  // Barra negra superior
-  for (i = 0; i < 80; i++) {
-    print(" ", i, 0, BG_BLACK);
-  }
-
-  // Barra negra inferior
-  for (i = 0; i < 80; i++) {
-    for (j = 50-5; j < 50; j++) {
-      print(" ", i, j, BG_BLACK);
+    // Barra negra superior
+    for (i = 0; i < 80; i++) {
+        print(" ", i, 0, BG_BLACK);
     }
-  }
 
-  // Cuadraditos de puntajes
-  int x_medio_red = 39-2;
-  int x_medio_blue = x_medio_red + 5;
-  int y_medio = 50-3;
-  for (i = -2; i <= 2; i++) {
-    for (j = -2; j <= 2; j++) {
-      print(" ", x_medio_red + i, y_medio + j, BG_RED);
-      print(" ", x_medio_blue + i, y_medio + j, BG_BLUE);
+    // Barra negra inferior
+    for (i = 0; i < 80; i++) {
+        for (j = 50-5; j < 50; j++) {
+            print(" ", i, j, BG_BLACK);
+        }
     }
-  }
 
-  // Números para los zombis
-  print("1 2 3 4 5 6 7 8", 4, 50-4, FG_WHITE | BG_BLACK);
-  print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
+    // Cuadraditos de puntajes
+    int x_medio_red = 39-2;
+    int x_medio_blue = x_medio_red + 5;
+    int y_medio = 50-3;
+    for (i = -2; i <= 2; i++) {
+        for (j = -2; j <= 2; j++) {
+            print(" ", x_medio_red + i, y_medio + j, BG_RED);
+            print(" ", x_medio_blue + i, y_medio + j, BG_BLUE);
+        }
+    }
 
-  // Firma
-  const char s[] = "Bonobon Champion";
-  print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
+    // Números para los zombis
+    print("1 2 3 4 5 6 7 8", 4, 50-4, FG_WHITE | BG_BLACK);
+    print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
 
-  // Null key
-  print("0", 80-1, 0, FG_LIGHT_GREY | BG_BLACK);
+    // Tareas activas
+    print("X X X X X X X X", 4, 50-2, FG_RED | BG_BLACK);
+    print("X X X X X X X X", 80-20, 50-2, FG_RED | BG_BLACK);
+
+    // Puntajes y Restantes
+    print_puntajes(0, 0);
+    print_cantidad_zombis(20, 20);
+
+    // Personajes
+    print(SMILEY, 0, 22, FG_LIGHT_RED| BG_RED);
+    print(SMILEY, 79, 22, FG_LIGHT_BLUE | BG_BLUE);
+
+    // Firma
+    const char s[] = "Bonobon Champion";
+    print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
+
+    // Null key
+    print("0", 80-1, 0, FG_LIGHT_GREY | BG_BLACK);
 }
 
 
 void print_teclado(unsigned int key){
-  // Player A
-  if (key == KEY_W) { // w - Up
-    print("w", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_S) { // s - Down
-    print("s", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_A) { // a - Left
-    print("a", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_D) { // d - Right
-    print("d", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_LS) { // LShift
-    print("L", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  // Player 2
-  } else if (key == KEY_I) { // i - Up
-    print("i", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_K) { // k - Down
-    print("k", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_L) { // l - Left
-    print("l", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_J) { // j - Right
-    print("j", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  } else if (key == KEY_RS) { // RShift
-    print("R", 79, 0, FG_LIGHT_GREY | BG_BLACK);
-  }
+    // Player A
+    if (key == KEY_W) { // w - Up
+        print("w", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_S) { // s - Down
+        print("s", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_A) { // a - Left
+        print("a", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_D) { // d - Right
+        print("d", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_LS) { // LShift
+        print("L", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    // Player 2
+    } else if (key == KEY_I) { // i - Up
+        print("i", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_K) { // k - Down
+        print("k", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_L) { // l - Left
+        print("l", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_J) { // j - Right
+        print("j", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    } else if (key == KEY_RS) { // RShift
+        print("R", 79, 0, FG_LIGHT_GREY | BG_BLACK);
+    }
 }
 
 // AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++

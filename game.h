@@ -15,8 +15,8 @@ int y_a, y_b;
 unsigned short tipo_a, tipo_b; // Tipo de zombi
 unsigned short restantes_a, restantes_b;
 unsigned short puntaje_a, puntaje_b;
-posicion zombis_pos_a[];
-posicion zombis_pos_b[];
+posicion zombis_pos_a[8];
+posicion zombis_pos_b[8];
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ADE = 0x83D, ATR = 0x732 } direccion;
 

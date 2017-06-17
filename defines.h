@@ -29,6 +29,8 @@ typedef struct posicion_t {
 
 #define TSS_SIZE                104
 
+#define SMILEY                  "\x02"
+
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 
