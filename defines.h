@@ -9,15 +9,16 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-/* Bool */
+/* Tipos */
 /* -------------------------------------------------------------------------- */
-#define TRUE                    0x00000001
-#define FALSE                   0x00000000
-#define ERROR                   1
-
 typedef _Bool bool;
 #define true True
 #define false False
+
+typedef struct posicion_t {
+  unsigned short x;
+  unsigned short y;
+}__attribute__((__packed__)) posicion;
 
 /* Misc */
 /* -------------------------------------------------------------------------- */
