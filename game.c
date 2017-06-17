@@ -6,6 +6,13 @@
 
 #include "game.h"
 
+int y_a = 22, y_b = 22;
+unsigned short tipo_a = 1, tipo_b = 1; // Tipo de zombi: 1,2 o 3
+unsigned short restantes_a = 20, restantes_b = 20;
+unsigned short puntaje_a = 0, puntaje_b = 0;
+posicion zombis_pos_a[8] = {};
+posicion zombis_pos_b[8] = {};
+
 void game_jugador_mover(unsigned int jugador, unsigned int value) {
 }
 void game_lanzar_zombi(unsigned int jugador) {
