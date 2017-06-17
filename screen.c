@@ -7,8 +7,8 @@
 
 #include "screen.h"
 
-// PRINT FUNCTIONS +++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// PRINT FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
@@ -54,57 +54,9 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
-void prrint(char* str){
-  unsigned int x = cursor_x, y = cursor_y; // Carga el seteo de donde empieza el frame del cursor
-  if (cursor_reset) {
-    x = frame_x; y = frame_y;
-    cursor_reset = 0;
-  }
-  ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
-  int i;
-  unsigned char attr = p[y][x].a; // Deja los atributos del fondo
-  for (i = 0; str[i] != 0; i++) {
-    if (str[i] == '\n') {
-      x = frame_x;
-      y++;
-    }else{
-      p[y][x].c = (unsigned char) str[i];
-      p[y][x].a = (unsigned char) attr;
-      x++;
-      if (x == VIDEO_COLS) {
-        x = frame_x;
-        y++;
-      }
-    }
-    if (y == VIDEO_FILS) y = frame_y;
-  }
-  cursor_x = x;
-  cursor_y = y;
-}
-
-void init_prrint_frame(){
-  frame_x = 0;
-  frame_y = 0;
-  cursor_x = 0;
-  cursor_y = 0;
-  cursor_reset = 1;
-}
-
-void set_print_ptr(unsigned int x, unsigned int y)
-  { cursor_reset = 1; frame_x = x; frame_y = y; };
-
 
 // USER FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#define error_msg_size 16
-void print_int_error(){
-    int error_num;
-    asm("movl %%eax, %0;" : "=r" (error_num) : );
-    char* msg = "ERROR en int: ";
-    print(msg, 40-error_msg_size/2 - 2,  25, 0x24);
-    print_int(error_num, 40+error_msg_size/2, 25, 0x24);
-}
 
 void print_puntajes(unsigned int a, unsigned int b){
   print_int(a, 39-2, 50-3, FG_WHITE | BG_RED);
@@ -118,9 +70,36 @@ void print_cantidad_zombis(unsigned int a, unsigned int b){
   print_int(b, 39+9, 50-3, FG_WHITE | BG_BLUE);
 }
 
-void print_misc(){
-  // Cuadraditos de puntajes
+void print_screen(){
+  // Index declare
   int i, j;
+
+  // Fondo verde
+  for (i = 0; i < 80; i++) {
+    for (j = 0; j < 50; j++) {
+      print(" ", i, j, BG_GREEN);
+    }
+  }
+  
+  // Barras coloreadas de los jugadores
+  for (j = 0; j < 50; j++) {
+    print(" ", 0, j, BG_RED);
+    print(" ", 79, j, BG_BLUE);
+  }
+
+  // Barra negra superior
+  for (i = 0; i < 80; i++) {
+    print(" ", i, 0, BG_BLACK);
+  }
+
+  // Barra negra inferior
+  for (i = 0; i < 80; i++) {
+    for (j = 50-5; j < 50; j++) {
+      print(" ", i, j, BG_BLACK);
+    }
+  }
+
+  // Cuadraditos de puntajes
   int x_medio_red = 39-2;
   int x_medio_blue = x_medio_red + 5;
   int y_medio = 50-3;
@@ -136,7 +115,7 @@ void print_misc(){
   print("1 2 3 4 5 6 7 8", 80-20, 50-4, FG_WHITE | BG_BLACK);
 
   // Firma
-  const char s[] = "Windows 2000";
+  const char s[] = "Bonobon Champion";
   print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
 
   // Null key
@@ -169,51 +148,6 @@ void print_teclado(unsigned int key){
     print("R", 79, 0, FG_LIGHT_GREY | BG_BLACK);
   }
 }
-
-
-// TEST DUMP +++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void areloco(){
-  int str_size = 5;
-  char* testo= "PUTOO";
-	int i, j;
-    while(1){
-        for (i = 0; i < 80-80%str_size; i+=1) {
-            print(" ", i-1, 30, 0x20);
-            print(testo, i, 30, 0x24);
-            for (j = 0; j < 2556000; j++) {
-
-            }
-        }
-        print("    ", 80-1, 30, 0x20);
-    }
-}
-
-void firmar_tp(){
-  set_print_ptr(2, 0);
-  prrint("Felizmente desarrolado en Windows Vista");
-}
-
-void seguir_llenando_pantalla(){
-  set_print_ptr(4, 50-4);
-  prrint("1 2 3 4 5 6 7 8");
-  set_print_ptr(80-20, 50-4);
-  prrint("1 2 3 4 5 6 7 8");
-}
-
-void test_prrint(){
-  set_print_ptr(10, 10);
-  prrint("imprimir \nimprimir\n");
-  prrint("imprimir \nimprimir");
-  prrint("imprimir \n\nimprimirjodasd asdijas d 9uds");
-}
-
-void testing_shit() {
-  char s[] = "Wassup";
-  print(s, 80-strlen(s), 3, FG_BLACK | BG_LIGHT_GREY);
-}
-
 
 // AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -8,8 +8,6 @@ BITS 32
 
 %include "imprimir.mac"
 
-global idle
-
 idle:
     .loopear:
         inc dword [numero]

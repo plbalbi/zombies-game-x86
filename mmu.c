@@ -5,47 +5,48 @@
   definicion de funciones del manejador de memoria
 */
 
-#include "defines.h"
 #include "mmu.h"
 
-
-// INICIALIZACIÓN ++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// INICIALIZACIÓN +++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void mmu_inicializar() {
-    // Inicialización
+	// Pag Libres Init
+	prox_pag_lib = PRIMERA_PAG_LIBRE;
+}
+
+unsigned int mmu_inicializar_zombi(unsigned int tarea, int jugador, int y) {
+    unsigned int cr3_zombi = mmu_inicializar_esquema_zombi(jugador, y);
+    unsigned int cr3_kernel = rcr3();
+    lcr3(cr3_zombi);
+    tlbflush();
+    copiar_zombi(tarea, jugador);
+    breakpoint();
+    lcr3(cr3_kernel);
+    tlbflush();
+    return cr3_zombi;
+}
+
+void mmu_inicializar_esquema_kernel(){
+	// Index Init (porque c89)
 	int i;
-    unsigned int* pd = (unsigned int*) DIR_INICIO_KERNEL_PD;
-    unsigned int* pt = (unsigned int*) DIR_INICIO_KERNEL_PT;
 
-    // Llenando la Page Directory
-    *pd = 0x28003; // Base Address = 0x28, US=1, RW=1, P=1
-    pd++;
-    for (i = 1; i < 1024; i++) {
-        *pd = 0x00000; // P=0
-        pd++;
-    }
+	// Kernel Page Directory (0x27000)
+	pd_entry* pd = (pd_entry*) 0x27000;
+	pd[0] = (pd_entry) {.p = 1, .rw = 1, .base = 0x28};
+	for (i = 1; i < 1024; i++) {
+		pd[i] = (pd_entry) { };
+	}
 
-    // Llenando la Page Table
-    for (i = 0; i < 1024; i++) {
-        *pt = 0x00003 | (i<<12); // P=0
-        pt++;
-    }
-
-    // Páginas Libres
-    prox_pag_lib = PRIMERA_PAG_LIBRE;
+	// Kernel Page Table (0x28000)
+	pt_entry* pt = (pt_entry*) 0x28000;
+	for (i = 0; i < 1024; i++) {
+		pt[i] = (pt_entry) {.p = 1, .rw = 1, .base = i};
+	}
 }
 
-unsigned int mmu_inicializar_dir_zombi(unsigned int tarea, unsigned int jugador, int y){
-  return 0;
-}
-
-// TODO: Reformular las dos funciones de abajo para que las podamos reutilizar al mover
-// zombies.
-
-unsigned int crear_esquema_zombi(int jugador, int y) {
-    // Crea el esquema de paginación para un zombie, y devuelve
-    // el CR3 correspondiente (AKA la dirección del page directory)
+unsigned int mmu_inicializar_esquema_zombi(int jugador, int y) {
+    // Index Declaration
     int i;
 
     // Memory Allocation
@@ -54,38 +55,98 @@ unsigned int crear_esquema_zombi(int jugador, int y) {
 
     // Page Directory
     for (i = 0; i < 1024; i++) pd[i] = (pd_entry) { }; // zero everything
-    pd[0] = (pd_entry) { .p = 1, .rw = 1, .frame = 0x28 }; // first entry
-    pd[0x20] = (pd_entry) { .p = 1, .rw = 1, .frame = (unsigned int)pt>>12 }; // zombi sight
+    pd[0] = (pd_entry) { .p = 1, .rw = 1, .base = 0x28 }; // first entry
+    pd[0x20] = (pd_entry) { .p = 1, .rw = 1, .base = (unsigned int)pt>>12 }; // zombi sight table
 
     // Page Table
     for (i = 0; i < 1024; i++) pt[i] = (pt_entry) { }; // zero everything
-    if (jugador == 0) {
-        int x = 0+1; // Jugador rojo
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y)); // 1
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y)); // 2
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y+1)); // 3
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 3*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y-1)); // 4
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 4*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y+1)); // 5
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 5*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y-1)); // 6
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 6*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y)); // 7
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 7*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y-1)); // 8
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y+1)); // 9
-    } else {
-        int x = 77-1; // Jugador azul (Recordar que el mapa es 78x44)
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y)); // 1
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y)); // 2
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y-1)); // 3
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 3*PAGE_SIZE, (unsigned int)pd, dir_fisica(x-1, y+1)); // 4
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 4*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y-1)); // 5
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 5*PAGE_SIZE, (unsigned int)pd, dir_fisica(x, y+1)); // 6
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 6*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y)); // 7
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 7*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y+1)); // 8
-        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE, (unsigned int)pd, dir_fisica(x+1, y-1)); // 9
-    }
+    int x = jugador == 1 ? 0+1 : 77-1;
+    mmu_mapear_vision_zombi(jugador, (unsigned int)pd, x, y);
+
     return (unsigned int) pd;
 }
 
-void copiar_zombi(unsigned int task, unsigned int player, int y){
+
+// MANEJO DE MEMORIA ++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++
+
+unsigned int mmu_prox_pag_libre(){
+    unsigned int prev_page = prox_pag_lib;
+    prox_pag_lib += PAGE_SIZE;
+    return prev_page;
+}
+
+void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis){
+    if (((vir & 0xFFF) != 0) || ((fis & 0xFFF) != 0)) {
+        error("ASSERT FAIL: dirs no multiplo de PAGESIZE (mmu_mapear_pagina)");
+    }
+    if (((prox_pag_lib & 0xFFF) != 0)) {
+        error("ASSERT FAIL: proxpaglib no multiplo de PAGESIZE (mmu_mapear_pagina)");
+    }
+
+    pd_entry* pd = (pd_entry*) (cr3 & 0xFFFFF000);
+    pt_entry* pt;
+    
+    pd_entry* ptr_pde = pd + INDEX_DIR(vir);
+    if ((*ptr_pde).p == 0) {
+        pt = (pt_entry*) mmu_prox_pag_libre();
+        (*ptr_pde) = (pd_entry) { .p = 1, .rw = 1, .base = (unsigned int) pt>>12 };
+    } else {
+        pt = (pt_entry*) ((*ptr_pde).base << 12);
+    }
+
+    pt[INDEX_TABLE(vir)] = (pt_entry) { .p = 1, .rw = 1, .base = fis>>12 };
+}
+
+void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
+    if ((vir & 0xFFF) != 0) {
+        error("ASSERT FAIL: vir no multiplo de PAGESIZE (mmu_unmapear_pagina)");
+    }
+
+    pd_entry* pd = (pd_entry*) (cr3 & 0xFFFFF000);
+    pt_entry* pt = (pt_entry*) (pd[INDEX_DIR(vir)].base << 12);
+    pt[INDEX_TABLE(vir)] = (pt_entry) { };
+}
+
+void mmu_mapear_vision_zombi(int jugador, unsigned int cr3, int x, int y){
+    if (jugador != 1 && jugador != 2) {
+        error("ASSERT FAIL: jugador no valido (mmu_mapear_vision_zombi)");
+    }
+
+    if (jugador == 1) {
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y)); // 1
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y)); // 2
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y+1)); // 3
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 3*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y-1)); // 4
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 4*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y+1)); // 5
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 5*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y-1)); // 6
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 6*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y)); // 7
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 7*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y-1)); // 8
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y+1)); // 9
+    } else {
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y)); // 1
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y)); // 2
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y-1)); // 3
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 3*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x-1, y+1)); // 4
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 4*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y-1)); // 5
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 5*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y+1)); // 6
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 6*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y)); // 7
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 7*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y+1)); // 8
+        mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y-1)); // 9
+    }
+}
+
+
+// AUXILIARES +++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++
+
+unsigned int dir_fisica(int x, int y){
+    int modulo_x = x % MAP_WIDTH;
+    int modulo_y = (y + MAP_HEIGHT) % MAP_HEIGHT;
+    return DIR_INICIO_MAPA + (modulo_y * MAP_WIDTH + modulo_x)*PAGE_SIZE;
+}
+
+void copiar_zombi(unsigned int task, int player){
     // Tareas Jug 1 (A)
     // 1 0x10000 - 0x10FFF
     // 2 0x11000 - 0x11FFF
@@ -106,59 +167,10 @@ void copiar_zombi(unsigned int task, unsigned int player, int y){
     // offset de tarea
     dir_task += (task-1)*0x1000;
 
-    int x = (player==1) ? 1 : MAP_WIDTH-2; // Operador ternario
-    char* dir_mapa = (char*) dir_fisica(x,y);
+    char* dir_mapa = (char*) DIR_INICIO_ZOMBI_VISION;
     int i;
-    for(i = 0; i < 0x1000; i++){
-        *dir_mapa = *dir_task;
-        dir_mapa++;
-        dir_task++;
+    for (i = 0; i < 0x1000; i++) {
+        dir_mapa[i] = dir_task[i];
     }
-}
 
-
-// ADMINISTRACIÓN DE MEMORIA +++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-unsigned int mmu_prox_pag_libre(){
-    unsigned int prev_page = prox_pag_lib;
-    prox_pag_lib+=PAGE_SIZE;
-    return prev_page;
-}
-
-void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis){
-    // Nota: si 'vir' ya está mapeada, se pizza
-    // [indice en dir | indice en paginas | offset    ]
-    //        10             10               12
-    pd_entry* pde = (pd_entry*) (cr3 & 0xFFFFF000);
-    pd_entry my_dir_entry = pde[INDEXAR_DIR(vir)];
-    pt_entry* pt = (pt_entry*) (my_dir_entry.frame << 12);
-    if (my_dir_entry.p == 0) {
-        pt = (pt_entry*) mmu_prox_pag_libre();
-        pde[INDEXAR_DIR(vir)] = (pd_entry) { .p = 1, .rw = 1, .frame = (unsigned int) pt>>12 };
-    }
-    pt[INDEXAR_TABLE(vir)] = (pt_entry) { .p = 1, .rw = 1, .frame = fis>>12 };
-}
-
-void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
-    pd_entry* pde = (pd_entry*) (cr3 & 0xFFFFF000);
-    pt_entry* pt = (pt_entry*) (pde[INDEXAR_DIR(vir)].frame << 12);
-    pt[INDEXAR_TABLE(vir)] = (pt_entry) { };
-}
-
-
-// AUXILIARES ++++++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-unsigned int dir_fisica(int x, int y){
-    int modulo_x = x % MAP_WIDTH;
-    int modulo_y = (y + MAP_HEIGHT) % MAP_HEIGHT;
-    return INICIO_MAPA + (modulo_y * MAP_WIDTH + modulo_x)*PAGE_SIZE;
-}
-
-posicion x_y(unsigned int dir_fisica){
-  posicion res;
-  res.x = (dir_fisica % (MAP_WIDTH*PAGE_SIZE))/PAGE_SIZE;
-  res.y = dir_fisica / (MAP_WIDTH*PAGE_SIZE);
-  return res;
 }

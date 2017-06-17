@@ -57,7 +57,7 @@ QUIET = @
 
 .PHONY=clean all image tasks defines.h
 
-all:  clean tasks image
+all:  clean tasks image 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -71,7 +71,6 @@ kernel.bin: $(OBJ) $(TASKS)
 	$(NM) $@.tmp | grep -v " U " | awk '{print "0x" $$1 " " $$3}' > kernel.sym
 	$(OBJCOPY) -S -O binary $@.tmp $@
 	rm $@.tmp
-	cp $@ sarasa.bin
 	@echo ''
 
 	@echo 'Generando imagen del kernel...'
@@ -145,3 +144,4 @@ clean:
 	rm -f $(DISK_IMG)
 	rm -rf *~
 	@echo ''
+	
