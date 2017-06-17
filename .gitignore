@@ -8,3 +8,4 @@
 *.sym
 *.bin
 *.gch
+.sass-cache/

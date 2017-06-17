@@ -68,9 +68,13 @@ _isr32:
     push ebx
     call fin_intr_pic1
     call proximo_reloj
+    str bx ; Cargo el TR en bx
+    cmp bx, 0x0 ; Veo si es 0x0 -> Nuna se cargo una tarea todavia
+    je .same_task ; Salgo es ese caso
     ; -----------------
     ; SCHEDULER SECTION
     ; -----------------
+    xchg bx, bx ; BREAK
     call sched_proximo_indice ; EAX <- indice del decscriptor de la proxima tarea (en la gdt)
     shl eax, 3 ; 3 primeros bits de atributos para acceder en la gdt, son 0 ya que se accede con privilegios de Kernel
     str bx ; Cargo el TR en bx
