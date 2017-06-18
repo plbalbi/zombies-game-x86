@@ -51,7 +51,7 @@ void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
 
 void game_lanzar_zombi(unsigned int jugador) {
   if (restantes_a != 0 && sched_hay_lugar_zombi(jugador)) {
-    if (jugador == 1) {
+    if (jugador == player_A) {
       // Juicy info
       posicion pos_zombi = { .x = 1, .y = y_a };
       unsigned int i = sched_indice_libre(jugador);

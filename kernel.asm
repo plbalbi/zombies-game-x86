@@ -144,7 +144,7 @@ protegido:
     sti
 
     ; Tests
-    call run_tests
+    ;call run_tests
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

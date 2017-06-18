@@ -123,8 +123,8 @@ void print_screen(){
     print_cantidad_zombis(20, 20);
 
     // Personajes
-    print_jugador(1, tipo_a, y_a);
-    print_jugador(2, tipo_b, y_b);
+    print_jugador(player_A, tipo_a, y_a);
+    print_jugador(player_B, tipo_b, y_b);
 
     // Firma
     const char s[] = "Bonobon Championship";
@@ -173,10 +173,10 @@ void print_jugador(unsigned short jugador, unsigned short tipo, int y){
 
     unsigned int x;
     unsigned short attr;
-    if (jugador == 1) {
+    if (jugador == player_A) {
         x = 0;
         attr = FG_LIGHT_RED | BG_RED;
-    } else if (jugador == 2) {
+    } else if (jugador == player_B) {
         x = 79;
         attr = FG_LIGHT_BLUE | BG_BLUE;
     }
@@ -195,9 +195,9 @@ void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
     }
 
     unsigned short attr;
-    if (jugador == 1) {
+    if (jugador == player_A) {
         attr = FG_RED | BG_GREEN;
-    } else if (jugador == 2) {
+    } else if (jugador == player_B) {
         attr = FG_BLUE | BG_GREEN;
     }
 

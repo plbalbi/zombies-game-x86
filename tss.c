@@ -36,8 +36,8 @@ void tss_inicializar() {
       tss_inicializar_inicial();
       int i;
       for (i = 0; i < CANT_ZOMBIS; i++) {
-            tss_inicializar_zombi(1, i);
-            tss_inicializar_zombi(2, i);
+            tss_inicializar_zombi(player_A, i);
+            tss_inicializar_zombi(player_B, i);
       }
 }
 
@@ -101,13 +101,13 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
       // Memoria
       // Los cr3 van a tener mapeadas 0x800000 en adelante, pero no importa
       // , los zombis posta las van a pisar al crearse
-      unsigned int cr3 = mmu_inicializar_esquema_zombi(1, 1);
+      unsigned int cr3 = mmu_inicializar_esquema_zombi(player_A, 1);
       // Para el esp0 pedimos una página y apuntamos a la 'base'
       unsigned int esp0 = mmu_prox_pag_libre() + PAGE_SIZE;
 
       // TSS
       tss* ptr_tss_zombi;
-      if (jugador == 1) {
+      if (jugador == player_A) {
             ptr_tss_zombi = tss_zombisA + i; // Puntero a tss_zombisA[i]
       } else {
             ptr_tss_zombi = tss_zombisB + i; // Puntero a tss_zombisB[i]
@@ -131,7 +131,7 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
 
       // Task Gate
       unsigned int task_index;
-      if (jugador == 1) {
+      if (jugador == player_A) {
             task_index = GDT_IDX_TSS_ZOMBIS_A + i;
       } else {
             task_index = GDT_IDX_TSS_ZOMBIS_B + i;
