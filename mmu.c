@@ -54,7 +54,7 @@ unsigned int mmu_inicializar_esquema_zombi(int jugador, int y) {
 
     // Page Table
     for (i = 0; i < 1024; i++) pt[i] = (pt_entry) { }; // zero everything
-    int x = jugador == 1 ? 0+1 : 77-1;
+    int x = jugador == player_A ? 0+1 : 77-1;
     mmu_mapear_vision_zombi(jugador, (unsigned int)pd, x, y);
 
     return (unsigned int) pd;
@@ -104,11 +104,11 @@ void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3){
 }
 
 void mmu_mapear_vision_zombi(int jugador, unsigned int cr3, int x, int y){
-    if (jugador != 1 && jugador != 2) {
+    if (jugador != player_A && jugador != player_B) {
         error("ASSERT FAIL: jugador no valido (mmu_mapear_vision_zombi)");
     }
 
-    if (jugador == 1) {
+    if (jugador == player_A) {
         mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x, y), 1); // 1
         mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y), 1); // 2
         mmu_mapear_pagina(DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE, (unsigned int)cr3, dir_fisica(x+1, y+1), 1); // 3
@@ -163,7 +163,7 @@ void copiar_zombi(unsigned int cr3_zombi, unsigned int task, int player){
     // Las direccions de arriba están en la parte de kernel (identity mapping)
     char* dir_task;
     // base de jugador
-    if(player==1){
+    if(player==player_A){
         dir_task = (char*) 0x10000;
     }else{
         dir_task = (char*) 0x13000;
