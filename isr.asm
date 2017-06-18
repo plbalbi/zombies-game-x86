@@ -79,7 +79,7 @@ _isr32:
     str bx ; Cargo el TR en bx
     cmp bx, ax ; Comparo la parte visible del TR (el selector), con el selector de la "nueva" tarea
     je .same_task ; Si son distintas, realizo el TASK-SWITCH
-    xchg bx, bx
+    ;xchg bx, bx
     mov [.jump_far_selector], ax ; Cargo el nuevo selector
     jmp far [.jump_far_address] ; Salto al mismo
 .same_task:

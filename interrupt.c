@@ -34,13 +34,13 @@ void handle_keyboard(unsigned int key) {
 		if (y_a != 0) {
 			y_a--;
 			print_jugador(1, tipo_a, y_a);
-			print(" ", 0, y_a+1, BG_RED);
+			print(" ", 0, (y_a+1)+1, BG_RED);
 		}
 	} else if (key == KEY_S) {
 		if (y_a != MAP_HEIGHT-1) {
 			y_a++;
 			print_jugador(1, tipo_a, y_a);
-			print(" ", 0, y_a-1, BG_RED);
+			print(" ", 0, (y_a-1)+1, BG_RED);
 		}
 	} else if (key == KEY_A) {
 		if (tipo_a != 1) {
@@ -63,13 +63,13 @@ void handle_keyboard(unsigned int key) {
 		if (y_b != 0) {
 			y_b--;
 			print_jugador(2, tipo_b, y_b);
-			print(" ", 79, y_b+1, BG_BLUE);
+			print(" ", 79, (y_b+1)+1, BG_BLUE);
 		}
 	} else if (key == KEY_K) {
 		if (y_b != MAP_HEIGHT-1) {
 			y_b++;
 			print_jugador(2, tipo_b, y_b);
-			print(" ", 79, y_b-1, BG_BLUE);
+			print(" ", 79, (y_b-1)+1, BG_BLUE);
 		}
 	} else if (key == KEY_J) {
 		if (tipo_b != 1) {
