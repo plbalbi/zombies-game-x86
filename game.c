@@ -80,6 +80,29 @@ void game_lanzar_zombi(unsigned int jugador) {
 
       // Pintar
       print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
+    }else{ // Debe ser jugador == player_B, sino agregar otro if
+      // Juicy info
+      posicion pos_zombi = { .x = MAP_WIDTH-1, .y = y_b };
+      unsigned int i = sched_indice_libre(jugador);
+
+      // Actualizar variables del juego
+      restantes_b--;
+      zombis_pos_b[i] = pos_zombi;
+      zombis_tipo_b[i] = tipo_b;
+
+      // Rescribir estructuras de la tarea
+      unsigned int cr3 = tss_leer_cr3(jugador, i);
+      mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
+
+      // Copiar zombi físicamente
+      copiar_zombi(cr3, tipo_b, jugador);
+
+      // Avisarle al scheduler
+      sched_activar_zombi(jugador, i);
+
+      // Pintar
+      print_zombi(jugador, zombis_tipo_b[i], zombis_pos_b[i]);
+
     }
   }
 }

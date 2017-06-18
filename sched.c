@@ -79,6 +79,7 @@ bool sched_hay_lugar_zombi(unsigned int jugador) {
 }
 
 unsigned int sched_indice_libre(unsigned int jugador) {
+  // REQ: sched_hay_lugar_zombi(jugador) == true
   int i;
   if (jugador == player_A) {
     for (i = 0; i < 8; i++) {
