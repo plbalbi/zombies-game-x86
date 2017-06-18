@@ -8,8 +8,7 @@
 #ifndef __SCHED_H__
 #define __SCHED_H__
 
-#include "screen.h"
-#include "tss.h"
+#include "defines.h"
 
 #define INC_INDEX(index) index = (index+1)%8
 

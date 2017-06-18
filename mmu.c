@@ -6,6 +6,10 @@
 */
 
 #include "mmu.h"
+#include "i386.h"
+#include "tss.h"
+#include "game.h"
+#include "debug.h"
 
 // INICIALIZACIÓN +++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++

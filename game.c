@@ -5,6 +5,10 @@
 */
 
 #include "game.h"
+#include "screen.h"
+#include "sched.h"
+#include "mmu.h"
+#include "tss.h"
 
 int y_a = 22, y_b = 22;
 unsigned short tipo_a = 1, tipo_b = 1; // Tipo de zombi: 1,2 o 3

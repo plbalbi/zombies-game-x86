@@ -9,15 +9,10 @@
 #define __MMU_H__
 
 #include "defines.h"
-#include "screen.h"
 #include "colors.h"
-#include "i386.h"
-#include "tss.h"
-#include "game.h"
-#include "debug.h"
 
 #define PRIMERA_PAG_LIBRE 0x100<<12
-  
+
 #define INDEX_DIR(dir) (dir >> 22)
 #define INDEX_TABLE(dir) (dir >> 12) & 0x3FF
 #define OFFSET(dir) (dir) & 0xFFF

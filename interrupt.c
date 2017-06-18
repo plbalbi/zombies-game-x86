@@ -1,4 +1,13 @@
 #include "interrupt.h"
+#include "i386.h"
+#include "screen.h"
+#include "colors.h"
+#include "mmu.h"
+#include "sched.h"
+#include "tss.h"
+#include "game.h"
+#include "debug.h"
+
 
 void handle_interrupt(unsigned int code) {
 	// Obs: Por default una interrupción haltea el procesador

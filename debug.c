@@ -1,4 +1,11 @@
 #include "debug.h"
+#include "i386.h"
+#include "colors.h"
+#include "mmu.h"
+#include "idt.h"
+#include "tss.h"
+#include "game.h"
+
 
 
 // TESTING ++++++++++++++++++++++++++++++++++

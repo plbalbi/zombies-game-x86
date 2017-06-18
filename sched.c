@@ -6,6 +6,9 @@
 */
 
 #include "sched.h"
+#include "screen.h"
+#include "debug.h"
+#include "tss.h"
 
 bool tasks_A[8] = {};
 bool tasks_B[8] = {};

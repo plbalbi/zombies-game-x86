@@ -15,7 +15,6 @@
 #include "colors.h"
 #include "defines.h"
 #include "game.h"
-#include "debug.h"
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {

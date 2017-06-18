@@ -8,9 +8,6 @@
 #define __GAME_H__
 
 #include "defines.h"
-#include "screen.h"
-#include "sched.h"
-#include "mmu.h"
 
 int y_a, y_b;
 unsigned short tipo_a, tipo_b; // Tipo de zombi
