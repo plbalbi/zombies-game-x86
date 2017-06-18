@@ -59,54 +59,56 @@ void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
 }
 
 void game_lanzar_zombi(unsigned int jugador) {
-  if (restantes_a != 0 && sched_hay_lugar_zombi(jugador)) {
-    if (jugador == player_A) {
-      // Juicy info
-      posicion pos_zombi = { .x = 1, .y = y_a };
-      unsigned int i = sched_indice_libre(jugador);
+  if (jugador == player_A && restantes_a != 0 && sched_hay_lugar_zombi(jugador)) {
+    // Juicy info
+    posicion pos_zombi = { .x = 1, .y = y_a };
+    unsigned int i = sched_indice_libre(jugador);
 
-      // Actualizar variables del juego
-      restantes_a--;
-      zombis_pos_a[i] = pos_zombi;
-      zombis_tipo_a[i] = tipo_a;
+    // Actualizar variables del juego
+    restantes_a--;
+    zombis_pos_a[i] = pos_zombi;
+    zombis_tipo_a[i] = tipo_a;
 
-      // Rescribir estructuras de la tarea
-      unsigned int cr3 = tss_leer_cr3(jugador, i);
-      mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
-      //tss_zombisA[i].esp0 = mmu_prox_pag_libre() + PAGE_SIZE; FUUUUUUCUUUUUUUUUUUUUUUUUUUUUUUUUCK
+    // Rescribir estructuras de la tarea
+    unsigned int cr3 = tss_leer_cr3(jugador, i);
+    mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
+    //tss_zombisA[i].esp0 = mmu_prox_pag_libre() + PAGE_SIZE; FUUUUUUCUUUUUUUUUUUUUUUUUUUUUUUUUCK
 
-      // Copiar zombi físicamente
-      copiar_zombi(cr3, tipo_a, jugador);
+    // Copiar zombi físicamente
+    copiar_zombi(cr3, tipo_a, jugador);
 
-      // Avisarle al scheduler
-      sched_activar_zombi(jugador, i);
+    // Avisarle al scheduler
+    sched_activar_zombi(jugador, i);
 
-      // Pintar
-      print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
-    }else{ // Debe ser jugador == player_B, sino agregar otro if
-      // Juicy info
-      posicion pos_zombi = { .x = MAP_WIDTH-1, .y = y_b };
-      unsigned int i = sched_indice_libre(jugador);
+    // Pintar
+    print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
+  }
+  // Aca ya se que jugador != player_A => jugador == player_B
+  else if (  restantes_b != 0 && sched_hay_lugar_zombi(jugador)  ){
+     // Debe ser jugador == player_B, sino agregar otro if
+    // Juicy info
+    posicion pos_zombi = { .x = MAP_WIDTH-1, .y = y_b };
+    unsigned int i = sched_indice_libre(jugador);
 
-      // Actualizar variables del juego
-      restantes_b--;
-      zombis_pos_b[i] = pos_zombi;
-      zombis_tipo_b[i] = tipo_b;
+    // Actualizar variables del juego
+    restantes_b--;
+    zombis_pos_b[i] = pos_zombi;
+    zombis_tipo_b[i] = tipo_b;
 
-      // Rescribir estructuras de la tarea
-      unsigned int cr3 = tss_leer_cr3(jugador, i);
-      mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
+    // Rescribir estructuras de la tarea
+    unsigned int cr3 = tss_leer_cr3(jugador, i);
+    mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
 
-      // Copiar zombi físicamente
-      copiar_zombi(cr3, tipo_b, jugador);
+    // Copiar zombi físicamente
+    copiar_zombi(cr3, tipo_b, jugador);
 
-      // Avisarle al scheduler
-      sched_activar_zombi(jugador, i);
+    // Avisarle al scheduler
+    sched_activar_zombi(jugador, i);
 
-      // Pintar
-      print_zombi(jugador, zombis_tipo_b[i], zombis_pos_b[i]);
+    // Pintar
+    print_zombi(jugador, zombis_tipo_b[i], zombis_pos_b[i]);
 
-    }
+    asm("xchg %bx, %bx"); // Lleva los % en cada registro porque es AT&T syntax
   }
 }
 
