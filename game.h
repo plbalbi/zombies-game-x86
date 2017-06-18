@@ -9,6 +9,7 @@
 
 #include "defines.h"
 #include "screen.h"
+#include "sched.h"
 #include "mmu.h"
 
 int y_a, y_b;
@@ -22,14 +23,16 @@ unsigned short zombis_tipo_b[8];
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ADE = 0x83D, ATR = 0x732 } direccion;
 
-void game_jugador_mover(unsigned int jugador, unsigned int value);
+void game_mover_jugador(unsigned int jugador, unsigned int value);
+
+void game_cambiar_tipo(unsigned int jugador, unsigned int value);
 
 void game_lanzar_zombi(unsigned int jugador);
 
 void game_move_current_zombi(direccion dir);
 
-bool hay_lugar_zombi(unsigned int jugador);
+bool game_hay_lugar_zombi(unsigned int jugador);
 
-unsigned int slot_zombi_libre(unsigned int jugador);
+unsigned int game_slot_zombi_libre(unsigned int jugador);
 
 #endif  /* !__GAME_H__ */

@@ -37,6 +37,9 @@ typedef struct posicion_t {
 #define player_A 1
 #define player_B 2
 
+#define UP   1
+#define DOWN 2
+
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */

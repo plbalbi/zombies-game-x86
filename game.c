@@ -15,14 +15,73 @@ posicion zombis_pos_b[8] = {};
 unsigned short zombis_tipo_a[8] = {};
 unsigned short zombis_tipo_b[8] = {};
 
-void game_jugador_mover(unsigned int jugador, unsigned int value) {
+
+
+void game_mover_jugador(unsigned int jugador, unsigned int value) {
+  int* ptr_y =  jugador == player_A ? &y_a : &y_b;
+  unsigned short* ptr_tipo =  jugador == player_A ? &tipo_a : &tipo_b;
+  unsigned short color =  jugador == player_A ? BG_RED : BG_BLUE;
+  int x =  jugador == player_A ? 0 : 79;
+
+  if (value == UP && (*ptr_y) > 0) {
+    (*ptr_y)--;
+    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
+    print(" ", x, ((*ptr_y)+1)+1, color);
+  } else if (value == DOWN && (*ptr_y) < MAP_HEIGHT-1) {
+    (*ptr_y)++;
+    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
+    print(" ", x, ((*ptr_y)-1)+1, color);
+  }
 }
+
+void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
+  int* ptr_y =  jugador == player_A ? &y_a : &y_b;
+  unsigned short* ptr_tipo =  jugador == player_A ? &tipo_a : &tipo_b;
+
+  if (value == UP && (*ptr_tipo) < 3) {
+    (*ptr_tipo)++;
+    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
+  } else if (value == DOWN && (*ptr_tipo) > 1) {
+    (*ptr_tipo)--;
+    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
+  } 
+}
+
 void game_lanzar_zombi(unsigned int jugador) {
+  if (restantes_a != 0 && game_hay_lugar_zombi(1)) {
+    if (jugador == 1) {
+      // Juicy info
+      posicion pos_zombi = { .x = 1, .y = y_a };
+      unsigned int i = game_slot_zombi_libre(jugador);
+
+      // Actualizar variables del juego
+      restantes_a--;
+      zombis_pos_a[i] = pos_zombi;
+      zombis_tipo_a[i] = tipo_a;
+
+      // Rescribir estructuras de la tarea
+      unsigned int cr3 = tss_zombisA[i].cr3;
+      mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
+      //tss_zombisA[i].esp0 = mmu_prox_pag_libre() + PAGE_SIZE; FUUUUUUCUUUUUUUUUUUUUUUUUUUUUUUUUCK
+
+      // Copiar zombi físicamente
+      copiar_zombi(cr3, tipo_a, jugador);
+
+      // Avisarle al scheduler
+      tasks_A[i] = true;
+
+      // Pintar
+      print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
+    }
+  }
 }
+
+
+
 void game_move_current_zombi(direccion dir) {
 }
 
-bool hay_lugar_zombi(unsigned int jugador) {
+bool game_hay_lugar_zombi(unsigned int jugador) {
   int i;
   if (jugador == player_A) {
     for (i = 0; i < 8; i++) {
@@ -36,7 +95,7 @@ bool hay_lugar_zombi(unsigned int jugador) {
   return false;
 }
 
-unsigned int slot_zombi_libre(unsigned int jugador) {
+unsigned int game_slot_zombi_libre(unsigned int jugador) {
   int i;
   if (jugador == player_A) {
     for (i = 0; i < 8; i++) {
