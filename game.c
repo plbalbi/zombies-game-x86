@@ -16,6 +16,8 @@ unsigned short zombis_tipo_a[8] = {};
 unsigned short zombis_tipo_b[8] = {};
 
 
+// JUGADORES
+// --------------------------
 
 void game_mover_jugador(unsigned int jugador, unsigned int value) {
   int* ptr_y =  jugador == player_A ? &y_a : &y_b;
@@ -77,9 +79,15 @@ void game_lanzar_zombi(unsigned int jugador) {
 }
 
 
+// ZOMBIS
+// --------------------------
 
 void game_move_current_zombi(direccion dir) {
 }
+
+
+// AUXILIARES
+// --------------------------
 
 bool game_hay_lugar_zombi(unsigned int jugador) {
   int i;
