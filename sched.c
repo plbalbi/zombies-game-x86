@@ -44,3 +44,48 @@ unsigned int sched_proximo_indice() {
     return GDT_IDX_TSS_IDLE;
   }
 }
+
+void sched_activar_zombi(unsigned int jugador, unsigned int i) {
+  if (jugador == player_A) {
+    tasks_A[i] = 1;
+  } else {
+    tasks_B[i] = 1;
+  }
+}
+
+void sched_desactivar_zombi(unsigned int jugador, unsigned int i) {
+  if (jugador == player_A) {
+    tasks_A[i] = 0;
+  } else {
+    tasks_B[i] = 0;
+  }
+}
+
+bool sched_hay_lugar_zombi(unsigned int jugador) {
+  int i;
+  if (jugador == player_A) {
+    for (i = 0; i < 8; i++) {
+      if (tasks_A[i] == 0) return true;
+    }
+  } else {
+    for (i = 0; i < 8; i++) {
+      if (tasks_B[i] == 0) return true;
+    }
+  }
+  return false;
+}
+
+unsigned int sched_indice_libre(unsigned int jugador) {
+  int i;
+  if (jugador == player_A) {
+    for (i = 0; i < 8; i++) {
+      if (tasks_A[i] == 0) return i;
+    }
+  } else {
+    for (i = 0; i < 8; i++) {
+      if (tasks_B[i] == 0) return i;
+    }
+  }
+  error("ASSERT ERROR: No hay zombi libre (sched_indice_libre)");
+  return 0xDEAD;
+}

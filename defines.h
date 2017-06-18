@@ -34,11 +34,11 @@ typedef struct posicion_t {
 #define CHAR_MAGO               "\x04"
 #define CHAR_GUERRERO           "\x06"
 
-#define player_A 1
-#define player_B 2
+#define player_A                1
+#define player_B                2
 
-#define UP   1
-#define DOWN 2
+#define UP                      1
+#define DOWN                    2
 
 
 /* Direcciones de memoria */

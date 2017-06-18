@@ -13,13 +13,11 @@
 
 #define INC_INDEX(index) index = (index+1)%8
 
-bool tasks_A[8];
-bool tasks_B[8];
-unsigned short running_A;
-unsigned short running_B;
-unsigned int next_player;
+unsigned int sched_proximo_indice(void);
 
-unsigned int sched_proximo_indice();
-
+void sched_activar_zombi(unsigned int jugador, unsigned int i);
+void sched_desactivar_zombi(unsigned int jugador, unsigned int i);
+bool sched_hay_lugar_zombi(unsigned int jugador);
+unsigned int sched_indice_libre(unsigned int jugador);
 
 #endif	/* !__SCHED_H__ */

@@ -50,11 +50,11 @@ void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
 }
 
 void game_lanzar_zombi(unsigned int jugador) {
-  if (restantes_a != 0 && game_hay_lugar_zombi(1)) {
+  if (restantes_a != 0 && sched_hay_lugar_zombi(jugador)) {
     if (jugador == 1) {
       // Juicy info
       posicion pos_zombi = { .x = 1, .y = y_a };
-      unsigned int i = game_slot_zombi_libre(jugador);
+      unsigned int i = sched_indice_libre(jugador);
 
       // Actualizar variables del juego
       restantes_a--;
@@ -70,7 +70,7 @@ void game_lanzar_zombi(unsigned int jugador) {
       copiar_zombi(cr3, tipo_a, jugador);
 
       // Avisarle al scheduler
-      tasks_A[i] = true;
+      sched_activar_zombi(jugador, i);
 
       // Pintar
       print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
@@ -83,37 +83,4 @@ void game_lanzar_zombi(unsigned int jugador) {
 // --------------------------
 
 void game_move_current_zombi(direccion dir) {
-}
-
-
-// AUXILIARES
-// --------------------------
-
-bool game_hay_lugar_zombi(unsigned int jugador) {
-  int i;
-  if (jugador == player_A) {
-    for (i = 0; i < 8; i++) {
-      if (zombis_tipo_a[i] == 0) return true;
-    }
-  } else {
-    for (i = 0; i < 8; i++) {
-      if (zombis_tipo_b[i] == 0) return true;
-    }
-  }
-  return false;
-}
-
-unsigned int game_slot_zombi_libre(unsigned int jugador) {
-  int i;
-  if (jugador == player_A) {
-    for (i = 0; i < 8; i++) {
-      if (zombis_tipo_a[i] == 0) return i;
-    }
-  } else {
-    for (i = 0; i < 8; i++) {
-      if (zombis_tipo_b[i] == 0) return i;
-    }
-  }
-  error("ASSERT ERROR: No hay zombi libre (slot_zombi_libre)");
-  return 0xDEAD;
 }
