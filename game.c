@@ -48,11 +48,14 @@ void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
 
   if (value == UP && (*ptr_tipo) < 3) {
     (*ptr_tipo)++;
-    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
-  } else if (value == DOWN && (*ptr_tipo) > 1) {
+  }else if(value == UP && (*ptr_tipo) == 3){
+    (*ptr_tipo) = 1;
+  }else if (value == DOWN && (*ptr_tipo) > 1) {
     (*ptr_tipo)--;
-    print_jugador(jugador, (*ptr_tipo), (*ptr_y));
+  }else if(value == DOWN && (*ptr_tipo) == 1){
+    (*ptr_tipo) = 3;
   }
+  print_jugador(jugador, (*ptr_tipo), (*ptr_y));
 }
 
 void game_lanzar_zombi(unsigned int jugador) {
