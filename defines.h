@@ -57,7 +57,7 @@ typedef struct posicion_t {
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 30
+#define GDT_COUNT 31
 
 #define GDT_IDX_NULL_DESC           0
 #define GDT_IDX_CODE_KERNEL         8
@@ -68,7 +68,8 @@ typedef struct posicion_t {
 
 #define GDT_IDX_TSS_ZOMBIS_A       13
 #define GDT_IDX_TSS_ZOMBIS_B       (GDT_IDX_TSS_ZOMBIS_A + CANT_ZOMBIS)
-#define GDT_IDX_TSS_IDLE           (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS)
+#define GDT_IDX_TSS_IDLE           (GDT_IDX_TSS_ZOMBIS_B + CANT_ZOMBIS) // 29
+#define GDT_IDX_TSS_INIT           (GDT_IDX_TSS_IDLE + 1) // 30
 
 
 /* Descriptores en la gdt */
@@ -78,6 +79,11 @@ typedef struct posicion_t {
 #define GDT_DESC_DATA_KERNEL        (GDT_IDX_DATA_KERNEL << 3)
 #define GDT_DESC_DATA_USER          (GDT_IDX_DATA_USER << 3)
 #define GDT_DESC_SCREEN             (GDT_IDX_SCREEN << 3)
+
+#define GDT_DESC_TSS_ZOMBIS_A       (GDT_IDX_TSS_ZOMBIS_A << 3)
+#define GDT_DESC_TSS_ZOMBIS_B       (GDT_IDX_TSS_ZOMBIS_B << 3)
+#define GDT_DESC_TSS_IDLE           (GDT_IDX_TSS_IDLE << 3)
+#define GDT_DESC_TSS_INIT           (GDT_IDX_TSS_INIT << 3)
 
 
 /* Keyboard opcodes */

@@ -21,6 +21,8 @@ jmp start
 %define GDT_IDX_DATA_KERNEL 10
 %define GDT_IDX_DATA_USER 11
 %define GDT_IDX_SCREEN 12
+%define GDT_IDX_TSS_INIT 30
+
 extern GDT_DESC
 
 extern idt_inicializar
@@ -134,11 +136,12 @@ protegido:
     call habilitar_pic
 
     ; Cargar tarea inicial
+    mov ax, (GDT_IDX_TSS_INIT << 3)
+    ltr ax
 
     ; Habilitar interrupciones
+    ; Nota: El scheduler ya se encarga
     sti
-
-    ; Saltar a la primera tarea: Idle
 
     ; Tests
     call run_tests

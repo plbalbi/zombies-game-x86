@@ -30,6 +30,7 @@ tss tss_zombisA[CANT_ZOMBIS];
 
 void tss_inicializar() {
       tss_inicializar_idle();
+      tss_inicializar_inicial();
       int i;
       for (i = 0; i < CANT_ZOMBIS; i++) {
             tss_inicializar_zombi(1, i);
@@ -44,6 +45,8 @@ void tss_inicializar_idle() {
             .ss0 = GDT_DESC_DATA_KERNEL,
             .cr3 = 0x27000,
             .eip = DIR_INICIO_TASK_IDLE,
+            .esp = DIR_INICIO_PILA_KERNEL,
+            .ebp = DIR_INICIO_PILA_KERNEL,
             .eflags = 0x202, // Seteamos IF y Reserved
             .fs = GDT_DESC_SCREEN,
             .cs = GDT_DESC_CODE_KERNEL,
@@ -58,6 +61,26 @@ void tss_inicializar_idle() {
             (unsigned short)    TSS_SIZE-1,            /* limit[0:15]   */
             (unsigned short)    BITS_0_15(&tss_idle),  /* base[0:15]    */
             (unsigned char)     BITS_16_23(&tss_idle), /* base[23:16]   */
+            (unsigned char)     0x9,                   /* type (tss)    */
+            (unsigned char)     0x0,                   /* s (supervisor)*/
+            (unsigned char)     0x00,                  /* dpl           */
+            (unsigned char)     0x01,                  /* p             */
+            (unsigned char)     0x00,                  /* limit[16:19]  */
+            (unsigned char)     0x00,                  /* avl           */
+            (unsigned char)     0x00,                  /* l             */
+            (unsigned char)     0x01,                  /* db            */
+            (unsigned char)     0x00,                  /* g             */
+            (unsigned char)     0x00,                  /* base[31:24]   */
+      };
+}
+
+void tss_inicializar_inicial() {
+      // Si bien no hace falta que la TSS tenga un contexto posta,
+      // el selector en la GDT tiene que estar bien (tr)
+      gdt[GDT_IDX_TSS_INIT] = (gdt_entry){
+            (unsigned short)    TSS_SIZE-1,            /* limit[0:15]   */
+            (unsigned short)    BITS_0_15(&tss_inicial),  /* base[0:15]    */
+            (unsigned char)     BITS_16_23(&tss_inicial), /* base[23:16]   */
             (unsigned char)     0x9,                   /* type (tss)    */
             (unsigned char)     0x0,                   /* s (supervisor)*/
             (unsigned char)     0x00,                  /* dpl           */
