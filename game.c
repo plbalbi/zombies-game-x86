@@ -15,6 +15,8 @@ posicion zombis_pos_b[8] = {};
 unsigned short zombis_tipo_a[8] = {};
 unsigned short zombis_tipo_b[8] = {};
 
+bool debug = false;
+
 
 // JUGADORES
 // --------------------------
@@ -46,7 +48,7 @@ void game_cambiar_tipo(unsigned int jugador, unsigned int value) {
   } else if (value == DOWN && (*ptr_tipo) > 1) {
     (*ptr_tipo)--;
     print_jugador(jugador, (*ptr_tipo), (*ptr_y));
-  } 
+  }
 }
 
 void game_lanzar_zombi(unsigned int jugador) {

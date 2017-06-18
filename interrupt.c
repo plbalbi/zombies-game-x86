@@ -55,4 +55,16 @@ void handle_keyboard(unsigned int key) {
 	} else if (key == KEY_RS) {
 		game_lanzar_zombi(player_B);
 	}
+
+	// Juego
+	if (key == KEY_Y) {
+		if (debug == false) {
+			debug_on();
+		} else {
+			debug_off();
+		}
+		// TODO: este if también debería preguntar si el modo debug está
+		// ON o OFF. Es otra varaible global a agregar
+	}
+
 }

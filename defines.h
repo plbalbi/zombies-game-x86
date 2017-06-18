@@ -109,4 +109,5 @@ typedef struct posicion_t {
 #define KEY_J  0x24
 #define KEY_RS 0x36
 
+#define KEY_Y 0X15
 #endif  /* !__DEFINES_H__ */
