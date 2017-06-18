@@ -62,7 +62,7 @@ void game_lanzar_zombi(unsigned int jugador) {
       zombis_tipo_a[i] = tipo_a;
 
       // Rescribir estructuras de la tarea
-      unsigned int cr3 = tss_zombisA[i].cr3;
+      unsigned int cr3 = tss_leer_cr3(jugador, i);
       mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
       //tss_zombisA[i].esp0 = mmu_prox_pag_libre() + PAGE_SIZE; FUUUUUUCUUUUUUUUUUUUUUUUUUUUUUUUUCK
 

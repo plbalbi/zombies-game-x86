@@ -28,6 +28,9 @@ tss tss_zombisA[CANT_ZOMBIS];
 #define BITS_16_23(base) ((unsigned int)base >> 16) & 0xFF  // base[23:16]
 
 
+// INICIALIZACIÓN
+// --------------
+
 void tss_inicializar() {
       tss_inicializar_idle();
       tss_inicializar_inicial();
@@ -149,4 +152,40 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
             (unsigned char)     0x00,                  /* g             */
             (unsigned char)     0x00,                  /* base[31:24]   */
       };
+}
+
+
+// INTERFAZ
+// --------------
+
+unsigned int tss_leer_cr3(unsigned int jugador, unsigned int i) {
+      if (jugador == player_A) {
+            return tss_zombisA[i].cr3;
+      } else {
+            return tss_zombisB[i].cr3;
+      }
+}
+
+void tss_escribir_cr3(unsigned int jugador, unsigned int i, unsigned int cr3) {
+      if (jugador == player_A) {
+            tss_zombisA[i].cr3 = cr3;
+      } else {
+            tss_zombisB[i].cr3 = cr3;
+      }
+}
+
+unsigned int tss_leer_esp0(unsigned int jugador, unsigned int i) {
+      if (jugador == player_A) {
+            return tss_zombisA[i].esp0;
+      } else {
+            return tss_zombisB[i].esp0;
+      }
+}
+
+void tss_escribir_esp0(unsigned int jugador, unsigned int i, unsigned int esp0) {
+      if (jugador == player_A) {
+            tss_zombisA[i].esp0 = esp0;
+      } else {
+            tss_zombisB[i].esp0 = esp0;
+      }
 }

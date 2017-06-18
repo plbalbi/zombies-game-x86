@@ -58,10 +58,9 @@ void tss_inicializar_idle();
 void tss_inicializar_inicial();
 void tss_inicializar_zombi(int jugador, unsigned int i);
 
-tss tss_inicial;
-tss tss_idle;
-
-tss tss_zombisB[CANT_ZOMBIS];
-tss tss_zombisA[CANT_ZOMBIS];
+unsigned int tss_leer_cr3(unsigned int jugador, unsigned int i);
+void tss_escribir_cr3(unsigned int jugador, unsigned int i, unsigned int cr3);
+unsigned int tss_leer_esp0(unsigned int jugador, unsigned int i);
+void tss_escribir_esp0(unsigned int jugador, unsigned int i, unsigned int esp0);
 
 #endif  /* !__TSS_H__ */
