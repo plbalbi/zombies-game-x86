@@ -13,9 +13,8 @@ extern fin_intr_pic1
 
 extern sched_proximo_indice
 
-extern print_teclado
-
 extern handle_interrupt
+extern handle_keyboard
 
 ;;
 ;; Definición de MACROS
@@ -98,7 +97,7 @@ _isr33:
     xor eax, eax
     in al, 0x60
     push eax
-    call print_teclado
+    call handle_keyboard
     pop eax
     call fin_intr_pic1
     pop eax

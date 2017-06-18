@@ -123,11 +123,11 @@ void print_screen(){
     print_cantidad_zombis(20, 20);
 
     // Personajes
-    print(SMILEY, 0, 22, FG_LIGHT_RED| BG_RED);
-    print(SMILEY, 79, 22, FG_LIGHT_BLUE | BG_BLUE);
+    print_jugador(1, tipo_a, y_a);
+    print_jugador(2, tipo_b, y_b);
 
     // Firma
-    const char s[] = "Bonobon Champion";
+    const char s[] = "Bonobon Championship";
     print(s, 80-2-strlen(s), 0, FG_WHITE | BG_BLACK);
 
     // Null key
@@ -160,6 +160,50 @@ void print_teclado(unsigned int key){
         print("R", 79, 0, FG_LIGHT_GREY | BG_BLACK);
     }
 }
+
+void print_jugador(unsigned short jugador, unsigned short tipo, int y){
+    char* s;
+    if (tipo == 1){
+        s = CHAR_GUERRERO;
+    } else if (tipo == 2){
+        s = CHAR_MAGO;
+    } else {
+        s = CHAR_CLERICO;
+    }
+
+    unsigned int x;
+    unsigned short attr;
+    if (jugador == 1) {
+        x = 0;
+        attr = FG_LIGHT_RED | BG_RED;
+    } else if (jugador == 2) {
+        x = 79;
+        attr = FG_LIGHT_BLUE | BG_BLUE;
+    }
+
+    print(s, x, y, attr);
+}
+
+void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
+    char* s;
+    if (tipo == 1){
+        s = CHAR_GUERRERO;
+    } else if (tipo == 2){
+        s = CHAR_MAGO;
+    } else {
+        s = CHAR_CLERICO;
+    }
+
+    unsigned short attr;
+    if (jugador == 1) {
+        attr = FG_RED | BG_GREEN;
+    } else if (jugador == 2) {
+        attr = FG_BLUE | BG_GREEN;
+    }
+
+    print(s, pos.x, pos.y, attr);
+}
+
 
 // AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

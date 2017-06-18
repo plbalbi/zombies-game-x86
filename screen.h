@@ -14,6 +14,9 @@
 
 #include "colors.h"
 #include "defines.h"
+#include "game.h"
+#include "debug.h"
+
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;
@@ -27,5 +30,11 @@ void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, un
 void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr);
 
 unsigned int strlen(const char *str);
+
+void print_jugador(unsigned short jugador, unsigned short tipo, int y);
+
+void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos);
+
+void print_teclado(unsigned int key);
 
 #endif  /* !__SCREEN_H__ */

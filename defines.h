@@ -30,7 +30,10 @@ typedef struct posicion_t {
 #define PAGE_SIZE               (1<<12)
 #define TSS_SIZE                104
 
-#define SMILEY                  "\x02"
+#define CHAR_CLERICO            "\x03"
+#define CHAR_MAGO               "\x04"
+#define CHAR_GUERRERO           "\x06"
+
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */

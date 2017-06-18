@@ -140,7 +140,7 @@ protegido:
     ltr ax
 
     ; Habilitar interrupciones
-    ; Nota: El scheduler ya se encarga
+    ; Nota: El scheduler ya se encarga de cargar IDLE al no haber zombis
     sti
 
     ; Tests
