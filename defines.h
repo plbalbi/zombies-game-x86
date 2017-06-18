@@ -12,8 +12,8 @@
 /* Tipos */
 /* -------------------------------------------------------------------------- */
 typedef _Bool bool;
-#define true True
-#define false False
+#define true 1
+#define false 0
 
 typedef struct posicion_t {
   unsigned short x;
@@ -33,6 +33,9 @@ typedef struct posicion_t {
 #define CHAR_CLERICO            "\x03"
 #define CHAR_MAGO               "\x04"
 #define CHAR_GUERRERO           "\x06"
+
+#define player_A 1
+#define player_B 2
 
 
 /* Direcciones de memoria */
@@ -78,9 +81,9 @@ typedef struct posicion_t {
 /* Descriptores en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_DESC_CODE_KERNEL        (GDT_IDX_CODE_KERNEL << 3)
-#define GDT_DESC_CODE_USER          (GDT_IDX_CODE_USER << 3)
+#define GDT_DESC_CODE_USER          ((GDT_IDX_CODE_USER << 3) | 3)
 #define GDT_DESC_DATA_KERNEL        (GDT_IDX_DATA_KERNEL << 3)
-#define GDT_DESC_DATA_USER          (GDT_IDX_DATA_USER << 3)
+#define GDT_DESC_DATA_USER          ((GDT_IDX_DATA_USER << 3) | 3)
 #define GDT_DESC_SCREEN             (GDT_IDX_SCREEN << 3)
 
 #define GDT_DESC_TSS_ZOMBIS_A       (GDT_IDX_TSS_ZOMBIS_A << 3)

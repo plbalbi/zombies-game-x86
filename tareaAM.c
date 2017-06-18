@@ -11,7 +11,7 @@
 
 void task() {
     /* Tarea */
-    int i;
+    /*int i;
     for(i=0;i<10;i++) {
     syscall_mover(ADE); //breakpoint();
     }
@@ -26,7 +26,7 @@ void task() {
     }
     for(i=0;i<10;i++) {
     syscall_mover(ADE); //breakpoint();
-    }
+    }*/
     
-//   while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
+   while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
 }

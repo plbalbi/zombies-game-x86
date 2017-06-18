@@ -118,8 +118,8 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
             .esp = DIR_INICIO_ZOMBI_PILA,
             .ebp = DIR_INICIO_ZOMBI_PILA,
             .eflags = 0x202, // Seteamos IF y Reserved
-            .cs = GDT_DESC_CODE_USER,
-            .ss = GDT_DESC_DATA_USER,
+            .cs = GDT_DESC_CODE_USER, //Selector de GDT, bits de privilegio
+            .ss = GDT_DESC_DATA_USER, //  es RPL, no DPL!
             .ds = GDT_DESC_DATA_USER,
             .es = GDT_DESC_DATA_USER,
             .fs = GDT_DESC_DATA_USER,

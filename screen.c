@@ -181,7 +181,7 @@ void print_jugador(unsigned short jugador, unsigned short tipo, int y){
         attr = FG_LIGHT_BLUE | BG_BLUE;
     }
 
-    print(s, x, y, attr);
+    print(s, x, y+1, attr);
 }
 
 void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
@@ -201,7 +201,7 @@ void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
         attr = FG_BLUE | BG_GREEN;
     }
 
-    print(s, pos.x, pos.y, attr);
+    print(s, pos.x+1, pos.y+1, attr);
 }
 
 

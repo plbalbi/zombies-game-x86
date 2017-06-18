@@ -21,3 +21,32 @@ void game_lanzar_zombi(unsigned int jugador) {
 }
 void game_move_current_zombi(direccion dir) {
 }
+
+bool hay_lugar_zombi(unsigned int jugador) {
+  int i;
+  if (jugador == player_A) {
+    for (i = 0; i < 8; i++) {
+      if (zombis_tipo_a[i] == 0) return true;
+    }
+  } else {
+    for (i = 0; i < 8; i++) {
+      if (zombis_tipo_b[i] == 0) return true;
+    }
+  }
+  return false;
+}
+
+unsigned int slot_zombi_libre(unsigned int jugador) {
+  int i;
+  if (jugador == player_A) {
+    for (i = 0; i < 8; i++) {
+      if (zombis_tipo_a[i] == 0) return i;
+    }
+  } else {
+    for (i = 0; i < 8; i++) {
+      if (zombis_tipo_b[i] == 0) return i;
+    }
+  }
+  error("ASSERT ERROR: No hay zombi libre (slot_zombi_libre)");
+  return 0xDEAD;
+}

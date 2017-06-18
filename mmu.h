@@ -31,12 +31,12 @@ void mmu_inicializar_esquema_kernel(void);
 unsigned int mmu_inicializar_esquema_zombi(int jugador, int y);
 
 unsigned int mmu_prox_pag_libre();
-void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis);
+void mmu_mapear_pagina(unsigned int vir, unsigned int cr3, unsigned int fis, unsigned char user);
 void mmu_unmapear_pagina(unsigned int vir, unsigned int cr3);
 void mmu_mapear_vision_zombi(int jugador, unsigned int cr3, int x, int y);
 
 unsigned int dir_fisica(int x, int y);
-void copiar_zombi(unsigned int task, int player);
+void copiar_zombi(unsigned int cr3_zombi, unsigned int task, int player);
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;

@@ -23,6 +23,5 @@ void task() {
     for(i=0;i<500;i++)
     syscall_mover(ATR);*/
     
-  //while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
-    while (1) {};
+    while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
 }
