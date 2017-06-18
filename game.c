@@ -12,6 +12,8 @@ unsigned short restantes_a = 20, restantes_b = 20;
 unsigned short puntaje_a = 0, puntaje_b = 0;
 posicion zombis_pos_a[8] = {};
 posicion zombis_pos_b[8] = {};
+unsigned short zombis_tipo_a[8] = {};
+unsigned short zombis_tipo_b[8] = {};
 
 void game_jugador_mover(unsigned int jugador, unsigned int value) {
 }
