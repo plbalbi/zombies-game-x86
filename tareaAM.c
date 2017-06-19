@@ -10,10 +10,12 @@
 #include "syscall.h" 
 
 void task() {
+    syscall_mover(ADE);
+    syscall_mover(ADE);
     /* Tarea */
     /*int i;
     for(i=0;i<10;i++) {
-    syscall_mover(ADE); //breakpoint();
+    //breakpoint();
     }
     for(i=0;i<10;i++) {
     syscall_mover(DER); //breakpoint();

@@ -10,14 +10,11 @@
 #include "syscall.h"
 
 void task() {
-  while(1) {
-    char* ptr;
-    for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR_SIZE; ptr++) {
-      *ptr = 0xDE;
+  char* ptr;
+  while (1) {
+    syscall_mover(ADE);
+    for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR+ALREDEDOR_SIZE; ptr++) {
+      *ptr = 0;
     };
-    syscall_mover(ADE);
-    syscall_mover(DER);
-    syscall_mover(ADE);
-    syscall_mover(IZQ);
-  }
+  };
 }

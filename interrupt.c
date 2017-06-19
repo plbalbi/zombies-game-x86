@@ -114,20 +114,17 @@ void handle_keyboard(unsigned int key) {
 
 }
 
+extern void _isr0(void);
 
 void handle_syscall_mover(direccion d){
-	//asm("xchg %bx, %bx");
-
-	// Averiguar la posicion actual del zombie en la tarea
-		// Averiguar pos_vieja y CR3
+	// Averiguar la info del zombi
 	unsigned int curr_player = current_player();
 	unsigned int curr_task = current_task();
 	posicion pos_vieja = (player_A == curr_player) ? zombis_pos_a[curr_task] : \
 		zombis_pos_b[curr_task];
 	unsigned int curr_cr3 = tss_leer_cr3(curr_player, curr_task);
+
 	// Averiguar con la direccion para donde ir
-		// Saber que direccion es la que debo ir
-		// Calcular nueva posicion, asi el codigo siguiente es el mismo para cualquier opcion posible
 	posicion destiny;
 	int reverse = 1;
 	if (curr_player == player_B) reverse = -1;
@@ -144,28 +141,38 @@ void handle_syscall_mover(direccion d){
 		destiny.x = pos_vieja.x - (1*reverse);
 		destiny.y = pos_vieja.y;
 	}
-		// Actualizar posicion
-		if (curr_player == player_A) {
-			zombis_pos_a[curr_task] = destiny;
-		}else{
-			zombis_pos_b[curr_task] = destiny;
-		}
 
-		// 'Moverse'
-		replicar_zombi(d);
+	// Verificar que los parámetros sean correctos
+	if (d != IZQ && d != DER && d != ADE && d != ATR) {
+		_isr0(); // KILL
+	}
 
-		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
-		// Mapearme las nuevas posiciones
-		mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
+	// Verificar que no esté accediendo fuera del mapa
+	if (destiny.x >= MAP_WIDTH || destiny.y >= MAP_HEIGHT) { // recordar que son unsigned short
+		_isr0(); // KILL
+	}
+		
+	// Actualizar posicion
+	if (curr_player == player_A) {
+		zombis_pos_a[curr_task] = destiny;
+	}else{
+		zombis_pos_b[curr_task] = destiny;
+	}
 
-		// Borrarme del mapa mi iconito, dejando rastro
-		print_zombie_trace(pos_vieja);
+	// 'Moverse'
+	replicar_zombi(d);
 
-		// Refresco todos los zombis
-		print_zombis();
+	// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
+	// Mapearme las nuevas posiciones
+	mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
 
-	if ((destiny.x == 0 && curr_player == player_B) || \
-		  (destiny.x == MAP_WIDTH-1 && curr_player == player_A)) {
+	// Borrarme del mapa mi iconito, dejando rastro
+	print_zombie_trace(pos_vieja);
+
+	// Refresco todos los zombis
+	print_zombis();
+
+	if (destiny.x == 0 || destiny.x == MAP_WIDTH-1) {
 		// Winning! ~ Charlie Sheen (1972-2017)
 		// Acabo de buscar si murio, tranquilos chicos, Charlie still alive
 
