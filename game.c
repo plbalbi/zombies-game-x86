@@ -108,7 +108,7 @@ void game_lanzar_zombi(unsigned int jugador) {
     // Pintar
     print_zombi(jugador, zombis_tipo_b[i], zombis_pos_b[i]);
 
-    asm("xchg %bx, %bx"); // Lleva los % en cada registro porque es AT&T syntax
+    // asm("xchg %bx, %bx"); // Lleva los % en cada registro porque es AT&T syntax
   }
 }
 
