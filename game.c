@@ -86,7 +86,7 @@ void game_lanzar_zombi(unsigned int jugador) {
     print_cantidad_zombis(restantes_a, restantes_b);
   }
   // Aca ya se que jugador != player_A => jugador == player_B
-  else if (  restantes_b != 0 && sched_hay_lugar_zombi(jugador)  ){
+  else if ( jugador == player_B && restantes_b != 0 && sched_hay_lugar_zombi(jugador)  ){
      // Debe ser jugador == player_B, sino agregar otro if
     // Juicy info
     posicion pos_zombi = { .x = MAP_WIDTH-1, .y = y_b };
