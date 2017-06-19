@@ -114,6 +114,14 @@ void game_lanzar_zombi(unsigned int jugador) {
     print_cantidad_zombis(restantes_a, restantes_b);
 
     // asm("xchg %bx, %bx"); // Lleva los % en cada registro porque es AT&T syntax
+  }else if((jugador == player_A && restantes_a == 0) || (jugador == player_B && restantes_b == 0)){
+    print("Baja un cambio ", 1, 0, FG_LIGHT_RED | BG_BLACK);
+    if (jugador == player_A) {
+      print("A", 16, 0, FG_LIGHT_RED | BG_BLACK);
+    }else{
+      print("B", 16, 0, FG_LIGHT_RED | BG_BLACK);
+    }
+    print(", te quedaste sin zombies...", 17, 0, FG_LIGHT_RED | BG_BLACK);      
   }
 }
 
