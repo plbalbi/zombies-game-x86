@@ -13,7 +13,8 @@ extern fin_intr_pic1
 
 extern sched_proximo_indice
 
-extern handle_interrupt
+extern handle_kernel_exception
+extern handle_zombi_exception
 extern handle_keyboard
 extern handle_syscall_mover
 
@@ -25,11 +26,25 @@ extern handle_syscall_mover
 global _isr%1
 
 _isr%1:
-    pop eax ; error code, see with bochs
     push %1
-    call handle_interrupt
-    add esp, 4
-    iret
+    ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
+    ; decir que interrupción sé y colgarme. Si estaba en una tarea,
+    ; quiero matar la tarea y seguir con el programa. Para checkear
+    ; qué es lo que soy, checkeo los 2 bits más bajos de 'ds'. En
+    ; un stack-switch el segmento de datos no cambia, por eso.
+    xor eax, eax
+    mov ax, ds
+    and ax, 0x0003
+    cmp ax, 0x0000
+    je .kernel
+    jnz .user
+.kernel:
+    call handle_kernel_exception
+    ;note: this function never returns
+.user:
+    call handle_zombi_exception
+    jmp 29<<3:0x0 ; task-switch a IDLE
+    ; I'm not coming back \^^/
 
 %endmacro
 
@@ -80,7 +95,6 @@ _isr32:
     str bx ; Cargo el TR en bx
     cmp bx, ax ; Comparo la parte visible del TR (el selector), con el selector de la "nueva" tarea
     je .same_task ; Si son distintas, realizo el TASK-SWITCH
-    ;xchg bx, bx
     mov [.jump_far_selector], ax ; Cargo el nuevo selector
     jmp far [.jump_far_address] ; Salto al mismo
 .same_task:
