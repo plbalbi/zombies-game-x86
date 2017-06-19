@@ -184,3 +184,24 @@ void copiar_zombi(unsigned int cr3_zombi, unsigned int task, int player){
     lcr3(cr3_original);
     tlbflush();
 }
+
+// Es parecido a copiar_zombi, pero para que usen los zombis. No podemos
+// usar esa función porque te lo trae del kernel, con lo cual perdemos
+// el estado que teniamos.
+void replicar_zombi(direccion dir){
+    char* dir_origen = (char*) DIR_INICIO_ZOMBI_VISION;
+    char* dir_destino = (char*) DIR_INICIO_ZOMBI_VISION;
+    if (dir == ADE) {
+        dir_destino += 1*PAGE_SIZE; // pag #2
+    } else if (dir == ATR) {
+        dir_destino += 6*PAGE_SIZE; // pag #7
+    } else if (dir == DER) {
+        dir_destino += 4*PAGE_SIZE; // pag #5
+    } else if (dir == IZQ) {
+        dir_destino += 5*PAGE_SIZE; // pag #6
+    }
+    int i;
+    for (i = 0; i < 0x1000; i++) {
+        dir_destino[i] = dir_origen[i];
+    }
+}

@@ -38,7 +38,7 @@ void handle_zombi_exception(unsigned int code) {
 	// Matamos la tarea (la sacamos del scheduler)
 	sched_desactivar_zombi(current_player(), current_task());
 
-	// Dibujamos en el mapa TODO: que pasa si hay otro zombi
+	// Borramos del mapa
 	posicion pos;
 	if (current_player() == player_A) {
 		pos = zombis_pos_a[current_task()];
@@ -46,6 +46,9 @@ void handle_zombi_exception(unsigned int code) {
 		pos = zombis_pos_b[current_task()];
 	}
 	print(" ", pos.x+1, pos.y+1, BG_GREEN);
+
+	// Refrescamos a los zombis
+	print_zombis();
 
 	// Dibujamos en la barra de control
 	clear_line();
@@ -116,13 +119,12 @@ void handle_syscall_mover(direccion d){
 	//asm("xchg %bx, %bx");
 
 	// Averiguar la posicion actual del zombie en la tarea
-		// Averiguar pos_actual y CR3
+		// Averiguar pos_vieja y CR3
 	unsigned int curr_player = current_player();
 	unsigned int curr_task = current_task();
-	posicion pos_actual = (player_A == curr_player) ? zombis_pos_a[curr_task] : \
+	posicion pos_vieja = (player_A == curr_player) ? zombis_pos_a[curr_task] : \
 		zombis_pos_b[curr_task];
 	unsigned int curr_cr3 = tss_leer_cr3(curr_player, curr_task);
-	unsigned int curr_type = curr_player == player_A ? zombis_tipo_a[curr_task] : zombis_tipo_b[curr_task];
 	// Averiguar con la direccion para donde ir
 		// Saber que direccion es la que debo ir
 		// Calcular nueva posicion, asi el codigo siguiente es el mismo para cualquier opcion posible
@@ -130,39 +132,37 @@ void handle_syscall_mover(direccion d){
 	int reverse = 1;
 	if (curr_player == player_B) reverse = -1;
 	if (d == IZQ) {
-		destiny.x = pos_actual.x;
-		destiny.y = pos_actual.y + (1 * reverse);
+		destiny.x = pos_vieja.x;
+		destiny.y = pos_vieja.y + (1 * reverse);
 	}else if (d == DER) {
-		destiny.x = pos_actual.x + 1;
-		destiny.y = pos_actual.y - (1 * reverse);
+		destiny.x = pos_vieja.x + 1;
+		destiny.y = pos_vieja.y - (1 * reverse);
 	}else if (d == ADE) {
-		destiny.x = pos_actual.x + (1*reverse);
-		destiny.y = pos_actual.y;
+		destiny.x = pos_vieja.x + (1*reverse);
+		destiny.y = pos_vieja.y;
 	}else{ // d==ATR
-		destiny.x = pos_actual.x - (1*reverse);
-		destiny.y = pos_actual.y;
+		destiny.x = pos_vieja.x - (1*reverse);
+		destiny.y = pos_vieja.y;
 	}
-
-
-		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
-		// Mapearme las nuevas posiciones
-		mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
-
-		// Copiar el codigo ahi
-		copiar_zombi(curr_cr3, curr_type, curr_player);
-
-		// Borrarme del mapa mi iconito, dejando rastro
-		print_zombie_trace(pos_actual);
-
-		// Dibujarme en el mapa nuevamente
-		print_zombi(curr_player, curr_type, destiny);
-
 		// Actualizar posicion
 		if (curr_player == player_A) {
 			zombis_pos_a[curr_task] = destiny;
 		}else{
 			zombis_pos_b[curr_task] = destiny;
 		}
+
+		// 'Moverse'
+		replicar_zombi(d);
+
+		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
+		// Mapearme las nuevas posiciones
+		mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
+
+		// Borrarme del mapa mi iconito, dejando rastro
+		print_zombie_trace(pos_vieja);
+
+		// Refresco todos los zombis
+		print_zombis();
 
 	if ((destiny.x == 0 && curr_player == player_B) || \
 		  (destiny.x == MAP_WIDTH-1 && curr_player == player_A)) {
@@ -179,7 +179,7 @@ void handle_syscall_mover(direccion d){
 		// Matamos la tarea (la sacamos del scheduler)
 		sched_desactivar_zombi(curr_player, curr_task);
 
-		// Dibujamos en el mapa TODO: que pasa si hay otro zombi
+		// Dibujamos en el mapa
 		print(" ", destiny.x+1, destiny.y+1, BG_GREEN);
 
 		// Dibujamos en la barra de control

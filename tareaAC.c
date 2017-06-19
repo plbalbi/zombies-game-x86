@@ -20,7 +20,7 @@ void task() {
     */
 
     /* Tarea */
-    __asm __volatile("xchg %%bx, %%bx" : :);
+    //__asm __volatile("xchg %%bx, %%bx" : :);
     int i = 10;
     while (i != 0) {
         syscall_mover(ADE);

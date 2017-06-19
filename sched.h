@@ -20,5 +20,6 @@ bool sched_hay_lugar_zombi(unsigned int jugador);
 unsigned int sched_indice_libre(unsigned int jugador);
 unsigned int current_player();
 unsigned int current_task();
+bool sched_esta_activo(unsigned int jugador, unsigned int i);
 
 #endif	/* !__SCHED_H__ */
