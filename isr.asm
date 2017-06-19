@@ -26,6 +26,7 @@ extern handle_syscall_mover
 global _isr%1
 
 _isr%1:
+    xchg bx, bx
     push %1
     ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
     ; decir que interrupción sé y colgarme. Si estaba en una tarea,

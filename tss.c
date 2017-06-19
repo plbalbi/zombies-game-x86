@@ -20,6 +20,9 @@ tss tss_zombisA[CANT_ZOMBIS];
 unsigned int esp0B[CANT_ZOMBIS];
 unsigned int esp0A[CANT_ZOMBIS];
 
+unsigned int cr3B[CANT_ZOMBIS];
+unsigned int cr3A[CANT_ZOMBIS];
+
 
 // Bases en descriptores TSS en la GDT:
 // Podemos estar seguros de que la base de las TSS van a estar
@@ -35,6 +38,7 @@ unsigned int esp0A[CANT_ZOMBIS];
 // --------------
 
 void tss_inicializar() {
+      // Inicialización de TSS y Task Gates
       tss_inicializar_idle();
       tss_inicializar_inicial();
       int i;
@@ -42,7 +46,10 @@ void tss_inicializar() {
             tss_inicializar_zombi(player_A, i);
             tss_inicializar_zombi(player_B, i);
       }
+      // Storage de variables globales
       for (i = 0; i < CANT_ZOMBIS; i++) {
+            cr3A[i] = tss_zombisA[i].cr3;
+            cr3B[i] = tss_zombisB[i].cr3;
             esp0A[i] = tss_zombisA[i].esp0;
             esp0B[i] = tss_zombisB[i].esp0;
       }
@@ -113,6 +120,38 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
       unsigned int esp0 = mmu_prox_pag_libre() + PAGE_SIZE;
 
       // TSS
+      tss_completar_zombi(jugador, i, cr3, esp0);
+
+      // Task Gate
+      unsigned int task_index;
+      tss* ptr_tss_zombi;
+      if (jugador == player_A) {
+            task_index = GDT_IDX_TSS_ZOMBIS_A + i;
+            ptr_tss_zombi = tss_zombisA + i; // Puntero a tss_zombisA[i]
+      } else {
+            task_index = GDT_IDX_TSS_ZOMBIS_B + i;
+            ptr_tss_zombi = tss_zombisB + i; // Puntero a tss_zombisB[i]
+      }
+
+      gdt[task_index] = (gdt_entry){
+            (unsigned short)    TSS_SIZE-1,            /* limit[0:15]   */
+            (unsigned short)    BITS_0_15(ptr_tss_zombi),  /* base[0:15]    */
+            (unsigned char)     BITS_16_23(ptr_tss_zombi), /* base[23:16]   */
+            (unsigned char)     0x9,                   /* type (tss)    */
+            (unsigned char)     0x0,                   /* s (supervisor)*/
+            (unsigned char)     0x00,                  /* dpl           */
+            (unsigned char)     0x01,                  /* p             */
+            (unsigned char)     0x00,                  /* limit[16:19]  */
+            (unsigned char)     0x00,                  /* avl           */
+            (unsigned char)     0x00,                  /* l             */
+            (unsigned char)     0x01,                  /* db            */
+            (unsigned char)     0x00,                  /* g             */
+            (unsigned char)     0x00,                  /* base[31:24]   */
+      };
+}
+
+void tss_completar_zombi(int jugador, unsigned int i, unsigned int cr3, unsigned int esp0) {
+      // TSS
       tss* ptr_tss_zombi;
       if (jugador == player_A) {
             ptr_tss_zombi = tss_zombisA + i; // Puntero a tss_zombisA[i]
@@ -134,30 +173,6 @@ void tss_inicializar_zombi(int jugador, unsigned int i) {
             .es = GDT_DESC_DATA_USER,
             .fs = GDT_DESC_DATA_USER,
             .gs = GDT_DESC_DATA_USER,
-      };
-
-      // Task Gate
-      unsigned int task_index;
-      if (jugador == player_A) {
-            task_index = GDT_IDX_TSS_ZOMBIS_A + i;
-      } else {
-            task_index = GDT_IDX_TSS_ZOMBIS_B + i;
-      }
-
-      gdt[task_index] = (gdt_entry){
-            (unsigned short)    TSS_SIZE-1,            /* limit[0:15]   */
-            (unsigned short)    BITS_0_15(ptr_tss_zombi),  /* base[0:15]    */
-            (unsigned char)     BITS_16_23(ptr_tss_zombi), /* base[23:16]   */
-            (unsigned char)     0x9,                   /* type (tss)    */
-            (unsigned char)     0x0,                   /* s (supervisor)*/
-            (unsigned char)     0x00,                  /* dpl           */
-            (unsigned char)     0x01,                  /* p             */
-            (unsigned char)     0x00,                  /* limit[16:19]  */
-            (unsigned char)     0x00,                  /* avl           */
-            (unsigned char)     0x00,                  /* l             */
-            (unsigned char)     0x01,                  /* db            */
-            (unsigned char)     0x00,                  /* g             */
-            (unsigned char)     0x00,                  /* base[31:24]   */
       };
 }
 
@@ -181,10 +196,8 @@ void tss_escribir_cr3(unsigned int jugador, unsigned int i, unsigned int cr3) {
       }
 }
 
-void tss_resetear_esp0(unsigned int jugador, unsigned int i) {
-      if (jugador == player_A) {
-            tss_zombisA[i].esp0 = esp0A[i];
-      } else {
-            tss_zombisB[i].esp0 = esp0B[i];
-      }
+void tss_refrescar_zombi(int jugador, unsigned int i) {
+      unsigned int cr3 =  jugador == player_A ? cr3A[i] : cr3B[i];
+      unsigned int esp0 =  jugador == player_A ? esp0A[i] : esp0B[i];
+      tss_completar_zombi(jugador, i, cr3, esp0);
 }
