@@ -16,6 +16,8 @@
 #include "defines.h"
 #include "game.h"
 
+#define print_zombie_trace(pos) print("X", pos.x+1, pos.y+1, BG_LIGHT_GREY | FG_DARK_GREY)
+
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;

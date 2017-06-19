@@ -204,7 +204,6 @@ void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
     print(s, pos.x+1, pos.y+1, attr);
 }
 
-
 // AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

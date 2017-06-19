@@ -18,5 +18,7 @@ void sched_activar_zombi(unsigned int jugador, unsigned int i);
 void sched_desactivar_zombi(unsigned int jugador, unsigned int i);
 bool sched_hay_lugar_zombi(unsigned int jugador);
 unsigned int sched_indice_libre(unsigned int jugador);
+unsigned int current_player();
+unsigned int current_task();
 
 #endif	/* !__SCHED_H__ */

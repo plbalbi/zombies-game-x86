@@ -93,3 +93,11 @@ unsigned int sched_indice_libre(unsigned int jugador) {
   error("ASSERT ERROR: No hay zombi libre (sched_indice_libre)");
   return 0xDEAD;
 }
+
+unsigned int current_player(){
+  return (next_player == player_A) ? player_B : player_A;
+}
+
+unsigned int current_task(){
+  return (next_player == player_A) ? running_B : running_A;
+}
