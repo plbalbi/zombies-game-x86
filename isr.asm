@@ -80,8 +80,7 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-    push eax
-    push ebx
+    pushad
     call fin_intr_pic1
     call proximo_reloj
     str bx ; Cargo el TR en bx
@@ -98,8 +97,7 @@ _isr32:
     mov [.jump_far_selector], ax ; Cargo el nuevo selector
     jmp far [.jump_far_address] ; Salto al mismo
 .same_task:
-    pop ebx
-    pop eax
+    popad
     iret
 ; Direcciones para salto entre tareas
 .jump_far_address:  DD 0xBEBECACA ; fruta que nos chupa dos huevos
@@ -120,7 +118,6 @@ _isr33:
     pop eax
     iret
 
-
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
@@ -132,12 +129,13 @@ _isr33:
 
 global _isr102
 _isr102:
-    ; xchg bx, bx
+    pushad
     push eax
     call handle_syscall_mover
-    pop eax
     jmp 29<<3:0x0 ; task-switch a IDLE
-    ; I'm not coming back \^^/
+    pop eax
+    popad
+    iret
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
