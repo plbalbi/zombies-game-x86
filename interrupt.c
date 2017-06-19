@@ -192,6 +192,7 @@ void handle_syscall_mover(direccion d){
 		print_puntajes(puntaje_a, puntaje_b);
 
 		// Let the people know
+		clear_line();
 		print("Zombi", 1, 0, FG_LIGHT_GREEN | BG_BLACK);
 		if (current_player() == player_A) {
 			print("rojo", 7, 0, FG_LIGHT_GREEN | BG_BLACK);
