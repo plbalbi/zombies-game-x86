@@ -47,6 +47,13 @@ void handle_zombi_exception(unsigned int code) {
 	}
 	print(" ", pos.x+1, pos.y+1, BG_GREEN);
 
+	// Dibujamos en la barra de control
+	if (current_player() == player_A) {
+		print("X", 4+current_task()*2, 50-2, FG_RED | BG_BLACK);
+	} else {
+		print("X", 80-20+current_task()*2, 50-2, FG_RED | BG_BLACK);
+	}
+
 	// Let the people know
 	print_int(code, 1, 0, FG_LIGHT_MAGENTA | BG_BLACK);
 	print("Zombi", 3, 0, FG_LIGHT_MAGENTA | BG_BLACK);

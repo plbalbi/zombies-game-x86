@@ -38,4 +38,8 @@ void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos);
 
 void print_teclado(unsigned int key);
 
+void print_cantidad_zombis(unsigned int a, unsigned int b);
+
+void print_puntajes(unsigned int a, unsigned int b);
+
 #endif  /* !__SCREEN_H__ */

@@ -82,6 +82,8 @@ void game_lanzar_zombi(unsigned int jugador) {
 
     // Pintar
     print_zombi(jugador, zombis_tipo_a[i], zombis_pos_a[i]);
+    print("O", 4+i*2, 50-2, FG_LIGHT_GREEN | BG_BLACK);
+    print_cantidad_zombis(restantes_a, restantes_b);
   }
   // Aca ya se que jugador != player_A => jugador == player_B
   else if (  restantes_b != 0 && sched_hay_lugar_zombi(jugador)  ){
@@ -108,6 +110,8 @@ void game_lanzar_zombi(unsigned int jugador) {
 
     // Pintar
     print_zombi(jugador, zombis_tipo_b[i], zombis_pos_b[i]);
+    print("O", 80-20+i*2, 50-2, FG_LIGHT_GREEN | BG_BLACK);
+    print_cantidad_zombis(restantes_a, restantes_b);
 
     // asm("xchg %bx, %bx"); // Lleva los % en cada registro porque es AT&T syntax
   }

@@ -40,7 +40,6 @@ typedef struct posicion_t {
 #define UP                      1
 #define DOWN                    2
 
-
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 
