@@ -118,9 +118,10 @@ _isr33:
 
 global _isr102
 _isr102:
-    push eax
-    call handle_syscall_mover
-    pop eax
+    ; xchg bx, bx
+    ; push eax
+    ; call handle_syscall_mover
+    ; pop eax
     iret
 
 ;; Funciones Auxiliares

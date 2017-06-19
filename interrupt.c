@@ -81,6 +81,8 @@ void handle_keyboard(unsigned int key) {
 
 
 void handle_syscall_mover(direccion d){
+	asm("xchg %bx, %bx");
+	
 	// Averiguar la posicion actual del zombie en la tarea
 		// Averiguar pos_actual y CR3
 	unsigned int curr_player = current_player();
