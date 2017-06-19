@@ -154,9 +154,3 @@ void restore_screen(){
 		}
 	}
 }
-
-
-
-
-
-//

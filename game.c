@@ -72,7 +72,7 @@ void game_lanzar_zombi(unsigned int jugador) {
     // Rescribir estructuras de la tarea
     unsigned int cr3 = tss_leer_cr3(jugador, i);
     mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
-    //tss_zombisA[i].esp0 = mmu_prox_pag_libre() + PAGE_SIZE; FUUUUUUCUUUUUUUUUUUUUUUUUUUUUUUUUCK
+    tss_resetear_esp0(jugador, i);
 
     // Copiar zombi físicamente
     copiar_zombi(cr3, tipo_a, jugador);
@@ -98,6 +98,7 @@ void game_lanzar_zombi(unsigned int jugador) {
     // Rescribir estructuras de la tarea
     unsigned int cr3 = tss_leer_cr3(jugador, i);
     mmu_mapear_vision_zombi(jugador, cr3, pos_zombi.x, pos_zombi.y);
+    tss_resetear_esp0(jugador, i);
 
     // Copiar zombi físicamente
     copiar_zombi(cr3, tipo_b, jugador);
