@@ -18,6 +18,8 @@ extern handle_zombi_exception
 extern handle_keyboard
 extern handle_syscall_mover
 
+extern debug_save_context
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -26,6 +28,23 @@ extern handle_syscall_mover
 global _isr%1
 
 _isr%1:
+    pushad
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+    call debug_save_context
+    add esp, 8 ; 4 reg de segmentos
+    popad
+
     push %1
     ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
     ; decir que interrupción sé y colgarme. Si estaba en una tarea,
