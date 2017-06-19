@@ -114,7 +114,7 @@ void handle_keyboard(unsigned int key) {
 
 void handle_syscall_mover(direccion d){
 	//asm("xchg %bx, %bx");
-	
+
 	// Averiguar la posicion actual del zombie en la tarea
 		// Averiguar pos_actual y CR3
 	unsigned int curr_player = current_player();
@@ -142,7 +142,7 @@ void handle_syscall_mover(direccion d){
 		destiny.x = pos_actual.x - (1*reverse);
 		destiny.y = pos_actual.y;
 	}
-	
+
 
 		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
 		// Mapearme las nuevas posiciones
@@ -164,9 +164,10 @@ void handle_syscall_mover(direccion d){
 			zombis_pos_b[curr_task] = destiny;
 		}
 
-
-	if (destiny.x == 0 || destiny.x == MAP_WIDTH-1) {
+	if ((destiny.x == 0 && curr_player == player_B) || \
+		  (destiny.x == MAP_WIDTH-1 && curr_player == player_A)) {
 		// Winning! ~ Charlie Sheen (1972-2017)
+		// Acabo de buscar si murio, tranquilos chicos, Charlie still alive
 
 		// Actualizamos info del juego
 		if (destiny.x == 0) {

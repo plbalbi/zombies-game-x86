@@ -89,7 +89,7 @@ void game_lanzar_zombi(unsigned int jugador) {
   else if ( jugador == player_B && restantes_b != 0 && sched_hay_lugar_zombi(jugador)  ){
      // Debe ser jugador == player_B, sino agregar otro if
     // Juicy info
-    posicion pos_zombi = { .x = MAP_WIDTH-1, .y = y_b };
+    posicion pos_zombi = { .x = MAP_WIDTH-2, .y = y_b };
     unsigned int i = sched_indice_libre(jugador);
 
     // Actualizar variables del juego
@@ -121,7 +121,7 @@ void game_lanzar_zombi(unsigned int jugador) {
     }else{
       print("B", 16, 0, FG_LIGHT_RED | BG_BLACK);
     }
-    print(", te quedaste sin zombies...", 17, 0, FG_LIGHT_RED | BG_BLACK);      
+    print(", te quedaste sin zombies...", 17, 0, FG_LIGHT_RED | BG_BLACK);
   }
 }
 
