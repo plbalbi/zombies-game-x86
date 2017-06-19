@@ -42,10 +42,60 @@ _isr%1:
     mov eax, cr4
     push eax
     call debug_save_context
-    add esp, 8 ; 4 reg de segmentos
+    add esp, 4*4 ; 4 reg de control
+    add esp, 4*4 ; 4 reg de segmentos
     popad
 
     push %1
+    ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
+    ; decir que interrupción sé y colgarme. Si estaba en una tarea,
+    ; quiero matar la tarea y seguir con el programa. Para checkear
+    ; qué es lo que soy, checkeo los 2 bits más bajos de 'ds'. En
+    ; un stack-switch el segmento de datos no cambia, por eso.
+    xor eax, eax
+    mov ax, ds
+    and ax, 0x0003
+    cmp ax, 0x0000
+    je .kernel
+    jnz .user
+.kernel:
+    call handle_kernel_exception
+    ;note: this function never returns
+.user:
+    call handle_zombi_exception
+    jmp 29<<3:0x0 ; task-switch a IDLE
+    ; I'm not coming back \^^/
+
+%endmacro
+
+; Esta versión de la macro es para
+; las interrupciones sin código de error
+%macro ISR_NOCODE 1
+global _isr%1
+
+_isr%1:
+    push %1
+    pushad
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+    call debug_save_context
+    add esp, 4*4 ; 4 reg de control
+    add esp, 4*4 ; 4 reg de segmentos
+    popad
+    ; TODO: se borra el ercode del stack o se necesita despues?
+    ; add esp, 4 ; errrcode (push 0)
+
+
     ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
     ; decir que interrupción sé y colgarme. Si estaba en una tarea,
     ; quiero matar la tarea y seguir con el programa. Para checkear
@@ -73,26 +123,26 @@ _isr%1:
 sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
 
-ISR 0
-ISR 1
-ISR 2
-ISR 3
-ISR 4
-ISR 5
-ISR 6
-ISR 7
+ISR_NOCODE 0
+ISR_NOCODE 1
+ISR_NOCODE 2
+ISR_NOCODE 3
+ISR_NOCODE 4
+ISR_NOCODE 5
+ISR_NOCODE 6
+ISR_NOCODE 7
 ISR 8
-ISR 9
+ISR_NOCODE 9
 ISR 10
 ISR 11
 ISR 12
 ISR 13
 ISR 14
-ISR 15
-ISR 16
+ISR_NOCODE 15
+ISR_NOCODE 16
 ISR 17
-ISR 18
-ISR 19
+ISR_NOCODE 18
+ISR_NOCODE 19
 
 ;;
 ;; Rutina de atención del RELOJ
