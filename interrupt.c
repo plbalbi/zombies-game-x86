@@ -36,6 +36,7 @@ void handle_interrupt(unsigned int code) {
 }
 
 
+
 void handle_keyboard(unsigned int key) {
 	print_teclado(key);
 
@@ -76,4 +77,26 @@ void handle_keyboard(unsigned int key) {
 		// ON o OFF. Es otra varaible global a agregar
 	}
 
+}
+
+
+void handle_syscall_mover(direccion d){
+	// Averiguar la posicion actual del zombie en la tarea
+		// Averiguar pos_actual y CR3
+	// Averiguar con la direccion para donde ir
+		// Saber que direccion es la que debo ir
+		// Calcular nueva posicion, asi el codigo siguiente es el mismo para cualquier opcion posible
+
+	// Desmapear paginacion actual
+
+	// Mapearme las nuevas posiciones
+
+	// Copiar el codigo ahi
+
+	// Borrarme del mapa mi iconito, dejando rastro
+
+	// Dibujarme en el mapa nuevamente
+
+
+	// TODO: Casos en que llegue al final (sumar puntos), me maten, etc...
 }
