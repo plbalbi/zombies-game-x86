@@ -9,8 +9,7 @@
 #include "debug.h"
 
 
-void handle_interrupt(unsigned int code) {
-	// Obs: Por default una interrupción haltea el procesador
+void handle_kernel_exception(unsigned int code) {
 	clear_line();
 	char* str = "Generic Interruption";
 	if (code == 0) {
@@ -33,6 +32,38 @@ void handle_interrupt(unsigned int code) {
 	print_int(code, 1, 0, FG_LIGHT_RED | BG_BLACK);
 	print(str, 3, 0, FG_LIGHT_RED | BG_BLACK);
 	while (1) { hlt(); };
+}
+
+void handle_zombi_exception(unsigned int code) {
+	// Matamos la tarea (la sacamos del scheduler)
+	sched_desactivar_zombi(current_player(), current_task());
+
+	// Dibujamos en el mapa TODO: que pasa si hay otro zombi
+	posicion pos;
+	if (current_player() == player_A) {
+		pos = zombis_pos_a[current_task()];
+	} else {
+		pos = zombis_pos_b[current_task()];
+	}
+	print(" ", pos.x+1, pos.y+1, BG_GREEN);
+
+	// Dibujamos en la barra de control
+	if (current_player() == player_A) {
+		print("X", 4+current_task()*2, 50-2, FG_RED | BG_BLACK);
+	} else {
+		print("X", 80-20+current_task()*2, 50-2, FG_RED | BG_BLACK);
+	}
+
+	// Let the people know
+	print_int(code, 1, 0, FG_LIGHT_MAGENTA | BG_BLACK);
+	print("Zombi", 3, 0, FG_LIGHT_MAGENTA | BG_BLACK);
+	if (current_player() == player_A) {
+		print("rojo", 9, 0, FG_LIGHT_MAGENTA | BG_BLACK);
+	} else {
+		print("azul", 9, 0, FG_LIGHT_MAGENTA | BG_BLACK);
+	}
+	print_int(current_task(), 14, 0, FG_LIGHT_MAGENTA | BG_BLACK);
+	print("se recato", 16, 0, FG_LIGHT_MAGENTA | BG_BLACK);
 }
 
 

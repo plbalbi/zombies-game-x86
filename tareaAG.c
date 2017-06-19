@@ -10,6 +10,8 @@
 #include "syscall.h" 
 
 void task() {
+  int* ptr = (int*) VIDEO;
+  *ptr = 2;
     /* Tarea */
     /*int i;
     for(i=0;i<100;i++) {

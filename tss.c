@@ -17,6 +17,9 @@ tss tss_idle;
 tss tss_zombisB[CANT_ZOMBIS];
 tss tss_zombisA[CANT_ZOMBIS];
 
+unsigned int esp0B[CANT_ZOMBIS];
+unsigned int esp0A[CANT_ZOMBIS];
+
 
 // Bases en descriptores TSS en la GDT:
 // Podemos estar seguros de que la base de las TSS van a estar
@@ -38,6 +41,10 @@ void tss_inicializar() {
       for (i = 0; i < CANT_ZOMBIS; i++) {
             tss_inicializar_zombi(player_A, i);
             tss_inicializar_zombi(player_B, i);
+      }
+      for (i = 0; i < CANT_ZOMBIS; i++) {
+            esp0A[i] = tss_zombisA[i].esp0;
+            esp0B[i] = tss_zombisB[i].esp0;
       }
 }
 
@@ -174,18 +181,10 @@ void tss_escribir_cr3(unsigned int jugador, unsigned int i, unsigned int cr3) {
       }
 }
 
-unsigned int tss_leer_esp0(unsigned int jugador, unsigned int i) {
+void tss_resetear_esp0(unsigned int jugador, unsigned int i) {
       if (jugador == player_A) {
-            return tss_zombisA[i].esp0;
+            tss_zombisA[i].esp0 = esp0A[i];
       } else {
-            return tss_zombisB[i].esp0;
-      }
-}
-
-void tss_escribir_esp0(unsigned int jugador, unsigned int i, unsigned int esp0) {
-      if (jugador == player_A) {
-            tss_zombisA[i].esp0 = esp0;
-      } else {
-            tss_zombisB[i].esp0 = esp0;
+            tss_zombisB[i].esp0 = esp0B[i];
       }
 }

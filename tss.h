@@ -60,7 +60,6 @@ void tss_inicializar_zombi(int jugador, unsigned int i);
 
 unsigned int tss_leer_cr3(unsigned int jugador, unsigned int i);
 void tss_escribir_cr3(unsigned int jugador, unsigned int i, unsigned int cr3);
-unsigned int tss_leer_esp0(unsigned int jugador, unsigned int i);
-void tss_escribir_esp0(unsigned int jugador, unsigned int i, unsigned int esp0);
+void tss_resetear_esp0(unsigned int jugador, unsigned int i);
 
 #endif  /* !__TSS_H__ */
