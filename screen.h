@@ -42,4 +42,6 @@ void print_cantidad_zombis(unsigned int a, unsigned int b);
 
 void print_puntajes(unsigned int a, unsigned int b);
 
+void print_zombis();
+
 #endif  /* !__SCREEN_H__ */
