@@ -48,6 +48,7 @@ void handle_zombi_exception(unsigned int code) {
 	print(" ", pos.x+1, pos.y+1, BG_GREEN);
 
 	// Dibujamos en la barra de control
+	clear_line();
 	if (current_player() == player_A) {
 		print("X", 4+current_task()*2, 50-2, FG_RED | BG_BLACK);
 	} else {
@@ -141,27 +142,64 @@ void handle_syscall_mover(direccion d){
 		destiny.x = pos_actual.x - (1*reverse);
 		destiny.y = pos_actual.y;
 	}
+	
 
-	// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
-	// Mapearme las nuevas posiciones
-		//  -> No me hace falta desmapear, solo piso el mapeo anterior
-	mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
+		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
+		// Mapearme las nuevas posiciones
+		mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
 
-	// Copiar el codigo ahi
-	copiar_zombi(curr_cr3, curr_type, curr_player);
+		// Copiar el codigo ahi
+		copiar_zombi(curr_cr3, curr_type, curr_player);
 
-	// Borrarme del mapa mi iconito, dejando rastro
-	print_zombie_trace(pos_actual);
+		// Borrarme del mapa mi iconito, dejando rastro
+		print_zombie_trace(pos_actual);
 
-	// Dibujarme en el mapa nuevamente
-	print_zombi(curr_player, curr_type, destiny);
+		// Dibujarme en el mapa nuevamente
+		print_zombi(curr_player, curr_type, destiny);
 
-	// Actualizar posicion
-	if (curr_player == player_A) {
-		zombis_pos_a[curr_task] = destiny;
-	}else{
-		zombis_pos_b[curr_task] = destiny;
+		// Actualizar posicion
+		if (curr_player == player_A) {
+			zombis_pos_a[curr_task] = destiny;
+		}else{
+			zombis_pos_b[curr_task] = destiny;
+		}
+
+
+	if (destiny.x == 0 || destiny.x == MAP_WIDTH-1) {
+		// Winning! ~ Charlie Sheen (1972-2017)
+
+		// Actualizamos info del juego
+		if (destiny.x == 0) {
+			puntaje_b++;
+		} else {
+			puntaje_a++;
+		}
+
+		// Matamos la tarea (la sacamos del scheduler)
+		sched_desactivar_zombi(curr_player, curr_task);
+
+		// Dibujamos en el mapa TODO: que pasa si hay otro zombi
+		print(" ", destiny.x+1, destiny.y+1, BG_GREEN);
+
+		// Dibujamos en la barra de control
+		clear_line();
+		if (curr_player == player_A) {
+			print("X", 4+curr_task*2, 50-2, FG_RED | BG_BLACK);
+		} else {
+			print("X", 80-20+curr_task*2, 50-2, FG_RED | BG_BLACK);
+		}
+		print_puntajes(puntaje_a, puntaje_b);
+
+		// Let the people know
+		print("Zombi", 1, 0, FG_LIGHT_GREEN | BG_BLACK);
+		if (current_player() == player_A) {
+			print("rojo", 7, 0, FG_LIGHT_GREEN | BG_BLACK);
+		} else {
+			print("azul", 7, 0, FG_LIGHT_GREEN | BG_BLACK);
+		}
+		print_int(current_task(), 12, 0, FG_LIGHT_GREEN | BG_BLACK);
+		print("se gano un bonobon", 14, 0, FG_LIGHT_GREEN | BG_BLACK);
 	}
 
-	// TODO: Casos en que llegue al final (sumar puntos), me maten, etc...
+
 }
