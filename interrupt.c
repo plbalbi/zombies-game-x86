@@ -143,13 +143,12 @@ void handle_syscall_mover(direccion d){
 		destiny.y = pos_actual.y;
 	}
 
+		// 'Moverse'
+		replicar_zombi(d);
 
 		// Desmapear paginacion actual -> No me hace falta desmapear, solo piso el mapeo anterior
 		// Mapearme las nuevas posiciones
 		mmu_mapear_vision_zombi(curr_player, curr_cr3, destiny.x, destiny.y);
-
-		// Copiar el codigo ahi
-		copiar_zombi(curr_cr3, curr_type, curr_player);
 
 		// Borrarme del mapa mi iconito, dejando rastro
 		print_zombie_trace(pos_actual);

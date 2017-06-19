@@ -10,6 +10,7 @@
 
 #include "defines.h"
 #include "colors.h"
+#include "game.h"
 
 #define PRIMERA_PAG_LIBRE 0x100<<12
 
@@ -32,6 +33,7 @@ void mmu_mapear_vision_zombi(int jugador, unsigned int cr3, int x, int y);
 
 unsigned int dir_fisica(int x, int y);
 void copiar_zombi(unsigned int cr3_zombi, unsigned int task, int player);
+void replicar_zombi(direccion dir);
 
 typedef struct str_pd_entry_t{
     unsigned char p:1;
