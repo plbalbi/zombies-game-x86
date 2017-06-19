@@ -112,4 +112,21 @@ typedef struct posicion_t {
 #define KEY_RS 0x36
 
 #define KEY_Y 0X15
+
+/* Game defines */
+/* -------------------------------------------------------------------------- */
+
+#define NEUTRAL                 (DIR_INICIO_ZOMBI_VISION + 0*PAGE_SIZE)
+#define ADELANTE                (DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE)
+#define DIAG_ADE_DER            (DIR_INICIO_ZOMBI_VISION + 2*PAGE_SIZE)
+#define DIAG_ADE_IZQ            (DIR_INICIO_ZOMBI_VISION + 3*PAGE_SIZE)
+#define DERECHA                 (DIR_INICIO_ZOMBI_VISION + 4*PAGE_SIZE)
+#define IZQUIERDA               (DIR_INICIO_ZOMBI_VISION + 5*PAGE_SIZE)
+#define ATRAS                   (DIR_INICIO_ZOMBI_VISION + 6*PAGE_SIZE)
+#define DIAG_ATR_IZQ            (DIR_INICIO_ZOMBI_VISION + 7*PAGE_SIZE)
+#define DIAG_ATR_DER			(DIR_INICIO_ZOMBI_VISION + 8*PAGE_SIZE)
+
+#define ALREDEDOR               (DIR_INICIO_ZOMBI_VISION + 1*PAGE_SIZE)
+#define ALREDEDOR_SIZE          (8*PAGE_SIZE)
+
 #endif  /* !__DEFINES_H__ */

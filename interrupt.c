@@ -133,10 +133,10 @@ void handle_syscall_mover(direccion d){
 	if (curr_player == player_B) reverse = -1;
 	if (d == IZQ) {
 		destiny.x = pos_vieja.x;
-		destiny.y = pos_vieja.y + (1 * reverse);
-	}else if (d == DER) {
-		destiny.x = pos_vieja.x + 1;
 		destiny.y = pos_vieja.y - (1 * reverse);
+	}else if (d == DER) {
+		destiny.x = pos_vieja.x;
+		destiny.y = pos_vieja.y + (1 * reverse);
 	}else if (d == ADE) {
 		destiny.x = pos_vieja.x + (1*reverse);
 		destiny.y = pos_vieja.y;

@@ -10,17 +10,14 @@
 #include "syscall.h"
 
 void task() {
-  int* ptr = (int*) VIDEO;
-  *ptr = 2;
-    /* Tarea */
-    int i;
-    for(i=0;i<100;i++) {
-      syscall_mover(ADE);
-      syscall_mover(DER);
-      syscall_mover(ADE);
-      syscall_mover(ADE);
-      syscall_mover(IZQ);
-      syscall_mover(ADE);
-    }
-  while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
+  while(1) {
+    char* ptr;
+    for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR_SIZE; ptr++) {
+      *ptr = 0xDE;
+    };
+    syscall_mover(ADE);
+    syscall_mover(DER);
+    syscall_mover(ADE);
+    syscall_mover(IZQ);
+  }
 }
