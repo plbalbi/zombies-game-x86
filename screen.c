@@ -6,6 +6,7 @@
 */
 
 #include "screen.h"
+#include "sched.h"
 
 // PRINT FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -202,6 +203,18 @@ void print_zombi(unsigned short jugador, unsigned short tipo, posicion pos){
     }
 
     print(s, pos.x+1, pos.y+1, attr);
+}
+
+void print_zombis() {
+    int i;
+    for (i = 0; i < CANT_ZOMBIS; i++) {
+        if (sched_esta_activo(player_A, i)) {
+            print_zombi(player_A, zombis_tipo_a[i], zombis_pos_a[i]);
+        }
+        if (sched_esta_activo(player_B, i)) {
+            print_zombi(player_B, zombis_tipo_b[i], zombis_pos_b[i]);
+        }
+    }
 }
 
 // AUXILIARS +++++++++++++++++++++++++++++++++++++++++++++++++

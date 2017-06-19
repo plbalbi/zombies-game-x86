@@ -101,3 +101,12 @@ unsigned int current_player(){
 unsigned int current_task(){
   return (next_player == player_A) ? running_B : running_A;
 }
+
+bool sched_esta_activo(unsigned int jugador, unsigned int i) {
+  if (jugador == player_A) {
+    return tasks_A[i];
+  } else if (jugador == player_B) {
+    return tasks_B[i];
+  }
+  return false;
+}
