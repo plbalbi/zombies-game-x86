@@ -30,9 +30,12 @@ typedef struct posicion_t {
 #define PAGE_SIZE               (1<<12)
 #define TSS_SIZE                104
 
-#define CHAR_CLERICO            "\x03"
-#define CHAR_MAGO               "\x04"
-#define CHAR_GUERRERO           "\x06"
+#define CHAR_CLERICO            "\x43"
+#define CHAR_MAGO               "\x4D"
+#define CHAR_GUERRERO           "\x47"
+// #define CHAR_CLERICO            "\x03"
+// #define CHAR_MAGO               "\x04"
+// #define CHAR_GUERRERO           "\x06"
 
 #define player_A                1
 #define player_B                2
