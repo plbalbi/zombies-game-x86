@@ -26,7 +26,6 @@ extern handle_syscall_mover
 global _isr%1
 
 _isr%1:
-    xchg bx, bx
     push %1
     ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
     ; decir que interrupción sé y colgarme. Si estaba en una tarea,
@@ -134,10 +133,11 @@ _isr33:
 global _isr102
 _isr102:
     ; xchg bx, bx
-    ; push eax
-    ; call handle_syscall_mover
-    ; pop eax
-    iret
+    push eax
+    call handle_syscall_mover
+    pop eax
+    jmp 29<<3:0x0 ; task-switch a IDLE
+    ; I'm not coming back \^^/
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;

@@ -10,10 +10,9 @@
 #include "syscall.h"
 
 void task() {
-    asm("xchg %bx, %bx");
     /* Tarea */
-    // int i;
-    // for(i=0;i<10;i++)
+    int i;
+    for(i=0;i<10;i++)
     syscall_mover(ADE);
     // for(i=0;i<10;i++)
     // syscall_mover(DER);

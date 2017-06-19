@@ -112,7 +112,7 @@ void handle_keyboard(unsigned int key) {
 
 
 void handle_syscall_mover(direccion d){
-	asm("xchg %bx, %bx");
+	//asm("xchg %bx, %bx");
 	
 	// Averiguar la posicion actual del zombie en la tarea
 		// Averiguar pos_actual y CR3
@@ -121,7 +121,7 @@ void handle_syscall_mover(direccion d){
 	posicion pos_actual = (player_A == curr_player) ? zombis_pos_a[curr_task] : \
 		zombis_pos_b[curr_task];
 	unsigned int curr_cr3 = tss_leer_cr3(curr_player, curr_task);
-	unsigned int curr_type = curr_player == player_A ? tipo_a : tipo_b;
+	unsigned int curr_type = curr_player == player_A ? zombis_tipo_a[curr_task] : zombis_tipo_b[curr_task];
 	// Averiguar con la direccion para donde ir
 		// Saber que direccion es la que debo ir
 		// Calcular nueva posicion, asi el codigo siguiente es el mismo para cualquier opcion posible
