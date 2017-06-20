@@ -130,10 +130,10 @@ void handle_syscall_mover(direccion d){
 	if (curr_player == player_B) reverse = -1;
 	if (d == IZQ) {
 		destiny.x = pos_vieja.x;
-		destiny.y = pos_vieja.y - (1 * reverse);
+		destiny.y = ( (pos_vieja.y - (1 * reverse) + MAP_HEIGHT) % MAP_HEIGHT);
 	}else if (d == DER) {
 		destiny.x = pos_vieja.x;
-		destiny.y = pos_vieja.y + (1 * reverse);
+		destiny.y = ( (pos_vieja.y + (1 * reverse) + MAP_HEIGHT) % MAP_HEIGHT);
 	}else if (d == ADE) {
 		destiny.x = pos_vieja.x + (1*reverse);
 		destiny.y = pos_vieja.y;
@@ -144,11 +144,6 @@ void handle_syscall_mover(direccion d){
 
 	// Verificar que los parámetros sean correctos
 	if (d != IZQ && d != DER && d != ADE && d != ATR) {
-		_isr0(); // KILL
-	}
-
-	// Verificar que no esté accediendo fuera del mapa
-	if (destiny.x >= MAP_WIDTH || destiny.y >= MAP_HEIGHT) { // recordar que son unsigned short
 		_isr0(); // KILL
 	}
 		
