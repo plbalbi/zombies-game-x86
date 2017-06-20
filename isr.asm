@@ -28,6 +28,7 @@ extern debug_save_context
 global _isr%1
 
 _isr%1:
+    push %1
     pushad
     push gs
     push fs
@@ -46,7 +47,6 @@ _isr%1:
     add esp, 4*4 ; 4 reg de segmentos
     popad
 
-    push %1
     ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
     ; decir que interrupción sé y colgarme. Si estaba en una tarea,
     ; quiero matar la tarea y seguir con el programa. Para checkear
@@ -74,6 +74,7 @@ _isr%1:
 global _isr%1
 
 _isr%1:
+    push 0 ; estas inter no tienen errCode. se pushea algo para que el stack tenga la misma forma
     push %1
     pushad
     push gs
