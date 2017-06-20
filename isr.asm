@@ -29,6 +29,7 @@ global _isr%1
 
 _isr%1:
     push %1
+
     pushad
     push gs
     push fs
@@ -59,6 +60,18 @@ _isr%1:
     je .kernel
     jnz .user
 .kernel:
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
     call handle_kernel_exception
     ;note: this function never returns
 .user:
@@ -76,6 +89,7 @@ global _isr%1
 _isr%1:
     push 0 ; estas inter no tienen errCode. se pushea algo para que el stack tenga la misma forma
     push %1
+
     pushad
     push gs
     push fs
@@ -109,6 +123,18 @@ _isr%1:
     je .kernel
     jnz .user
 .kernel:
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
     call handle_kernel_exception
     ;note: this function never returns
 .user:

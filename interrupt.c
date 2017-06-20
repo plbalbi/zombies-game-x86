@@ -9,7 +9,21 @@
 #include "debug.h"
 
 
-void handle_kernel_exception(unsigned int code) {
+void handle_kernel_exception(unsigned int cr4,
+							unsigned int cr3,
+							unsigned int cr2,
+							unsigned int cr0,
+							unsigned int ds,
+							unsigned int es,
+							unsigned int fs,
+							unsigned int gs,
+							unsigned int code,
+							unsigned int inter,
+							unsigned int eip,
+							unsigned int cs,
+							unsigned int eflags,
+							unsigned int esp,
+							unsigned int ss) {
 	clear_line();
 	char* str = "Generic Interruption";
 	if (code == 0) {
@@ -31,6 +45,22 @@ void handle_kernel_exception(unsigned int code) {
 	}
 	print_int(code, 1, 0, FG_LIGHT_RED | BG_BLACK);
 	print(str, 3, 0, FG_LIGHT_RED | BG_BLACK);
+
+	print("esp",28,20, FG_LIGHT_RED | BG_BLACK);
+	print_hex(esp,8,28,21, FG_LIGHT_RED | BG_BLACK);
+	print("eip",28 ,23, FG_LIGHT_RED | BG_BLACK);
+	print_hex(eip,8,28,24, FG_LIGHT_RED | BG_BLACK);
+	print("ds",28,26, FG_LIGHT_RED | BG_BLACK);
+	print_hex(ds,4,28,27, FG_LIGHT_RED | BG_BLACK);
+	print("cs",28,29, FG_LIGHT_RED | BG_BLACK);
+	print_hex(cs,4,28,30, FG_LIGHT_RED | BG_BLACK);
+	print("ss",28,32, FG_LIGHT_RED | BG_BLACK);
+	print_hex(ss,4,28,33, FG_LIGHT_RED | BG_BLACK);
+	print("eflags",28,35, FG_LIGHT_RED | BG_BLACK);
+	print_hex(eflags,8,28,37, FG_LIGHT_RED | BG_BLACK);
+	print("cr3",28,39, FG_LIGHT_RED | BG_BLACK);
+	print_hex(cr3,8,28,40, FG_LIGHT_RED | BG_BLACK);
+
 	while (1) { hlt(); };
 }
 
@@ -146,7 +176,7 @@ void handle_syscall_mover(direccion d){
 	if (d != IZQ && d != DER && d != ADE && d != ATR) {
 		_isr0(); // KILL
 	}
-		
+
 	// Actualizar posicion
 	if (curr_player == player_A) {
 		zombis_pos_a[curr_task] = destiny;
