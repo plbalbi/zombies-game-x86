@@ -4,11 +4,13 @@
 #include "screen.h"
 #include "defines.h"
 
+
 void error(const char * text);
 void warning(const char * text);
 void notify_int(const char * text, unsigned int var);
 void notify_hex(const char * text, unsigned int var);
 
+#define MAX_STACK_DEBUG 10
 void clear_line(void);
 
 // MODO DEBUG DEL JUEGO
@@ -32,6 +34,7 @@ void debug_save_context(unsigned int cr4,
 						unsigned int edx,
 						unsigned int ecx,
 						unsigned int eax,
+						unsigned int inter,
 						unsigned int error_code,
 						unsigned int eip,
 						unsigned int cs,
@@ -41,6 +44,7 @@ void debug_save_context(unsigned int cr4,
 						);
 
 typedef struct context_t {
+    unsigned int stack[MAX_STACK_DEBUG];
     unsigned int edi;
     unsigned int esi;
     unsigned int ebp;
@@ -61,6 +65,7 @@ typedef struct context_t {
     unsigned short fs;
     unsigned short gs;
     unsigned short ss;
+    unsigned short inter;
 }__attribute__((__packed__)) context;
 
 

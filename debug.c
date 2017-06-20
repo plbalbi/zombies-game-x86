@@ -94,7 +94,8 @@ void debug_on(){
 		screen[7+1][x].a = BG_BLUE;
 		screen[7+1][x].c = 0;
 	}
-	print("Zombi tu vieja", 25+1, 7+1, FG_WHITE | BG_BLUE);
+	print("Zombi - Falta cometida: ", 25+1, 7+1, FG_WHITE | BG_BLUE);
+	print_int(saved_context.inter,25+25, 7+1, FG_WHITE | BG_BLUE);
 
 	print("eax", 25+2, 7+3, FG_BLACK | BG_LIGHT_GREY);
 	print_hex(saved_context.eax,8, 25+2+4, 7+3, FG_WHITE | BG_LIGHT_GREY);
@@ -140,8 +141,13 @@ void debug_on(){
 	print_hex(saved_context.cr4,8, 25+16+4, 7+9, FG_WHITE | BG_LIGHT_GREY);
 
 	print("stack", 25+16, 7+20, FG_BLACK | BG_LIGHT_GREY);
-
-
+	if (saved_context.esp > DIR_INICIO_ZOMBI_VISION && saved_context.esp < DIR_INICIO_ZOMBI_PILA) {
+		int i = 0;
+		while (saved_context.esp+i*4 < saved_context.ebp && i<MAX_STACK_DEBUG) {
+			print_hex(saved_context.stack[i],8, 25+16, 7+20+2+i, FG_WHITE | BG_LIGHT_GREY);
+			i++;
+		}
+	}
 }
 
 void debug_off(){
@@ -191,6 +197,7 @@ void debug_save_context(unsigned int cr4,
 						unsigned int edx,
 						unsigned int ecx,
 						unsigned int eax,
+						unsigned int inter,
 						unsigned int error_code,
 						unsigned int eip,
 						unsigned int cs,
@@ -219,4 +226,15 @@ void debug_save_context(unsigned int cr4,
 	saved_context.cr2 = cr2;
 	saved_context.cr3 = cr3;
 	saved_context.cr4 = cr4;
+	saved_context.inter = inter;
+
+	if (esp > DIR_INICIO_ZOMBI_VISION && esp < DIR_INICIO_ZOMBI_PILA) {
+		unsigned int* sp = (unsigned int*) esp;
+		int i = 0;
+		while (sp < (unsigned int*)ebp && i<MAX_STACK_DEBUG) {
+			saved_context.stack[i] = *sp;
+			sp++;
+			i++;
+		}
+	}
 }
