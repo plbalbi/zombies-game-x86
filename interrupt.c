@@ -46,20 +46,20 @@ void handle_kernel_exception(unsigned int cr4,
 	print_int(code, 1, 0, FG_LIGHT_RED | BG_BLACK);
 	print(str, 3, 0, FG_LIGHT_RED | BG_BLACK);
 
-	print("esp",28,20, FG_LIGHT_RED | BG_BLACK);
-	print_hex(esp,8,28,21, FG_LIGHT_RED | BG_BLACK);
-	print("eip",28 ,23, FG_LIGHT_RED | BG_BLACK);
-	print_hex(eip,8,28,24, FG_LIGHT_RED | BG_BLACK);
-	print("ds",28,26, FG_LIGHT_RED | BG_BLACK);
-	print_hex(ds,4,28,27, FG_LIGHT_RED | BG_BLACK);
-	print("cs",28,29, FG_LIGHT_RED | BG_BLACK);
-	print_hex(cs,4,28,30, FG_LIGHT_RED | BG_BLACK);
-	print("ss",28,32, FG_LIGHT_RED | BG_BLACK);
-	print_hex(ss,4,28,33, FG_LIGHT_RED | BG_BLACK);
-	print("eflags",28,35, FG_LIGHT_RED | BG_BLACK);
-	print_hex(eflags,8,28,37, FG_LIGHT_RED | BG_BLACK);
-	print("cr3",28,39, FG_LIGHT_RED | BG_BLACK);
-	print_hex(cr3,8,28,40, FG_LIGHT_RED | BG_BLACK);
+	print("esp",2,24, FG_LIGHT_RED | BG_BLACK);
+	print_hex(esp,8,2,25, FG_LIGHT_RED | BG_BLACK);
+	print("eip",2 ,27, FG_LIGHT_RED | BG_BLACK);
+	print_hex(eip,8,2,28, FG_LIGHT_RED | BG_BLACK);
+	print("ds",2,30, FG_LIGHT_RED | BG_BLACK);
+	print_hex(ds,4,2,31, FG_LIGHT_RED | BG_BLACK);
+	print("cs",2,33, FG_LIGHT_RED | BG_BLACK);
+	print_hex(cs,4,2,34, FG_LIGHT_RED | BG_BLACK);
+	print("ss",2,36, FG_LIGHT_RED | BG_BLACK);
+	print_hex(ss,4,2,37, FG_LIGHT_RED | BG_BLACK);
+	print("eflags",2,39, FG_LIGHT_RED | BG_BLACK);
+	print_hex(eflags,8,2,40, FG_LIGHT_RED | BG_BLACK);
+	print("cr3",2,42, FG_LIGHT_RED | BG_BLACK);
+	print_hex(cr3,8,2,43, FG_LIGHT_RED | BG_BLACK);
 
 	while (1) { hlt(); };
 }
