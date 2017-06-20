@@ -158,7 +158,7 @@
 	\textit{Compuesto por kernel.asm, mmu.c y mmu.h}
 	\end{flushright}
 
-	\subsection{Overview}
+	\subsection{Generalidades}
 	
 	Este módulo se encarga de todas las rutinas relacionadas con paginación.
 	
@@ -172,13 +172,20 @@
 	
 	Hay detalles a explicar en cómo fueron inicializadas los esquemas de memoria de las tareas. Para no desaprovechar memoria, decidimos no pedir memoria para cada zombi nuevo creado. Lo que hicimos fue pedir memoria para las 16 posibles tareas desde un principio. Dicha inicialización la arranca \texttt{tss.c}, que es la que termina guardando las direcciones de memoria de las páginas pedidas.
 	
-
+	La función que se llama es \texttt{mmu\_inicializar\_esquema\_zombi}. Toma como entrada un \textit{jugador} y un \textit{y} que indica donde está el zombi verticalmente (el x está implicito en el jugador, ya que todos los zombis comienzan siempre en las mismas columas). Lo que hace la función es pedir dos páginas, una para un page directory, y otra para un page table. Para implementar el identity mapping de los primeros 4MB, aprovecha la tabla de páginas del kernel en la dirección $0x28000$ que ya utiliza el esquema de paginación del kernel. La página nueva que pedimos para una page table la usamos para mapear a las direcciones $0x800000- 0x8008fff$.
+	
+	Para completar la page table, se delega a la rutina \texttt{mmu\_mapear\_vision\_zombi}, que a su vez aplica \texttt{mmu\_mapear\_pagina} (del enunciado) nueve veces para mapear individualmente las páginas lineales a partir de la $0x8000000$ a las posiciones adyacentes al zombi. La función toma \textit{jugador}, para saber en que orden mapear las páginas (que cambian según el jugador, de tal forma que el zombi es agnóstico de a que bando pertenece), un \textit{x}, un \textit{y}, con el cual calcularemos las direcciones físicas del mapa a las que mapearemos y un \textit{cr3} que indicará sobre que mapa de memoria se aplicará el mapeo. Observar que esta instrucción no inicializa nada, solo mapea las direcciones que componen la `vision' del zombi, con lo cual es una función bastante general. De hecho, la usaremos también para la syscall mover.
+		
+	Haremos una mención a la función \texttt{mmu\_inicializar\_zombi} que nunca es usada, si bien está presente por pedido del enunciado.
+	
+	
 	% Files Left:
 	% idt.h, idt.c, isr.h y isr.o -> INTERRUPCIONES (externas y excepciones)
 	
-	% debug.c y debug.h
 	% game.c y game.h -> JUEGO (global)
 	% screen.c y screen.h -> SCREEN (global)
 	% sched.c y sched.h -> SCHEDULER
 	% tss.h y tss.c
+	% debug.c y debug.h
+	
 \end{document}
