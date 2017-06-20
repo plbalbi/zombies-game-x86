@@ -1,0 +1,184 @@
+\documentclass{article}
+
+% --------------------------------------------------
+% PACKAGES -----------------------------------------
+% --------------------------------------------------
+
+% ENCODING
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+% DOCUMENT
+\usepackage{geometry} % Page layout
+\usepackage{fancyhdr} % Headers
+
+% MATH
+\usepackage{amsmath} % Has everything
+\usepackage{amssymb} % Math symbols
+\usepackage{dsfont} % Domain font
+\usepackage{amsthm} % Theorems
+
+% ALGORITHMS
+\usepackage{algorithm} % Algorithm floats
+\usepackage{algorithmicx} % Macro definitions for algorithm typesetting
+\usepackage{algpseudocode} % Pseudocode package built with algorithmicx
+
+% MISC
+\usepackage{graphicx} % Images
+\usepackage{lastpage} % Reference to last page
+\usepackage{enumitem} % List control
+\usepackage[draft]{todonotes} % Todo's
+\usepackage{hyperref} % Hyperlinks
+\usepackage{lipsum} % Lorem Ipsum
+\usepackage{caratulaMetNum} % You know it
+
+
+% ---------------------------------------------------
+% SET UP --------------------------------------------
+% ---------------------------------------------------
+
+% GEOMETRY
+
+\geometry{
+	paper=a4paper,
+	tmargin=3.5cm,
+	bmargin=3.5cm,
+	lmargin=3cm,
+	rmargin=3cm,
+	headheight = 0pt,
+	headsep = 40pt,
+	footskip = 40pt
+}
+
+% SPACING
+\setlength{\parskip}{3mm}
+
+% HEADERS
+% * 'fancyhead' and 'fancyfoot' writes to all fielsds
+% * 'leftmark' and 'rightmark' have the info of two top-level sections
+% * 'sectionmark', I don't know
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\fancyhead{} 
+\fancyfoot{}
+\rhead{\nouppercase{\leftmark}}
+\cfoot{\thepage / \pageref*{LastPage}}
+
+% HYPERLINKS
+\hypersetup{
+	colorlinks = true,
+    urlcolor = blue,
+    linkcolor = red,
+    citecolor = red
+}
+
+% FONTS
+ \renewcommand*\rmdefault{iwona} %	Iwona
+
+% ENVIRONMENTS
+\newtheorem*{teorema}{Teorema}
+\newtheorem*{proposicion}{Proposición}
+
+% ALGORITHMS
+\algrenewcommand\algorithmicrequire{\textbf{Requiere}}
+\algrenewcommand\algorithmicensure{\textbf{Asegura}}
+\floatname{algorithm}{Algoritmo}
+
+
+
+% ---------------------------------------------------
+% TIPS ----------------------------------------------
+% ---------------------------------------------------
+
+% * pass 'topsep=0pt' to lists to decrease their skips
+
+% ---------------------------------------------------
+% MAIN ----------------------------------------------
+% ---------------------------------------------------
+
+\begin{document}
+
+	\titulo{Descripción del tp}
+	\fecha{\today}
+	\materia{Organización del Computador II}
+	\titulo{Trabajo Práctico Número 3}
+	\subtitulo{Zombi Defence}
+	\grupo{Grupo: ``pin-pun-pan-raca-tan-tan''}
+
+	\integrante{Reyes Mesarra, Darío René}{838/15}	{dario6reyes6@yahoo.com.ar}
+	\integrante{Pazos Méndez, Nicolás Javier}{709/15}{npazosmendez@gmail.com}
+	\integrante{Balbi, Pablo}{707/15}{pablo.l.balbi@gmail.com}
+	
+	\palabraClave{Cómo entender nuestro kernel y no morir en el intento - Vol I}
+	
+	\maketitle
+	
+	\tableofcontents
+
+	\pagebreak
+	
+	
+	\section{Inicialización}
+	\vspace{-1cm}	
+	\begin{flushright}
+	\textit{Compuesto por kernel.asm}
+	\end{flushright}
+	
+
+	
+	\texttt{kernel.asm} es el punto de entrada al código del kernel. Se encarga de realizar las operaciones de más bajo nivel del mismo, asegurándose de cargar los valores correspondientes en los registros internos para que los mecanismos del procesador (paginación, interrupciones, modo protegido, tareas, etc) funcionen correctamente. También hace una delegación general de trabajo a los demás módulos del kernel para inicializar las estructuras de datos que hagan falta. En resúmen:
+	
+	\begin{itemize}[topsep=0pt]
+		\item Configurar video
+		\item Cargar la GDT y saltar a modo protegido
+		\item Llamar a las rutinas que inicializan la MMU
+		\item Cargar un mapa de memoria con identity mapping de los primeros 4MB y activar paginación
+		\item Llamar a las rutinas que inicializan las TSS de todas las tareas, y cargar un TR válido al contexto actual
+		\item Llamar a las rutinas que inicializan la IDT y cargarlas
+		\item Configurar el pic para remapear interrupciones externas y activar interrupciones
+	\end{itemize}
+	
+	Al activarse las interrupciones, se corre por primera vez la rutina de atención del clock, que contiene el código del scheduler. Llegados a este punto, todo se encuentra inicializado. El control pasa al scheduler, las tareas, y las interrupciones generadas por excepciones, o por eventos generados por el usuario.
+
+	\section{Segmentación}
+	\vspace{-1cm}	
+	\begin{flushright}
+	\textit{Compuesto por gdt.c, gdt.h}
+	\end{flushright}
+	
+	En \texttt{gdt.c} se encuentran \textbf{definidas}los descriptores de segmentos principales: tanto de código y de datos de nivel 0 (kernel y tarea idle) y 3 (tareas zombis). Como tomamos el modelo flat como estrategia de segmentación, todos los segmentos comparten base $0$ y límite $623MB$. El problema de la protección del kernel entonces no será resuelto por segmentación, sino por paginación. De cualquier forma, que el nivel de privilegio del segmento para las tareas sea 3 es importante, pues es lo que define el CPL (Current Privilege Level) de las tareas, del cual depende el checkeo de privilegios de paginación.
+	
+	No tiene interfaz alguna, pues la información adentro de la GDT no se vuelve a tocar, y para acceder a la misma sólo hacen falta los selectores correctos, que están definidos como macros en \texttt{defines.c}.
+	
+	La GDT también contiene las task-gates de las tareas, pero las mismas serán descriptas en la sección del mismo nombre.
+	
+	\section{Paginación}
+	\vspace{-1cm}	
+	\begin{flushright}
+	\textit{Compuesto por kernel.asm, mmu.c y mmu.h}
+	\end{flushright}
+
+	\subsection{Overview}
+	
+	Este módulo se encarga de todas las rutinas relacionadas con paginación.
+	
+	Las páginas físicas que vamos a utilizar van a provenir de un \textit{área libre} en memoria definida en el rango $0x100000 - 0x3fffff$. Vamos a inicializar una variable \textit{prox\_pag\_lib} al comienzo del área libre que apuntará en todo momento a una página libre que podamos utilizar. Al pedir memoria, lo único que haremos es apuntar a la siguiente página, sin preocuparnos por liberar memoria (dado que sólo vamos a necesitar memoria para $40$ tareas zombi como máximo, no va a ser ningún problema).
+	
+	Se hará un mapeo de memoria de los primeros 4MB con identity mapping para el kernel y la tarea idle como pide el enunciado.
+	
+	Para las tareas zombis, se mapearan los primeros 4MB con identity mapping y DPL supervisor, y las 9 páginas de la posición del mapa en donde se encuentra el zombi a $0x8000000 - 0x8008fff$ con DPL usuario. Esto implica que las tareas normalmente sólo tendrán acceso a las direcciones lineales en $0x8000000 - 0x8008fff$ (con permisos de lectura y escritura sobre posiciones en el mapa). Al producirse la interrupción del scheduler en una tarea, como el segmento de código cambia a uno de nivel 0 (definido en la IDT), las rutinas tienen acceso a las estructuras del kernel.
+	
+	\subsection{Inicialización}
+	
+	Hay detalles a explicar en cómo fueron inicializadas los esquemas de memoria de las tareas. Para no desaprovechar memoria, decidimos no pedir memoria para cada zombi nuevo creado. Lo que hicimos fue pedir memoria para las 16 posibles tareas desde un principio. Dicha inicialización la arranca \texttt{tss.c}, que es la que termina guardando las direcciones de memoria de las páginas pedidas.
+	
+
+	% Files Left:
+	% idt.h, idt.c, isr.h y isr.o -> INTERRUPCIONES (externas y excepciones)
+	
+	% debug.c y debug.h
+	% game.c y game.h -> JUEGO (global)
+	% screen.c y screen.h -> SCREEN (global)
+	% sched.c y sched.h -> SCHEDULER
+	% tss.h y tss.c
+\end{document}
