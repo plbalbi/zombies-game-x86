@@ -206,6 +206,8 @@ void debug_save_context(unsigned int cr4,
 						unsigned int ss
 						)
 {
+	debug_hubo_excepcion = true;
+
 	saved_context.edi = edi;
 	saved_context.esi = esi;
 	saved_context.ebp = ebp;
