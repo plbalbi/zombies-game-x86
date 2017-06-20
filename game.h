@@ -19,6 +19,7 @@ unsigned short zombis_tipo_a[8];
 unsigned short zombis_tipo_b[8];
 
 bool debug;
+bool debug_hubo_excepcion;
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ADE = 0x83D, ATR = 0x732 } direccion;
 

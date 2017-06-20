@@ -20,6 +20,7 @@ unsigned short zombis_tipo_a[8] = {};
 unsigned short zombis_tipo_b[8] = {};
 
 bool debug = false;
+bool debug_hubo_excepcion = false;
 
 
 // JUGADORES
