@@ -18,6 +18,7 @@ unsigned int next_player = player_A;
 
 
 unsigned int sched_proximo_indice() {
+  if(debug==true) return GDT_IDX_TSS_IDLE;
   unsigned int active_tasks_A = 0, active_tasks_B = 0;
   int i;
   for (i = 0; i < 8; i++) {
