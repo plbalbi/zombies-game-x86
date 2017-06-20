@@ -8,3 +8,9 @@
 *.sym
 *.bin
 *.gch
+*.aux
+*.log
+*.out
+*.pdf
+*.gz
+*.toc
