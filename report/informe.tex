@@ -31,7 +31,9 @@
 \usepackage{hyperref} % Hyperlinks
 \usepackage{lipsum} % Lorem Ipsum
 \usepackage{caratulaMetNum} % You know it
-
+%\usepackage[firstpage=true]{background} % Background
+\usepackage{wallpaper}
+\usepackage{eso-pic}
 
 % ---------------------------------------------------
 % SET UP --------------------------------------------
@@ -84,7 +86,16 @@
 \algrenewcommand\algorithmicensure{\textbf{Asegura}}
 \floatname{algorithm}{Algoritmo}
 
+%\backgroundsetup{
+%contents={\TileSquareWallPaper{10}{zombie_8bit.jpg}},
+%position={0,0},
+%angle=0,
+%scale=1,
+%color=black,
+%opacity=0.9
+%}
 
+\TileSquareWallPaper{10}{zombie_8bit.jpg}
 
 % ---------------------------------------------------
 % TIPS ----------------------------------------------
@@ -112,6 +123,8 @@
 	\palabraClave{Cómo entender nuestro kernel y no morir en el intento - Vol I}
 
 	\maketitle
+	
+    \ClearWallPaper
 
 	\tableofcontents
 
