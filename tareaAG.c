@@ -4,9 +4,8 @@
 ================================================================================
 */
 
-#include "game.h"
-#include "syscall.h"
 #include "tactics.h"
+#include "syscall.h"
 
 // TIENE 4K-4BYTES, NO LO TOQUEN QUE EXPLOTA
 
@@ -114,4 +113,12 @@ WALL
 
 __asm__ (
     "jmp begin \n\t"
+    "inc %eax               \n\t"
+    "clc\n\t"
+    "clc\n\t"
+    "clc\n\t"
+    "clc\n\t"
+    "clc\n\t"
+    "clc\n\t"
+    "clc\n\t"
 );
