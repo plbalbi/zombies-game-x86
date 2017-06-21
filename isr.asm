@@ -19,130 +19,91 @@ extern handle_keyboard
 extern handle_syscall_mover
 
 extern debug_save_context
+extern debug_hubo_excepcion
 
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
 
+%macro ISR_BODY 1
+    ; Preguntar si ya guardé una vez el contexto
+    cmp dword[debug_hubo_excepcion], 0
+    jnz .skip
+
+    ; Save context for debug
+    pushad
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax 
+    call debug_save_context
+    add esp, 4*4 ; 4 reg de control
+    add esp, 4*4 ; 4 reg de segmentos
+    popad
+
+.skip:
+    ; Nos fijamos si provenimos de un CS de nivel 0 o 3
+    mov eax, [esp+4*2] ; cargamos CS (suponemos 'error code', se arregla después)
+    and eax, 0x03 ; Nos quedamos con el CPL
+    cmp eax, 0x00 ; Preguntamos si es nivel 0
+    je .kernel
+    jnz .user
+
+    ; Si veniamos del kernel, de idle o de una interrupción,
+    ; nos quedamos colgamos y printeamos qué interrupción fue
+.kernel:
+    push %1
+    push gs
+    push fs
+    push es
+    push ds
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+    call handle_kernel_exception
+    ; I'm not coming back \^^/
+
+    ; Si veniamos de una tarea, matamos la tarea, informamos
+    ; al scheduler, refrescamos pantalla y saltamos a Idle
+.user:
+    push %1
+    call handle_zombi_exception
+    jmp 29<<3:0x0 ; task-switch a Idle
+    ; I'm not coming back \^^/
+
+%endmacro
+
+
 %macro ISR 1
 global _isr%1
 
 _isr%1:
-    push %1
-
-    pushad
-    push gs
-    push fs
-    push es
-    push ds
-    mov eax, cr0
-    push eax
-    mov eax, cr2
-    push eax
-    mov eax, cr3
-    push eax
-    mov eax, cr4
-    push eax
-    call debug_save_context
-    add esp, 4*4 ; 4 reg de control
-    add esp, 4*4 ; 4 reg de segmentos
-    popad
-
-    ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
-    ; decir que interrupción sé y colgarme. Si estaba en una tarea,
-    ; quiero matar la tarea y seguir con el programa. Para checkear
-    ; qué es lo que soy, checkeo los 2 bits más bajos de 'ds'. En
-    ; un stack-switch el segmento de datos no cambia, por eso.
-    xor eax, eax
-    mov ax, ds
-    and ax, 0x0003
-    cmp ax, 0x0000
-    je .kernel
-    jnz .user
-.kernel:
-    push gs
-    push fs
-    push es
-    push ds
-    mov eax, cr0
-    push eax
-    mov eax, cr2
-    push eax
-    mov eax, cr3
-    push eax
-    mov eax, cr4
-    push eax
-    call handle_kernel_exception
-    ;note: this function never returns
-.user:
-    call handle_zombi_exception
-    jmp 29<<3:0x0 ; task-switch a IDLE
-    ; I'm not coming back \^^/
+    ISR_BODY %1
 
 %endmacro
 
-; Esta versión de la macro es para
-; las interrupciones sin código de error
 %macro ISR_NOCODE 1
 global _isr%1
 
 _isr%1:
-    push 0 ; estas inter no tienen errCode. se pushea algo para que el stack tenga la misma forma
-    push %1
-
-    pushad
-    push gs
-    push fs
-    push es
-    push ds
-    mov eax, cr0
-    push eax
-    mov eax, cr2
-    push eax
-    mov eax, cr3
-    push eax
-    mov eax, cr4
-    push eax
-    call debug_save_context
-    add esp, 4*4 ; 4 reg de control
-    add esp, 4*4 ; 4 reg de segmentos
-    popad
-    ; TODO: se borra el ercode del stack o se necesita despues?
-    ; add esp, 4 ; errrcode (push 0)
-
-
-    ; Lo siguiente es medio tricky. Si estaba en el kernel, quiero
-    ; decir que interrupción sé y colgarme. Si estaba en una tarea,
-    ; quiero matar la tarea y seguir con el programa. Para checkear
-    ; qué es lo que soy, checkeo los 2 bits más bajos de 'ds'. En
-    ; un stack-switch el segmento de datos no cambia, por eso.
-    xor eax, eax
-    mov ax, ds
-    and ax, 0x0003
-    cmp ax, 0x0000
-    je .kernel
-    jnz .user
-.kernel:
-    push gs
-    push fs
-    push es
-    push ds
-    mov eax, cr0
-    push eax
-    mov eax, cr2
-    push eax
-    mov eax, cr3
-    push eax
-    mov eax, cr4
-    push eax
-    call handle_kernel_exception
-    ;note: this function never returns
-.user:
-    call handle_zombi_exception
-    jmp 29<<3:0x0 ; task-switch a IDLE
-    ; I'm not coming back \^^/
+    push 0x12345678 ; easy to identify
+    ISR_BODY %1
 
 %endmacro
+
 
 ;;
 ;; Datos
