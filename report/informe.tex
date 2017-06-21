@@ -31,8 +31,9 @@
 \usepackage{hyperref} % Hyperlinks
 \usepackage{lipsum} % Lorem Ipsum
 \usepackage{caratulaMetNum} % You know it
-\usepackage[firstpage=true]{background} % Background
-
+%\usepackage[firstpage=true]{background} % Background
+\usepackage{wallpaper}
+\usepackage{eso-pic}
 
 % ---------------------------------------------------
 % SET UP --------------------------------------------
@@ -85,13 +86,16 @@
 \algrenewcommand\algorithmicensure{\textbf{Asegura}}
 \floatname{algorithm}{Algoritmo}
 
-\backgroundsetup{
-contents={\includegraphics{walking_dead.jpg}},
-angle=0,
-scale=1.5,
-color=black,
-opacity=0.2
-}
+%\backgroundsetup{
+%contents={\TileSquareWallPaper{10}{zombie_8bit.jpg}},
+%position={0,0},
+%angle=0,
+%scale=1,
+%color=black,
+%opacity=0.9
+%}
+
+\TileSquareWallPaper{10}{zombie_8bit.jpg}
 
 % ---------------------------------------------------
 % TIPS ----------------------------------------------
@@ -120,6 +124,8 @@ opacity=0.2
 	
 	\maketitle
 	
+    \ClearWallPaper
+
 	\tableofcontents
 
 	\pagebreak
