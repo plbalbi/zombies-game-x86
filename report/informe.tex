@@ -269,7 +269,7 @@
 	\textit{Compuesto por isr.asm, sched.c y sched.h}
 	\end{flushright}
 
-	La rutina principal del scheduler en \texttt{isr.asm} depende de \texttt{sched\_proximo\_indice} para que le pase el selector hacia la próxima tarea a correr. Si no se cargó ninguna tarea todavia ($TR = 0$) o si la próxima tarea es la misma que la actual (porque hay una sóla tarea corriendo), entonces retornamos de la interrupción. De lo contrario, hacemos un task-switch a la nueva tarea mediante un jump far con un selector al task-gate indicado (\todo{¿Qué pasaba si hacias un task-switch a vos mismo? \textbf{CAOS FUEGO DESTRUCCION}}). El RPL de dicho selector debe ser 0, porque es el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque la interrupción del reloj está en un segmento de nivel 0).
+	La rutina principal del scheduler en \texttt{isr.asm} depende de \texttt{sched\_proximo\_indice}, que le indica al selector la próxima tarea a correr. Si no se cargó ninguna tarea todavia ($TR = 0$) o si la próxima tarea es la misma que la actual (porque hay una sóla tarea corriendo), entonces no se hace nada, retornando de la interrupción. De lo contrario, hacemos un task-switch a la nueva tarea mediante un jump far con un selector al task-gate indicado (el `próximo índice' que se obtuvo\todo{¿Qué pasaba si hacias un task-switch a vos mismo? \textbf{CAOS FUEGO DESTRUCCION}}). El RPL de dicho selector debe ser 0, porque es el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque la interrupción del reloj está en un segmento de nivel 0).
 
 	El archivo \texttt{sched.c} tienezzzz...
 
@@ -278,5 +278,23 @@
 	% interrupt.c -> SYSCALL MOVER
 	% screen.c y screen.h -> SCREEN (global)
 	% debug.c y debug.h
+
+	\section{Debug}
+	\vspace{-1cm}
+	\begin{flushright}
+		\textit{Compuesto por debug.c y debug.h}
+	\end{flushright}
+\todo[inline]{Me copé escribiendo y quedó todo en un bloque. Tal vez se puede dividir en subtítulos}
+	Estos archivos fuente contienen dos conjuntos de funciones: un primer conjunto de funciones que sirve para imprimir en pantalla errores varios (por ejemplo excepciones del kernel sin resolver), y otro conjunto que compone el funcionamiento del modo debug del juego, que pide la consigna. Las primeras funciones son escencialmente renombres a llamadas de la función \texttt{print} (y sus variantes) con determinados valores de posición y atributos.
+
+	Nótese que el modo debug tiene su utilidad para excepciones de los zombis, y no así las del kernel. Las excepciones del kernel no se manejan de la misma manera (ver Interrupciones), y no dan lugar a este modo.
+
+	Al presionarse la tecla Y se activa el modo debug llamando a la función \texttt{debug\_on}, que lo primero que hace es poner en \textit{true} la variable global del juego \texttt{debug}, indicando que se prendió el modo debug. Este valor de verdad hace que el scheduler no actue, pausando todo movimiento del juego instantáneamente. Luego se procede a guardar los valores de la pantalla que se sobreescribirán al mostrar la ventana; para esto se llama a la función \texttt{backup\_screen}, que copia los datos correspondientes a un arreglo global, al que accederá también la función \texttt{restore\_screen} al salir del modo debug, que lleva a cabo el proceso inverso. Este arreglo está definido en el mismo archivo, por lo que se encuentra en el área de memoria del kernel.
+
+	Luego de haber hecho el \textit{backup} de la pantalla correspondiente, se procede a imprimir la información guardada correspondiente al contexto que provocó la primera excepción. Esta se encuentra almacenada en un \textit{struct} global, cuyos campos son todos los registros de interés. Esta información es guardada por la función \texttt{debug\_save\_context}, que  es llamada por una excepción únicamente si fue la primera en ocurrir; para ello se tiene otro booleano global del juego, \texttt{debug\_hubo\_excepcion}, que comienza en falso y se establece en verdadero cuando ocurre la primera excepción.
+
+	Los valores de la pila del contexto que guarda el modo debug merecen una mención especial. No podemos asegurar que el registro \texttt{esp} esté apuntando a lo que la rutina utilizaba como pila, pero lo asumiremos así. Sin embargo, tomaremos la precaución de verificar que la dirección de memoria que contenga se encuentre en el rango $0x8000000 - 0x8008fff$. Si es así, se muestran tantos valores de 4 \textit{bytes} como indique la distancia entre \texttt{esp} y \texttt{ebp}, con un tope máximo de 10. Si no se encuentra en rango, el modo debug no muestra valores de la pila.
+
+	Si se presiona la tecla Y y el modo debug está prendido, entonces se llama a la función \texttt{debug\_off}, que simplemente restaura la pantalla y establece al booleano \texttt{debug} en false, para que el scheduler retome su funcionamiento normal.
 
 \end{document}
