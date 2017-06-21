@@ -61,7 +61,7 @@
 % * 'sectionmark', I don't know
 \pagestyle{fancy}
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
-\fancyhead{} 
+\fancyhead{}
 \fancyfoot{}
 \rhead{\nouppercase{\leftmark}}
 \cfoot{\thepage / \pageref*{LastPage}}
@@ -119,9 +119,9 @@
 	\integrante{Reyes Mesarra, Darío René}{838/15}	{dario6reyes6@yahoo.com.ar}
 	\integrante{Pazos Méndez, Nicolás Javier}{709/15}{npazosmendez@gmail.com}
 	\integrante{Balbi, Pablo}{707/15}{pablo.l.balbi@gmail.com}
-	
+
 	\palabraClave{Cómo entender nuestro kernel y no morir en el intento - Vol I}
-	
+
 	\maketitle
 	
     \ClearWallPaper
@@ -129,16 +129,16 @@
 	\tableofcontents
 
 	\pagebreak
-	
-	
+
+
 	\section{Inicialización}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por kernel.asm}
 	\end{flushright}
-		
+
 	\texttt{kernel.asm} es el punto de entrada al código del kernel. Se encarga de realizar las operaciones de más bajo nivel del mismo, asegurándose de cargar los valores correspondientes en los registros internos para que los mecanismos del procesador (paginación, interrupciones, modo protegido, tareas, etc) funcionen correctamente. También hace una delegación general de trabajo a los demás módulos del kernel para inicializar las estructuras de datos que hagan falta. En resúmen:
-	
+
 	\begin{itemize}[topsep=0pt]
 		\item Configurar video
 		\item Cargar la GDT y saltar a modo protegido
@@ -148,135 +148,135 @@
 		\item Llamar a las rutinas que inicializan la IDT y cargarlas
 		\item Configurar el pic para remapear interrupciones externas y activar interrupciones
 	\end{itemize}
-	
+
 	Al activarse las interrupciones, se corre por primera vez la rutina de atención del clock, que contiene el código del scheduler. Llegados a este punto, todo se encuentra inicializado. El control pasa al scheduler, las tareas, y las interrupciones generadas por excepciones, o por eventos generados por el usuario.
 
 
 	\section{Segmentación}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por gdt.c, gdt.h}
 	\end{flushright}
-	
-	En \texttt{gdt.c} se encuentran \textbf{definidas}los descriptores de segmentos principales: tanto de código y de datos de nivel 0 (kernel y tarea idle) y 3 (tareas zombis). Como tomamos el modelo flat como estrategia de segmentación, todos los segmentos comparten base $0$ y límite $623MB$. El problema de la protección del kernel entonces no será resuelto por segmentación, sino por paginación. De cualquier forma, que el nivel de privilegio del segmento para las tareas sea 3 es importante, pues es lo que define el CPL (Current Privilege Level) de las tareas, del cual depende el checkeo de privilegios de paginación.
-	
-	No tiene interfaz alguna, pues la información adentro de la GDT no se vuelve a tocar, y para acceder a la misma sólo hacen falta los selectores correctos, que están definidos como macros en \texttt{defines.c}.
-	
+
+	En \texttt{gdt.c} se encuentran \textbf{definidos} los descriptores de segmentos principales: tanto de código y de datos de nivel 0 (kernel y tarea idle) y 3 (tareas zombis). Como tomamos el modelo flat como estrategia de segmentación, todos los segmentos comparten base $0$ y límite $623MB$. El problema de la protección del kernel entonces no será resuelto por segmentación, sino por paginación. De cualquier forma, que el nivel de privilegio del segmento para las tareas sea 3 es importante, pues es lo que define el CPL (Current Privilege Level) de las tareas, del cual depende el checkeo de privilegios de paginación.
+
+	No tiene interfaz alguna, pues la información adentro de la GDT no se vuelve a tocar, y para acceder a la misma sólo hacen falta los selectores correctos, que están definidos como macros en \texttt{defines.h}.
+
 	La GDT también contiene las task-gates de las tareas, pero las mismas serán descriptas en la sección del mismo nombre.
 
-	
+
 	\section{Paginación}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por kernel.asm, mmu.c y mmu.h}
 	\end{flushright}
 
 	\subsection*{Generalidades}
-	
+
 	Este módulo se encarga de todas las rutinas relacionadas con paginación.
-	
-	Las páginas físicas que vamos a utilizar van a provenir de un \textit{área libre} en memoria definida en el rango $0x100000 - 0x3fffff$. Vamos a inicializar una variable \textit{prox\_pag\_lib} al comienzo del área libre que apuntará en todo momento a una página libre que podamos utilizar. Al pedir memoria, lo único que haremos es apuntar a la siguiente página, sin preocuparnos por liberar memoria (dado que sólo vamos a necesitar memoria para $40$ tareas zombi como máximo, no va a ser ningún problema).
-	
+
+	Las páginas físicas que vamos a utilizar van a provenir de un \textit{área libre} en memoria definida en el rango $0x100000 - 0x3fffff$. Vamos a inicializar una variable \textit{prox\_pag\_lib} al comienzo del área libre que apuntará en todo momento a una página libre que podamos utilizar. Al pedir memoria, lo único que haremos será apuntar a la siguiente página, sin preocuparnos por liberar memoria (dado que sólo vamos a necesitar memoria para $40$ tareas zombi como máximo, no va a ser ningún problema).
+
 	Se hará un mapeo de memoria de los primeros 4MB con identity mapping para el kernel y la tarea idle como pide el enunciado.
-	
-	Para las tareas zombis, se mapearan los primeros 4MB con identity mapping y DPL supervisor, y las 9 páginas de la posición del mapa en donde se encuentra el zombi a $0x8000000 - 0x8008fff$ con DPL usuario. Esto implica que las tareas normalmente sólo tendrán acceso a las direcciones lineales en $0x8000000 - 0x8008fff$ (con permisos de lectura y escritura sobre posiciones en el mapa). Al producirse la interrupción del scheduler en una tarea, como el segmento de código cambia a uno de nivel 0 (definido en la IDT), las rutinas tienen acceso a las estructuras del kernel.
-	
+
+	Para las tareas zombis, se mapearán los primeros 4MB con identity mapping y DPL supervisor, y las 9 páginas de la posición del mapa en donde se encuentra el zombi a $0x8000000 - 0x8008fff$ con DPL usuario. Esto implica que las tareas normalmente sólo tendrán acceso a las direcciones lineales en $0x8000000 - 0x8008fff$ (con permisos de lectura y escritura sobre posiciones en el mapa). Al producirse la interrupción del scheduler en una tarea, como el segmento de código cambia a uno de nivel 0 (definido en la IDT), las rutinas tienen acceso a las estructuras del kernel.
+
 	\subsection*{Inicialización}
-	
-	Hay detalles a explicar en cómo fueron inicializadas los esquemas de memoria de las tareas. Para no desaprovechar memoria, decidimos no pedir memoria para cada zombi nuevo creado. Lo que hicimos fue pedir memoria para las 16 posibles tareas desde un principio. Dicha inicialización la arranca \texttt{tss.c}, que es la que termina guardando las direcciones de memoria de las páginas pedidas.
-	
-	La función que se llama es \texttt{mmu\_inicializar\_esquema\_zombi}. Toma como entrada un \textit{jugador} y un \textit{y} que indica donde está el zombi verticalmente (el x está implicito en el jugador, ya que todos los zombis comienzan siempre en las mismas columas). Lo que hace la función es pedir dos páginas, una para un page directory, y otra para un page table. Para implementar el identity mapping de los primeros 4MB, aprovecha la tabla de páginas del kernel en la dirección $0x28000$ que ya utiliza el esquema de paginación del kernel. La página nueva que pedimos para una page table la usamos para mapear a las direcciones $0x800000- 0x8008fff$.
-	
-	Para completar la page table, se delega a la rutina \texttt{mmu\_mapear\_vision\_zombi}, que a su vez aplica \texttt{mmu\_mapear\_pagina} (del enunciado) nueve veces para mapear individualmente las páginas lineales a partir de la $0x8000000$ a las posiciones adyacentes al zombi. La función toma \textit{jugador}, para saber en que orden mapear las páginas (que cambian según el jugador, de tal forma que el zombi es agnóstico de a que bando pertenece), un \textit{x}, un \textit{y}, con el cual calcularemos las direcciones físicas del mapa a las que mapearemos y un \textit{cr3} que indicará sobre que mapa de memoria se aplicará el mapeo. Observar que esta instrucción no inicializa nada, solo mapea las direcciones que componen la `vision' del zombi, con lo cual es una función bastante general. De hecho, la usaremos también para la syscall mover.
-		
-	Haremos una mención a la función \texttt{mmu\_inicializar\_zombi} que nunca es usada, si bien está presente por pedido del enunciado.
+
+	Hay detalles a explicar en cómo fueron inicializadas los esquemas de memoria de las tareas. Para no desaprovechar memoria, decidimos no pedir memoria para cada zombi nuevo creado. Lo que hicimos fue pedir memoria para las 16 posibles tareas desde un principio. Dicha inicialización la comienza \texttt{tss.c}, que es la que termina guardando las direcciones de memoria de las páginas pedidas.
+
+	La función que se llama para esto es \texttt{mmu\_inicializar\_esquema\_zombi}. Toma como entrada un \textit{jugador} y un \textit{y} que indica dónde está el zombi verticalmente (el x está implicito en el jugador, ya que todos los zombis comienzan siempre en las mismas columas). Lo que hace la función es pedir dos páginas, una para un page directory, y otra para un page table. Para implementar el identity mapping de los primeros 4MB, aprovecha la tabla de páginas del kernel en la dirección $0x28000$ que ya utiliza el esquema de paginación del kernel. La página nueva que pedimos para una page table la usamos para mapear a las direcciones $0x800000- 0x8008fff$.
+
+	Para completar la page table, se delega a la rutina \texttt{mmu\_mapear\_vision\_zombi}, que a su vez aplica \texttt{mmu\_mapear\_pagina} (del enunciado) nueve veces para mapear individualmente las páginas lineales a partir de la $0x8000000$ a las posiciones adyacentes al zombi. La función toma \textit{jugador}, para saber en qué orden mapear las páginas (que cambian según el jugador, de tal forma que el zombi es agnóstico de a qué bando pertenece), un \textit{x}, un \textit{y}, con el cual calcularemos las direcciones físicas del mapa a las que mapearemos y un \textit{cr3} que indicará sobre qué mapa de memoria se aplicará el mapeo. Observar que esta instrucción no inicializa nada, solo mapea las direcciones que componen la `visión' del zombi, con lo cual es una función bastante general. De hecho, la usaremos también para la syscall mover.
+
+	Haremos una mención a la función \texttt{mmu\_inicializar\_zombi} que nunca es usada, si bien está presente por pedido del enunciado. \todo{No entendí... acá se va a mencionar?}
 
 
 	\section{Tareas}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por tss.h y tss.c}
 	\end{flushright}
-	
-	La mayor responsabilidad del archivo \texttt{tss.c} es la de inicializar las estructuras de las tareas (\texttt{tss\_inicializar}). Cada tarea tiene asociada una variable global que apunta contiene su TSS (las tareas zombis, arrays). Para inicializar una tarea se completa su TSS con los valores que corresponden, y se le asigna una task-gate en la GDT.
-	
-	Como mencionamos anteriormente, la idea va a ser inicializar todo lo que necesitamos para los zombis en un principio, y reutilizar esos recursos. \texttt{tss\_inicializar\_zombi} toma un jugador y un número de tarea (del 0 al 7), y:
-	
+
+	La mayor responsabilidad del archivo \texttt{tss.c} es la de inicializar las estructuras de las tareas (\texttt{tss\_inicializar}). Cada tarea tiene asociada una variable global que apunta \todo{wut?} contiene su TSS (las tareas zombis, arrays). Para inicializar una tarea se completa su TSS con los valores que corresponden, y se le asigna una task-gate en la GDT.
+
+	Como mencionamos anteriormente, la idea es inicializar todo lo que necesitamos para los zombis en un principio, y reutilizar esos recursos. \texttt{tss\_inicializar\_zombi} toma un jugador y un número de tarea (del 0 al 7), y:
+
 	\begin{itemize}[topsep=0pt]
 		\item Pide memoria para el cr3 (con \texttt{mmu\_inicializar\_esquema\_zombi}) y el esp0 (con \texttt{mmu\_prox\_pag\_libre})
 		\item Completa la TSS de la tarea (utilizando el cr3 y el esp0)
 		\item Agrega la entrada de la GDT (utilizando la dirección de la tss de la tarea)
 	\end{itemize}
-	
-	Una vez hecho esto para todos los zombis, los \texttt{esp0} y \texttt{cr3} se guardan como variables globales. Esto es para sobrescribir la TSS con los valores iniciales cuando querramos utilizarlo para un zombi nuevo. Esto ocurrira en la rutina de atención del teclado, en el que al apretar una tecla Shift se lanzará un zombi, y por ende, una nueva tarea. Dicha rutina necesitará acudir a \texttt{tss.c}, llamando a la función \texttt{tss\_refrescar\_zombi}, que toma un jugador y un número de task, y utilizando el cr3 y el esp0 que le corresponden, completa la tss con sus valores iniciales.
-	
-	Se proveen las funciones \texttt{tss\_leer\_cr3} y \texttt{tss\_escribir\_cr3} para modificaciones que querramos hacer en el mapa de memoria de un TSS determinado.
-	
-	
+
+	Una vez hecho esto para todos los zombis, los \texttt{esp0} y \texttt{cr3} se guardan como variables globales. Esto es para sobrescribir la TSS con los valores iniciales cuando querramos utilizarlo para un zombi nuevo. Esto ocurrirá en la rutina de atención del teclado, en la que al apretar una tecla Shift se lanzará un zombi, y por ende, una nueva tarea. Dicha rutina necesitará acudir a \texttt{tss.c}, llamando a la función \texttt{tss\_refrescar\_zombi}, que toma un jugador y un número de task, y utilizando el cr3 y el esp0 que le corresponden, completa la tss con sus valores iniciales.
+
+	Se dispone de las funciones \texttt{tss\_leer\_cr3} y \texttt{tss\_escribir\_cr3} para modificaciones que querramos hacer en el mapa de memoria de un TSS determinado.
+
+
 	\section{Interrupciones}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por idt.h, idt.c, isr.asm, interrupt.c y interrupt.h}
 	\end{flushright}
-	
-	En el archivo \texttt{idt.c} no hay mucho que mencionar: se encuentra la rutina que inicializa las entradas de la IDT utilizando la macro proporcionada por la cátedra. En \texttt{isr.asm} están definidas todas las rutinas de atención e interrupción: las excepciones arquitecturales, el teclado, el clock, y la syscall mover. Suelen llamar a rutinas de C ubicadas en \texttt{interrupt.c} para programar con más comodidad.
-	
-	El clock tiene el código del scheduler, con lo cuál tendrá su propio apartado. Por la manera en que organizamos el código, la isr del syscall mover terminó teniendo muchas responsabilidades, con lo cuál también tendrá una sección aparte.
-	
+
+	Para el archivo \texttt{idt.c} no hubo muchas decisiones de diseño que tomar: se encuentra allí la rutina que inicializa las entradas de la IDT utilizando la macro proporcionada por la cátedra. En \texttt{isr.asm} están definidas todas las rutinas de atención e interrupción: las excepciones arquitecturales, el teclado, el clock, y la syscall mover. Suelen llamar a rutinas de C ubicadas en \texttt{interrupt.c} para programar con más comodidad.
+
+	El clock tiene el código del scheduler, con lo cuál tendrá su propio apartado. Por la manera en la que organizamos el código, la \textit{isr} del syscall mover terminó teniendo muchas responsabilidades, con lo cuál también tendrá una sección aparte.
+
 	\subsection*{Excepciones}
-	
+
 	En general, todas las excepciones se manejan de una forma parecida. Primero nos encargamos de guardar el contexto para una posible llamada a Debug (más información en dicha sección). Después, hay dos variantes: o la excepción fue generada por una tarea zombi, o por el kernel/tarea idle. Para verificar en qué caso estamos, utilizamos el CPL del proceso interrumpido, que se encuentra en el CS guardado en la pila.
-	
-	En el primer caso, cuando venimos de una tarea, como pide el enunciado, se `mata' la tarea llamando a \texttt{handle\_zombi\_exception} de \texttt{interrupt.c}. Lo que hace esta rutina es avisarle al scheduler que el zombi ya no existe, y pintar la pantalla para notificar al usuario. El número de `restantes' no baja en esta instancia, sino que baja al lanzar un zombi, asi que no hace falta modificar el estado global del juego. Una vez terminado esto, hacemos un stack-switch a Idle. Nunca vamos a volver, por lo que no hace falta completar con más código. Esto ocurre porque el scheduler dió de baja el contexto de la tarea, por lo que se lo saca de la rotación de tareas. Cuando el scheduler quiere reutilizar el `slot' del zombi, la TSS asociada al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente.
-	
+
+	En el primer caso, cuando venimos de una tarea, como pide el enunciado, se `mata' la tarea llamando a \texttt{handle\_zombi\_exception} de \texttt{interrupt.c}. Lo que hace esta rutina es avisarle al scheduler que el zombi ya no existe, y pintar la pantalla para notificar al usuario. El número de `restantes' no baja en esta instancia, sino que baja al lanzar un zombi, asi que no hace falta modificar el estado global del juego. Una vez terminado esto, hacemos un stack-switch a Idle. Nunca vamos a volver a la tarea, por lo que no hace falta completar con más código. Esto ocurre porque el scheduler dio de baja el contexto de la tarea, por lo que se lo saca de la rotación de tareas. Cuando el scheduler quiere reutilizar el `slot' del zombi, la TSS asociada al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente. \todo{mmm en realidad en la tss por ahí tenes algo más viejo que lo que había cuando se la desalojó, no?}
+
 	El segundo caso, en el que venimos del kernel, marca fallo no planificado. Por dicha razón, decidimos en \texttt{handle\_kernel\_exception} escribir en pantalla datos de la excepción generada (nombre, número de vector, registros varios), y haltear el procesador.
 
-	Ambos casos son muy parecidos, pero hay un detalle que complejizó el código. Ese detalle es que al querer acceder a  la información de la pila para guardarla o mostrarla, nos molesta que algunas excepciones pusheen el Error Code y otros no. Lo resolvimos pusheando un valor cualquiera para las excepciones que no generan Error Code, de tal manera que a partir de ese entonces podamos utilizar el mismo código para cualquier caso.
-	
-	\subsection*{Teclado}
-	
-	La rutina de atención e interrupción lee inmediatamente el dato proveido por el teclado, y se lo pasa a la rutina \texttt{handle\_keyboard} de \texttt{interrupt.asm}. Ésta verifica que tecla se pulsó, y llama a las rutinas de \texttt{game.c} correspondientes. Por ejemplo, al presionar \texttt{W} se llama a \texttt{game\_mover\_jugador} (pasándole la dirección y el jugador que se movió). También se puede prender y apagar el modo de debug con la tecla $Y$, por lo que esta rutina también lo verifica (y llama a funciones de \texttt{debug.c} para que se encarguen).
+	Ambos casos son muy parecidos, pero hay un detalle que complejizó el código. Ese detalle es que algunas excepciones pushean el Error Code y otras no; esto hace que la lectura de estos datos no pueda hacerse igual para todas ellas. Lo resolvimos pusheando un valor cualquiera para las excepciones que no generan Error Code, de tal manera que a partir de ese entonces podamos utilizar el mismo código para cualquier caso (esto es posible porque no hacemos uso del Error Code).
 
-	
+	\subsection*{Teclado}
+
+	La rutina de atención e interrupción lee inmediatamente el dato proveido por el teclado, y se lo pasa a la rutina \texttt{handle\_keyboard} de \texttt{interrupt.c}. Ésta verifica qué tecla se pulsó, y llama a las rutinas de \texttt{game.c} correspondientes. Por ejemplo, al presionar \texttt{W} se llama a \texttt{game\_mover\_jugador} (pasándole la dirección y el jugador que se movió). También se puede prender y apagar el modo de debug con la tecla $Y$, por lo que esta rutina también lo verifica (y llama a funciones de \texttt{debug.c} para que se encarguen).
+
+
 	\section{Juego}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por game.c y game.h}
 	\end{flushright}
-	
-	Este módulo contiene las variables que mantienen el estado del juego son:
-	
+
+	Este módulo contiene las variables que mantienen el estado del juego. Ellas son:
+
 	\begin{itemize}[topsep=0pt]
-		\item Las posiciones $y$ de los jugadores
-		\item Los tipos de zombi actuales que tienen jugadores
+		\item Las posiciones $y$ de los cursores de los jugadores
+		\item Los tipos de zombi actuales que tienen seleccionados los jugadores
 		\item Los zombis restantes de los jugadores
 		\item Los puntajes de los jugadores
-		\item Las posiciones de los zombis
-		\item Los tipos de los zombis
+		\item Las posiciones de los zombis activos
+		\item Los tipos de los zombis activos
 		\item Si el modo debug está activo
-		\item Si en el modo debug ya se detectó una excepción
+		\item Si el debugger ya detectó una excepción
 	\end{itemize}
-	
-	Las últimas dos se verán en Debug. El resto es son variables que tienen lo que necesitamos para la lógica del juego. Siempre que hay un cambio en el juego, como la posición de un zombi, de un jugador, o que se mate o lance un zombi; estas variables deben modificarse para reflejar el estado en el que se encuentra el juego. Por comodidad, están declaradas en el \textit{.h} y se utilizan directamente en un par de archivos como \texttt{interrupt.c} o \texttt{screen.c}.
-	
-	Además, este módulo provee rutinas que representan las diversas acciones dentro del juego. Están intimamente relacionadas con la isr del teclado, qué es de donde estas funciones son llamadas dependiendo de qué teclas se presionaron.
-	
-	La función más interesante es \texttt{game\_lanzar\_zombi}, que crea una nueva tarea. Primero, se le pregunta al Scheduler si hay un lugar libre (\texttt{sched\_hay\_lugar\_zombi}), y si lo hay, se le pide el mismo (\texttt{sched\_indice\_libre}), además de avisarle que a partir de ahora está activo \texttt{sched\_activar\_zombi}. Se pide el cr3 del TSS asociado a dicho índice (\texttt{tss\_leer\_zombi}), y se pisa el viejo mapeo de las páginas que representan la visión del zombi ($0x8000000 - 0x8008fff$) con un mapeo hacia la posición en la que zombi está siendo inicializado (\texttt{mmu\_mapear\_vision\_zombi}). Además, también se resetea el contexto entero de la tarea con \texttt{tss\_refrescar\_zombi}). Finalmente, se actualizan las variables del juego, y se dibuja en pantalla los cambios realizados.
-	
+
+	Las últimas dos se verán en Debug. El resto son variables que tienen lo que necesitamos para la lógica del juego. Siempre que hay un cambio en el juego, como la posición de un zombi, de un jugador, o que se mate o lance un zombi, estas variables deben modificarse para reflejar el estado en el que se encuentra el juego. Por comodidad, están declaradas en \texttt{game.h} y se utilizan directamente en archivos como \texttt{interrupt.c} o \texttt{screen.c}, dependiendo del evento.
+
+	Además, este módulo provee rutinas que representan las diversas acciones dentro del juego. Están íntimamente relacionadas con la \textit{isr} del teclado, que es de donde estas funciones son llamadas dependiendo de qué teclas se presionaron.
+
+	La función más interesante es \texttt{game\_lanzar\_zombi}, que crea una nueva tarea. \todo{Acá estaría bueno mencionar que las tareas activas las tenemos guardadas en un arreglo, así se entiende lo de el lugar y el índice} Primero, se le pregunta al Scheduler si hay un lugar libre (\texttt{sched\_hay\_lugar\_zombi}), y si lo hay, se le pide el mismo (\texttt{sched\_indice\_libre}), además de avisarle que a partir de ahora está activo \texttt{sched\_activar\_zombi}. Se pide el cr3 del TSS asociado a dicho índice (\texttt{tss\_leer\_zombi}), y se pisa el viejo mapeo de las páginas que representan la visión del zombi ($0x8000000 - 0x8008fff$) con un mapeo hacia la posición en la que zombi está siendo inicializado (\texttt{mmu\_mapear\_vision\_zombi}). Además, también se resetea el contexto entero de la tarea con \texttt{tss\_refrescar\_zombi}). Finalmente, se actualizan las variables del juego, y se dibuja en pantalla los cambios realizados.
+
 	\section{Scheduler}
-	\vspace{-1cm}	
+	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por isr.asm, sched.c y sched.h}
 	\end{flushright}
-	
-	La rutina principal del scheduler en \texttt{isr.asm} depende de \texttt{sched\_proximo\_indice} para que le pase el selector hacia la próxima tarea a correr. Si no se cargó ninguna tarea todavia ($TR = 0$) o si la próxima tarea es la misma que la actual (porque hay una sóla tarea corriendo), entonces retornamos de la interrupción. De lo contrario, hacemos un task-switch a la nueva tarea mediante un jump far con un selector al task-gate indicado (\todo{¿Qué pasaba si hacias un task-switch a vos mismo?}). El RPL de dicho selector debe ser 0, porque es el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque la interrupción del reloj está en un segmento de nivel 0).
-		
+
+	La rutina principal del scheduler en \texttt{isr.asm} depende de \texttt{sched\_proximo\_indice} para que le pase el selector hacia la próxima tarea a correr. Si no se cargó ninguna tarea todavia ($TR = 0$) o si la próxima tarea es la misma que la actual (porque hay una sóla tarea corriendo), entonces retornamos de la interrupción. De lo contrario, hacemos un task-switch a la nueva tarea mediante un jump far con un selector al task-gate indicado (\todo{¿Qué pasaba si hacias un task-switch a vos mismo? \textbf{CAOS FUEGO DESTRUCCION}}). El RPL de dicho selector debe ser 0, porque es el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque la interrupción del reloj está en un segmento de nivel 0).
+
 	El archivo \texttt{sched.c} tienezzzz...
-			
+
 	% Files Left:
 	% isr.asm, sched.c y sched.h -> SCHEDULER
 	% interrupt.c -> SYSCALL MOVER
 	% screen.c y screen.h -> SCREEN (global)
 	% debug.c y debug.h
-	
+
 \end{document}
