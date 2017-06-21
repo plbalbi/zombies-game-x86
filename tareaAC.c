@@ -52,6 +52,7 @@ void task() {
             int r = xn%5;
             if (r==0 && c>0) {
                 syscall_mover(ATR);
+                c--;
             }else if(r==1){
                 syscall_mover(IZQ);
             }else if(r==2){
