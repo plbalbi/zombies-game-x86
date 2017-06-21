@@ -19,13 +19,17 @@ extern handle_keyboard
 extern handle_syscall_mover
 
 extern debug_save_context
+extern debug_hubo_excepcion
 
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
 
 %macro ISR_BODY 1
-    xchg bx, bx
+    ; Preguntar si ya guardé una vez el contexto
+    cmp dword[debug_hubo_excepcion], 0
+    jnz .skip
+
     ; Save context for debug
     pushad
     push gs
@@ -45,6 +49,7 @@ extern debug_save_context
     add esp, 4*4 ; 4 reg de segmentos
     popad
 
+.skip:
     ; Nos fijamos si provenimos de un CS de nivel 0 o 3
     mov eax, [esp+4*2] ; cargamos CS (suponemos 'error code', se arregla después)
     and eax, 0x03 ; Nos quedamos con el CPL
