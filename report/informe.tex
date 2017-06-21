@@ -158,11 +158,20 @@
 	\textit{Compuesto por gdt.c, gdt.h}
 	\end{flushright}
 
-	En \texttt{gdt.c} se encuentran \textbf{definidos} los descriptores de segmentos principales: tanto de código y de datos de nivel 0 (kernel y tarea idle) y 3 (tareas zombis). Como tomamos el modelo flat como estrategia de segmentación, todos los segmentos comparten base $0$ y límite $623MB$. El problema de la protección del kernel entonces no será resuelto por segmentación, sino por paginación. De cualquier forma, que el nivel de privilegio del segmento para las tareas sea 3 es importante, pues es lo que define el CPL (Current Privilege Level) de las tareas, del cual depende el checkeo de privilegios de paginación.
+    En \texttt{gdt.c} se encuentran \textbf{definidos} los descriptores de segmentos principales:
+    tanto de código y de datos de nivel 0 (kernel y tarea idle) y 3 (tareas zombis). Como tomamos el
+    modelo flat como estrategia de segmentación, todos los segmentos comparten base $0$ y límite
+    $623MB$. El problema de la protección del kernel entonces no será resuelto por segmentación,
+    sino por paginación. De cualquier forma, es importante que el nivel de privilegio del segmento
+    de código sea 3 para las tareas, pues es lo que define el CPL (Current Privilege Level) de las
+    tareas, del cual depende el checkeo de privilegios de paginación.
 
-	No tiene interfaz alguna, pues la información adentro de la GDT no se vuelve a tocar, y para acceder a la misma sólo hacen falta los selectores correctos, que están definidos como macros en \texttt{defines.h}.
+    No tiene interfaz alguna, pues la información adentro de la GDT no se vuelve a tocar, y para
+    acceder a la misma sólo hacen falta los selectores correctos, que están definidos como macros en
+    \texttt{defines.h}.
 
-	La GDT también contiene las task-gates de las tareas, pero las mismas serán descriptas en la sección del mismo nombre.
+    La GDT también contiene las task-gates de las tareas, pero las mismas serán descriptas en la
+    sección del mismo nombre.
 
 
 	\section{Paginación}
@@ -227,7 +236,16 @@
 
 	En general, todas las excepciones se manejan de una forma parecida. Primero nos encargamos de guardar el contexto para una posible llamada a Debug (más información en dicha sección). Después, hay dos variantes: o la excepción fue generada por una tarea zombi, o por el kernel/tarea idle. Para verificar en qué caso estamos, utilizamos el CPL del proceso interrumpido, que se encuentra en el CS guardado en la pila.
 
-	En el primer caso, cuando venimos de una tarea, como pide el enunciado, se `mata' la tarea llamando a \texttt{handle\_zombi\_exception} de \texttt{interrupt.c}. Lo que hace esta rutina es avisarle al scheduler que el zombi ya no existe, y pintar la pantalla para notificar al usuario. El número de `restantes' no baja en esta instancia, sino que baja al lanzar un zombi, asi que no hace falta modificar el estado global del juego. Una vez terminado esto, hacemos un stack-switch a Idle. Nunca vamos a volver a la tarea, por lo que no hace falta completar con más código. Esto ocurre porque el scheduler dio de baja el contexto de la tarea, por lo que se lo saca de la rotación de tareas. Cuando el scheduler quiere reutilizar el `slot' del zombi, la TSS asociada al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente. \todo{mmm en realidad en la tss por ahí tenes algo más viejo que lo que había cuando se la desalojó, no?}
+    En el primer caso, cuando venimos de una tarea, como pide el enunciado, se `mata' la tarea
+    llamando a \texttt{handle\_zombi\_exception} de \texttt{interrupt.c}. Lo que hace esta rutina es
+    avisarle al scheduler que el zombi ya no existe, y pintar la pantalla para notificar al usuario.
+    El número de `restantes' no baja en esta instancia, sino que baja al lanzar un zombi, asi que no
+    hace falta modificar el estado global del juego. Una vez terminado esto, hacemos un task-switch
+    a Idle. Nunca vamos a volver a la tarea, por lo que no hace falta completar con más código. Esto
+    ocurre porque el scheduler dio de baja el contexto de la tarea, por lo que se lo saca de la
+    rotación de tareas. Cuando el scheduler quiere reutilizar el `slot' del zombi, la TSS asociada
+    al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente. \todo{mmm
+    en realidad en la tss por ahí tenes algo más viejo que lo que había cuando se la desalojó, no?}
 
 	El segundo caso, en el que venimos del kernel, marca fallo no planificado. Por dicha razón, decidimos en \texttt{handle\_kernel\_exception} escribir en pantalla datos de la excepción generada (nombre, número de vector, registros varios), y haltear el procesador.
 
@@ -293,7 +311,11 @@
 
 	Luego de haber hecho el \textit{backup} de la pantalla correspondiente, se procede a imprimir la información guardada correspondiente al contexto que provocó la primera excepción. Esta se encuentra almacenada en un \textit{struct} global, cuyos campos son todos los registros de interés. Esta información es guardada por la función \texttt{debug\_save\_context}, que  es llamada por una excepción únicamente si fue la primera en ocurrir; para ello se tiene otro booleano global del juego, \texttt{debug\_hubo\_excepcion}, que comienza en falso y se establece en verdadero cuando ocurre la primera excepción.
 
-	Los valores de la pila del contexto que guarda el modo debug merecen una mención especial. No podemos asegurar que el registro \texttt{esp} esté apuntando a lo que la rutina utilizaba como pila, pero lo asumiremos así. Sin embargo, tomaremos la precaución de verificar que la dirección de memoria que contenga se encuentre en el rango $0x8000000 - 0x8008fff$. Si es así, se muestran tantos valores de 4 \textit{bytes} como indique la distancia entre \texttt{esp} y \texttt{ebp}, con un tope máximo de 10. Si no se encuentra en rango, el modo debug no muestra valores de la pila.
+	Los valores de la pila del contexto que guarda el modo debug merecen una mención especial. No
+    podemos asegurar que el registro \texttt{esp} esté apuntando a lo que la rutina utilizaba como
+    pila, pero lo asumiremos así. Sin embargo, tomaremos la precaución de verificar que la dirección
+    de memoria que contenga se encuentre en el rango $0x8000000 - 0x8008fff$.\todo{La pila de cada
+    tarea no se encuentra mapeada de 0x8001000 para arriba?} Si es así, se muestran tantos valores de 4 \textit{bytes} como indique la distancia entre \texttt{esp} y \texttt{ebp}, con un tope máximo de 10. Si no se encuentra en rango, el modo debug no muestra valores de la pila.
 
 	Si se presiona la tecla Y y el modo debug está prendido, entonces se llama a la función \texttt{debug\_off}, que simplemente restaura la pantalla y establece al booleano \texttt{debug} en false, para que el scheduler retome su funcionamiento normal.
 
