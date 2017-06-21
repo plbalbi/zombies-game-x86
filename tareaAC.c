@@ -12,8 +12,12 @@
 #define PRIME1 104743
 #define PRIME2 105871
 #define PRIME3 1117
+#define MAGIC_NUM_OFF PAGE_SIZE/2
+
 
 void task() {
+    int *magic_mark = (int*)(DIR_INICIO_ZOMBI_VISION + MAGIC_NUM_OFF);
+    *magic_mark = 0x7D1A;
     int xn;
     __asm __volatile("rdtsc");
     __asm __volatile("\t movl %%eax,%0" : "=r"(xn));
