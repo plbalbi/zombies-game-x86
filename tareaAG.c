@@ -40,21 +40,9 @@ void task() {
            *ptr1 = *src;
            src++;
         }
-        magic_mark = ((int*)ptr + MAGIC_NUM_OFF);
+        magic_mark = ((int*)(ptr + MAGIC_NUM_OFF));
         *magic_mark = MAGIC_NUM;
       }
     }
-  }
-}
-
-void dummy_task(){
-  while (1) {
-    syscall_mover(ADE);
-    syscall_mover(ADE);
-    syscall_mover(ADE);
-    syscall_mover(ADE);
-    syscall_mover(ADE);
-    syscall_mover(ADE);
-    syscall_mover(ADE);
   }
 }
