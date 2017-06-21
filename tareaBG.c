@@ -4,22 +4,36 @@
 ================================================================================
 */
 
-#include "colors.h"
-#include "defines.h"
 #include "game.h"
 #include "syscall.h"
+#include "tactics.h"
 
 void task() {
-    /* Tarea */
     int i;
-    for(i=0;i<100;i++) {
-      syscall_mover(ADE);
-      syscall_mover(DER);
-      syscall_mover(ADE);
-      syscall_mover(ADE);
-      syscall_mover(IZQ);
-      syscall_mover(ADE);
+    unsigned int dir = random() % 100;
+    unsigned int length = (random() % 20) + 5;
+
+    for (i = 0; i < 1000; i++) {
+        destroy();
+        syscall_mover(ADE);
     }
-    
-  while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
+
+    if (dir > 50) {
+        for (i = 0; i < length; i++) {
+            destroy();
+            syscall_mover(DER);
+        }
+    } else {
+        for (i = 0; i < length; i++) {
+            destroy();
+            syscall_mover(IZQ);
+        }
+    }
+
+    while(1){
+        destroy();
+        syscall_mover(ADE); 
+    };
 }
+
+#include "tactics.c"
