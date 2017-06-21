@@ -4,45 +4,36 @@
 ================================================================================
 */
 
-#include "colors.h"
-#include "defines.h"
 #include "game.h"
 #include "syscall.h"
-#include "task_functions.h"
-
-#define MAGIC_NUM_OFF PAGE_SIZE/2
-#define MAGIC_NUM 0x7D1A
-
+#include "tactics.h"
 
 void task() {
-  int *magic_mark = (int*)(DIR_INICIO_ZOMBI_VISION + MAGIC_NUM_OFF);
-  *magic_mark = MAGIC_NUM;
-  char* ptr;
-  char* src;
-  char* ptr1;
-  direccion side = DER;
+    int i;
+    unsigned int dir = random() % 100;
+    unsigned int length = (random() % 20) + 5;
 
-  int forward = get_random(2, 15);
-  for (; forward > 0; forward--) {
-    syscall_mover(ADE);
-  }
-  if (get_random_bool()) {
-    side = IZQ;
-  }
-
-  while (1) {
-    syscall_mover(side);
-
-    for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR+ALREDEDOR_SIZE; ptr+=PAGE_SIZE) {
-      if (*((int*)(ptr + MAGIC_NUM_OFF)) != MAGIC_NUM) {
-        src = (char *)DIR_INICIO_ZOMBI_VISION;
-        for (ptr1 = ptr; ptr1 - ptr < PAGE_SIZE; ptr1++) {
-           *ptr1 = *src;
-           src++;
-        }
-        magic_mark = ((int*)(ptr + MAGIC_NUM_OFF));
-        *magic_mark = MAGIC_NUM;
-      }
+    for (i = 0; i < 68; i++) {
+        destroy();
+        syscall_mover(ADE);
     }
-  }
+
+    if (dir > 50) {
+        for (i = 0; i < length; i++) {
+            destroy();
+            syscall_mover(DER);
+        }
+    } else {
+        for (i = 0; i < length; i++) {
+            destroy();
+            syscall_mover(IZQ);
+        }
+    }
+
+    while(1){
+        destroy();
+        syscall_mover(ADE); 
+    };
 }
+
+#include "tactics.c"
