@@ -33,6 +33,7 @@ TASKAC=taskAC.ctsk
 TASKBG=taskBG.ctsk
 TASKBM=taskBM.ctsk
 TASKBC=taskBC.ctsk
+TASK_STUFF=task_functions.c
 
 TASKS=tareas.tsk
 
@@ -112,10 +113,12 @@ taskBM.tsko: tareaBM.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 taskBC.tsko: tareaBC.c
 	$(CC) $(CFLAGS) -c -o $@ $^
+task_stuff.tsko: $(TASK_STUFF) 
+	$(CC) $(CFLAGS) -c -o $@ $^
 
-%.ctsk: %.tsko
+%.ctsk: %.tsko task_stuff.tsko task_stuff.tsko
 	@echo 'Linkeando tarea...'
-	$(LD) $(LDTASKFLAGS) -o $@.tmp $^
+	$(LD) $(LDTASKFLAGS) -o $@.tmp $^ 
 	@echo ''
 	mv $@.tmp $@
 
