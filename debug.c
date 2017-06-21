@@ -151,8 +151,8 @@ void debug_on(){
 }
 
 void debug_off(){
-	debug = false;
 	restore_screen();
+	debug = false;
 }
 
 void backup_screen(){
