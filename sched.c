@@ -111,3 +111,11 @@ bool sched_esta_activo(unsigned int jugador, unsigned int i) {
   }
   return false;
 }
+bool count_active_tasks(){
+  int count = 0;
+  for (int i = 0; i < 8; i++) {
+    count+=(int)(tasks_A[i]);
+    count+=(int)(tasks_B[i]);
+  }
+  return count;
+}

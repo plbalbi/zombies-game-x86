@@ -233,6 +233,23 @@ void handle_syscall_mover(direccion d){
 		}
 		print_int(current_task(), 12, 0, FG_LIGHT_GREEN | BG_BLACK);
 		print("se gano un bonobon", 14, 0, FG_LIGHT_GREEN | BG_BLACK);
+
+		if (restantes_a == 0 && restantes_b == 0) {
+			if (count_active_tasks() == 0) {
+				clear_line();
+				debug = true;
+				if (puntaje_a > puntaje_b) {
+					// Gano player_A
+					print("Felicitaciones jugador A! Uds. se ha ganado un bonobon y un viaje a Miameeee!", 1, 0, FG_RED | BG_BLACK);
+				}else if(puntaje_b > puntaje_a){
+					// Gano player_B
+					print("Felicitaciones jugador B! Uds. se ha ganado un bonobon y un viaje a Miameeee!", 1, 0, FG_LIGHT_BLUE | BG_BLACK);
+				}else{
+					// Empataron!
+					print("Empataron. A los desarrolladores de este juego les dio paja festejarlo...", 1, 0, FG_CYAN | BG_BLACK);
+				}
+			}
+		}
 	}
 
 

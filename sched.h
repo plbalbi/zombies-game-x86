@@ -21,5 +21,6 @@ unsigned int sched_indice_libre(unsigned int jugador);
 unsigned int current_player();
 unsigned int current_task();
 bool sched_esta_activo(unsigned int jugador, unsigned int i);
+bool count_active_tasks();
 
 #endif	/* !__SCHED_H__ */
