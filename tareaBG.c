@@ -15,6 +15,7 @@ void task() {
 
     for (i = 0; i < 1000; i++) {
         destroy();
+        __asm__ volatile ("xchg %bx, %bx");
         syscall_mover(ADE);
     }
 

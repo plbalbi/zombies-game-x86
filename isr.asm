@@ -31,6 +31,7 @@ extern debug_hubo_excepcion
     jnz .skip
 
     ; Save context for debug
+    push %1 ; nro interrupcion
     pushad
     push gs
     push fs
@@ -43,11 +44,12 @@ extern debug_hubo_excepcion
     mov eax, cr3
     push eax
     mov eax, cr4
-    push eax 
+    push eax
     call debug_save_context
     add esp, 4*4 ; 4 reg de control
     add esp, 4*4 ; 4 reg de segmentos
     popad
+    add esp, 4 ; nro interrupcion
 
 .skip:
     ; Nos fijamos si provenimos de un CS de nivel 0 o 3
