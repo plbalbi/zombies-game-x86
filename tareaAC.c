@@ -43,20 +43,14 @@ void task() {
         }
     }else{
         int c = 0;
-        syscall_mover(ADE);
-        syscall_mover(ADE);
-        syscall_mover(ADE);
-        syscall_mover(ADE);
-        syscall_mover(ADE);
-        syscall_mover(ADE);
         while (1) {
             xn = (PRIME1*xn + PRIME2) % PRIME3;
-            int r = xn%7;
+            int r = xn%5;
             if (r==0 && c>0) {
                 syscall_mover(ATR);
-            }else if(r<3){
+            }else if(r==1){
                 syscall_mover(IZQ);
-            }else if(r<5){
+            }else if(r==2){
                 syscall_mover(DER);
             }else{
                 syscall_mover(ADE);
