@@ -290,7 +290,7 @@
 	La rutina principal del scheduler en \texttt{isr.asm} depende de
     \texttt{sched\_proximo\_indice}, que le indica al selector la próxima tarea a correr. Si no se
     cargó ninguna tarea todavia ($TR = 0$) o si la próxima tarea es la misma que la actual (porque
-    hay una sóla tarea corriendo), entonces no se hace nada(Ya que de llevarse a cabo un
+    hay una sóla tarea corriendo), entonces no se hace nada (ya que de llevarse a cabo un
     Task-Switch, se produciría caso, fuego y destrucción), retornando de la interrupción. De lo contrario, hacemos un task-switch a la nueva tarea mediante un jump far con un selector al task-gate indicado (el `próximo índice' que se obtuvo\todo{¿Qué pasaba si hacias un task-switch a vos mismo? \textbf{CAOS FUEGO DESTRUCCION}}). El RPL de dicho selector debe ser 0, porque es el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque la interrupción del reloj está en un segmento de nivel 0).
 
 	En el archivo \texttt{sched.c}, se encuentran definidas las estructuras que utiliza el scheduler
@@ -330,5 +330,41 @@
     tarea no se encuentra mapeada de 0x8001000 para arriba?} Si es así, se muestran tantos valores de 4 \textit{bytes} como indique la distancia entre \texttt{esp} y \texttt{ebp}, con un tope máximo de 10. Si no se encuentra en rango, el modo debug no muestra valores de la pila.
 
 	Si se presiona la tecla Y y el modo debug está prendido, entonces se llama a la función \texttt{debug\_off}, que simplemente restaura la pantalla y establece al booleano \texttt{debug} en false, para que el scheduler retome su funcionamiento normal.
+
+
+	\section{Syscall}
+	\vspace{-1cm}
+	\begin{flushright}
+		\textit{Compuesto por syscall.h, isr.asm y interrupt.c}
+	\end{flushright}
+    Los llamados a la syscall se realizan mediante la funcion syscall\_mover definida en syscall.h
+    (proveída por la cátedra). Como la syscall es, en otras palabras, una llamada a un servicio del
+    kernel, la comunicación entre la tarea llamadora y el kernel se realiza por medio de una
+    interrupción (número 102). Una vez realizada la interrupción, la misma es atendida por el
+    hanlder de la misma, definido en isr.asm. El mismo realiza una llamada a handle\_syscall\_mover,
+    pasandole como parámtro la dirección en la cual avanzar la tarea (zombie).
+
+    En interrupt.c, se enucentra definida la rutina (handle\_syscall\_mover) que lleva a cabo la acción de la syscall (mover
+    la tarea en una dirección dada). La misma consiste en:
+    \begin{enumerate}
+        \item Identificar la tarea que realizo el llamado a la syscall.
+        \item Calcular la posición del mapa destino, a la cual se moverá la tarea (zombie).
+        \item Replicar el código de la tarea, en la posición destino.
+        \item Mapear en el esquema de paginación de la tarea la nueva posicón del código, así como
+            sus páginas adyancentes (la cuales son la zona visible por la misma).
+        \item Pintar en la pantalla al zombie en su nuvea locación, y dejar un \textit{trace} en su
+            anterior.
+        \item Si la tarea llego al otro extremo del mapa, actualizar los puntajes, llamar a la
+            rutina encargada de destruir la tarea, y en caso de algún jugador haya ganado,
+            festejarselo apropiadamente.
+    \end{enumerate}
+    
+    La información que se recupera para identificar la tarea llamadora, se obtiene mediante
+    consultas a las estructuras del juego, asi como las del scheduler. Por otro lado, las rutinas
+    utilizadas para replicar a la tarea, e interactuar con su esquema de paginación, son las mismas
+    que se utilizaron (levemente modificadas en el caso de la replicación, ya que se debe copiar
+    también el stack de la tarea) al inicializarlas, vistas en la sección de paginación. En el caso
+    de que el zombie haya ganado un punto para su respectivo jugador, los mismos se actualizan en
+    variables globales, pertenecientes a la estructura del juego.
 
 \end{document}
