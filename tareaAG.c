@@ -29,10 +29,8 @@ void task() {
   if (get_random_bool()) {
     side = IZQ;
   }
-
+  int side_count = 0;
   while (1) {
-    syscall_mover(side);
-
     for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR+ALREDEDOR_SIZE; ptr+=PAGE_SIZE) {
       if (*((int*)(ptr + MAGIC_NUM_OFF)) != MAGIC_NUM) {
         src = (char *)DIR_INICIO_ZOMBI_VISION;
@@ -43,6 +41,13 @@ void task() {
         magic_mark = ((int*)(ptr + MAGIC_NUM_OFF));
         *magic_mark = MAGIC_NUM;
       }
+    }
+    if (side_count >= 80) {
+      syscall_mover(ADE);
+      side_count = 0;
+    }else{
+      syscall_mover(side);
+      side_count++;
     }
   }
 }
