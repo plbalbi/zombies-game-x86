@@ -275,7 +275,7 @@
 
 	Además, este módulo provee rutinas que representan las diversas acciones dentro del juego. Están íntimamente relacionadas con la \textit{isr} del teclado, que es de donde estas funciones son llamadas dependiendo de qué teclas se presionaron.
 
-	La función más interesante es \texttt{game\_lanzar\_zombi}, que crea una nueva tarea. \todo{Acá estaría bueno mencionar que las tareas activas las tenemos guardadas en un arreglo, así se entiende lo de el lugar y el índice} Primero, se le pregunta al Scheduler si hay un lugar libre (\texttt{sched\_hay\_lugar\_zombi}), y si lo hay, se le pide el mismo (\texttt{sched\_indice\_libre}), además de avisarle que a partir de ahora está activo \texttt{sched\_activar\_zombi}. Se pide el cr3 del TSS asociado a dicho índice (\texttt{tss\_leer\_zombi}), y se pisa el viejo mapeo de las páginas que representan la visión del zombi ($0x8000000 - 0x8008fff$) con un mapeo hacia la posición en la que zombi está siendo inicializado (\texttt{mmu\_mapear\_vision\_zombi}). Además, también se resetea el contexto entero de la tarea con \texttt{tss\_refrescar\_zombi}). Finalmente, se actualizan las variables del juego, y se dibuja en pantalla los cambios realizados.
+	La función más interesante es \texttt{game\_lanzar\_zombi}, que crea una nueva tarea. Primero, se le pregunta al Scheduler si hay un lugar libre (\texttt{sched\_hay\_lugar\_zombi}), y si lo hay, se le pide el mismo (\texttt{sched\_indice\_libre}), además de avisarle que a partir de ahora está activo \texttt{sched\_activar\_zombi}. Se pide el cr3 del TSS asociado a dicho índice (\texttt{tss\_leer\_zombi}), y se pisa el viejo mapeo de las páginas que representan la visión del zombi ($0x8000000 - 0x8008fff$) con un mapeo hacia la posición en la que zombi está siendo inicializado (\texttt{mmu\_mapear\_vision\_zombi}). Además, también se resetea el contexto entero de la tarea con \texttt{tss\_refrescar\_zombi}). Finalmente, se actualizan las variables del juego, y se dibuja en pantalla los cambios realizados.
 
 	\section{Scheduler}
 	\vspace{-1cm}
@@ -316,7 +316,6 @@
 	\begin{flushright}
 		\textit{Compuesto por debug.c y debug.h}
 	\end{flushright}
-\todo[inline]{Me copé escribiendo y quedó todo en un bloque. Tal vez se puede dividir en subtítulos}
 	Estos archivos fuente contienen dos conjuntos de funciones: un primer conjunto de funciones que sirve para imprimir en pantalla errores varios (por ejemplo excepciones del kernel sin resolver), y otro conjunto que compone el funcionamiento del modo debug del juego, que pide la consigna. Las primeras funciones son escencialmente renombres a llamadas de la función \texttt{print} (y sus variantes) con determinados valores de posición y atributos.
 
 	Nótese que el modo debug tiene su utilidad para excepciones de los zombis, y no así las del kernel. Las excepciones del kernel no se manejan de la misma manera (ver Interrupciones), y no dan lugar a este modo.
