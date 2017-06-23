@@ -198,16 +198,13 @@
 
 	Para completar la page table, se delega a la rutina \texttt{mmu\_mapear\_vision\_zombi}, que a su vez aplica \texttt{mmu\_mapear\_pagina} (del enunciado) nueve veces para mapear individualmente las páginas lineales a partir de la $0x8000000$ a las posiciones adyacentes al zombi. La función toma \textit{jugador}, para saber en qué orden mapear las páginas (que cambian según el jugador, de tal forma que el zombi es agnóstico de a qué bando pertenece), un \textit{x}, un \textit{y}, con el cual calcularemos las direcciones físicas del mapa a las que mapearemos y un \textit{cr3} que indicará sobre qué mapa de memoria se aplicará el mapeo. Observar que esta instrucción no inicializa nada, solo mapea las direcciones que componen la `visión' del zombi, con lo cual es una función bastante general. De hecho, la usaremos también para la syscall mover.
 
-	Haremos una mención a la función \texttt{mmu\_inicializar\_zombi} que nunca es usada, si bien está presente por pedido del enunciado. \todo{No entendí... acá se va a mencionar?}
-
-
 	\section{Tareas}
 	\vspace{-1cm}
 	\begin{flushright}
 	\textit{Compuesto por tss.h y tss.c}
 	\end{flushright}
 
-	La mayor responsabilidad del archivo \texttt{tss.c} es la de inicializar las estructuras de las tareas (\texttt{tss\_inicializar}). Cada tarea tiene asociada una variable global que apunta \todo{wut?} contiene su TSS (las tareas zombis, arrays). Para inicializar una tarea se completa su TSS con los valores que corresponden, y se le asigna una task-gate en la GDT.
+	La mayor responsabilidad del archivo \texttt{tss.c} es la de inicializar las estructuras de las tareas (la función \texttt{tss\_inicializar}). Por cada tarea hay una variable global con su TSS (para ser más precisos, las tareas zombis están guardadas en arrays globales). Para inicializar una tarea se completa su TSS con los valores que corresponden, y se le asigna una task-gate en la GDT.
 
 	Como mencionamos anteriormente, la idea es inicializar todo lo que necesitamos para los zombis en un principio, y reutilizar esos recursos. \texttt{tss\_inicializar\_zombi} toma un jugador y un número de tarea (del 0 al 7), y:
 
@@ -244,8 +241,7 @@
     a Idle. Nunca vamos a volver a la tarea, por lo que no hace falta completar con más código. Esto
     ocurre porque el scheduler dio de baja el contexto de la tarea, por lo que se lo saca de la
     rotación de tareas. Cuando el scheduler quiere reutilizar el `slot' del zombi, la TSS asociada
-    al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente. \todo{mmm
-    en realidad en la tss por ahí tenes algo más viejo que lo que había cuando se la desalojó, no?}
+    al mismo es reescrita, momento en el cual perdemos el contexto viejo definitivamente.
 
 	El segundo caso, en el que venimos del kernel, marca fallo no planificado. Por dicha razón, decidimos en \texttt{handle\_kernel\_exception} escribir en pantalla datos de la excepción generada (nombre, número de vector, registros varios), y haltear el procesador.
 
@@ -293,22 +289,20 @@
     hay una sóla tarea corriendo), entonces no se hace nada (ya que de llevarse a cabo un
     Task-Switch se produciría caos, fuego y destrucción), retornando de la interrupción. De lo
     contrario, hacemos un Task-Switch a la nueva tarea mediante un jump far con un selector al
-    task-gate indicado (el `próximo índice' que se obtuvo\todo{¿Qué pasaba si hacias un task-switch
-    a vos mismo? \textbf{CAOS FUEGO DESTRUCCION}}). El RPL de dicho selector debe ser 0, porque es
+    task-gate indicado (el `próximo índice' que se obtuvo. El RPL de dicho selector debe ser 0, porque es
     el privilegio que necesitamos para iniciar la conmutación de tareas (el CPL también es 0, porque
     la interrupción del reloj está en un segmento de nivel 0). Un comportamiento especial que posee
     el scheduler, consiste en que si se encuentra prendido el flag de \textit{debug}, entonces
     \texttt{sched\_proximo\_indice} siempre devoldera el índice de la tarea Idle, \textit{pausando}
     el juego.
 
-	En el archivo \texttt{sched.c}, se encuentran definidas las estructuras que utiliza el scheduler
-    para llevar a cabo un seguimiento de que tareas estan corriendo (\textit{tasks\_A} y
-    \textit{tasks\_B}), la última tarea ejectuada de cada jugador (\textit{running\_A} y
-    \textit{running\_B}), y qué jugador es el próximo al que el scheduler le debe transferir el
-    control (\textit{next\_player}). También contiene las runtinas que indican cuál es la siguiente
-    tarea a ser ejectuada (mencionada anteriormente), y funciones de interfaz con las estructuras
+	Si bien la isr del clock se encarga de iniciar las conmutaciones de tareas, es en el archivo \texttt{sched.c} en el que se encuentran definidas las estructuras que utiliza el scheduler para llevar a cabo el seguimiento de qué tareas estan corriendo. Son 8 las tareas que pueden estar corriendo simultaneamente para cada jugador, y vamos a administrar las tareas pensando que tenemos $8$ slots en donde podemos ubicar nuestras tareas activas. Para implementar esto utilizamos dos arreglos de booleanos de longitud 8 (\textit{tasks\_A} y \textit{tasks\_B}) , en donde un 1 marca que el `slot' está siendo utilizado por un zombi activo.
+	
+	Para ejecutar las tareas activas de la forma que requiere el enunciado guardamos la última tarea ejectuada de cada jugador (\textit{running\_A} y \textit{running\_B}), y qué jugador es el próximo al que el scheduler le debe transferir el control en el próximo quantum (\textit{next\_player}).
+	
+	El archivo también contiene funciones de interfaz con las estructuras
     del mismo (para indicar qué tarea esta siendo ejecutada, para agregar nuevas tareas al
-    scheduler, o para consultar las mismas).
+    scheduler, o para consultar las mismas). Resulta conveniente tener estas funciones porque, por ejemplo, el scheduler es el único que tiene guardado quién es el último zombi que se acabó de ejecutar.
 
 
 	% Files Left:
