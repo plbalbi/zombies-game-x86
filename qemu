@@ -1,0 +1,4 @@
+curl -F'file=@archivo.zip' https://0x0.st 
+
+sudo apt-get install qemu-system-x86 
+qemu-system-x86_64 -drive format=raw,file=diskette.img,index=0,if=floppy 
