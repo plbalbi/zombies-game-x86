@@ -4,55 +4,23 @@
 ================================================================================
 */
 
-#include "colors.h"
-#include "defines.h"
-#include "game.h"
+#include "tactics.h"
 #include "syscall.h"
 
 void task() {
-    int i;
-    unsigned long* p = (unsigned long*) (0x8000000+(2<<13));
-    while(1){
-        for(i=0; i<5; i++){
-            *p = 0;
-            p++;
-            syscall_mover(ADE);
-            syscall_mover(ADE);
-            syscall_mover(DER);
-        }
-        for(i=0; i<5; i++){
-            *p = 0;
-            p++;
-            syscall_mover(DER);
-            syscall_mover(ATR);
-            syscall_mover(IZQ);
-            syscall_mover(IZQ);
-            syscall_mover(ADE);
-            syscall_mover(ADE);
-            syscall_mover(ADE);
-        }
-        for(i=0; i<5; i++){
-            *p = 0;
-            p++;
-            syscall_mover(ADE);
-            syscall_mover(DER);
-            syscall_mover(ATR);
-            syscall_mover(ADE);
-            syscall_mover(IZQ);
-            syscall_mover(ATR);
-            syscall_mover(ADE);
-            syscall_mover(IZQ);
-        }
-        for(i=0; i<5; i++){
-            *p = 0;
-            p++;
-            syscall_mover(ADE);
-            syscall_mover(ADE);
-            syscall_mover(DER);
-            syscall_mover(DER);
-            syscall_mover(DER);
-        }
-    }
+    //__asm__("jmp next+4096*6"); // move ip back
 
-   while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
+    __asm__("next:");
+
+    //    __asm__("mov 0x8000000, %eax"); //init dir
+    __asm__("mov 1024*4, %eax"); // byte count
+    //  __asm__("cmp %ebx, 0");
+    //  __asm__("je loop");
+
+    __asm__("loop:");
+    __asm__("jmp loop");
+
 }
+
+#include "tactics.c"
+

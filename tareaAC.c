@@ -12,5 +12,6 @@
 
 void task() {
     while(1) {
+        syscall_mover(ADE); // move forward
     }
 }
