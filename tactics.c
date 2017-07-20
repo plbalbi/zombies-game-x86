@@ -4,7 +4,7 @@
 // +++++++++++++++++++++++++++++
 void destroy() {
     char* ptr;
-    for(ptr = (char*)ALREDEDOR; ptr < (char*) ALREDEDOR+ALREDEDOR_SIZE; ptr++) {
+    for(ptr = (char*)ADELANTE; ptr < (char*) ADELANTE+PAGE_SIZE*3; ptr++) {
       *ptr = 0;
     };
 }
